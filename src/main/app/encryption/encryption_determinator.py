@@ -1,3 +1,5 @@
+import numpy as np
+
 from src.main.app.encryption.entropy import Entropy
 from src.main.app.encryption.entropy_analyzer import EntropyAnalyzer
 from src.main.app.encryption.file_reader import read_file
@@ -14,8 +16,15 @@ class EncryptionDeterminator:
         count_above_border = len(list(filter(lambda entr: entr >= self._encryption_border, entropies)))
         entropy_above_border = round(100 * count_above_border / len(entropies))
 
-        if entropy >= 90 or (entropy >= 60 and entropy_above_border >= 80):
+        if entropy >= 90:
             return True, entropy, entropy_above_border
+        if entropy >= 80 and entropy_above_border >= 25:
+            return True, entropy, entropy_above_border
+        if entropy >= 60 and entropy_above_border >= 80:
+            return True, entropy, entropy_above_border
+        # if entropy >= 60 and entropy_above_border >= 80:
+        #     return True, entropy, entropy_above_border
+
         return False, entropy, entropy_above_border
 
 

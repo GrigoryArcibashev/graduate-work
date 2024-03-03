@@ -7,10 +7,6 @@ class Entropy:
         if len(data) == 0:
             return 0
         entropy, number_of_unique = self._calc_entropy(data, number_of_unique=True)
-        # if number_of_unique <= 1:
-        #     print(f'data = {data}')
-        #     print(f'entropy = {entropy}')
-        #     print(f'number_of_unique = {number_of_unique}')
         if entropy:
             return round(100 * entropy / log2(number_of_unique), 2)
         return entropy
@@ -21,7 +17,6 @@ class Entropy:
         for symbol in frequency.keys():
             freq = frequency[symbol]
             result -= freq * log2(freq)
-
         if number_of_unique:
             return result, len(frequency.keys())
         return result
@@ -31,4 +26,3 @@ class Entropy:
         unique, counts = np.unique(data, return_counts=True)
         data_length = len(data)
         return {unique[i]: counts[i] / data_length for i in range(len(unique))}
-        # print(np.asarray((unique, counts)).T)
