@@ -6,9 +6,9 @@ from src.main.app.encryption.file_reader import read_file
 
 
 class EncryptionDeterminator:
-    def __init__(self, entropy_analyzer):
+    def __init__(self, entropy_analyzer, border):
         self._entropy_analyzer = entropy_analyzer
-        self._encryption_border = 90
+        self._encryption_border = border
 
     def determinate(self, data):
         entropy = self._entropy_analyzer.analyze(data)
@@ -18,9 +18,7 @@ class EncryptionDeterminator:
 
         if entropy >= 90:
             return True, entropy, entropy_above_border
-        if entropy >= 80 and entropy_above_border >= 25:
-            return True, entropy, entropy_above_border
-        if entropy >= 60 and entropy_above_border >= 80:
+        if entropy >= 77 and entropy_above_border >= 15:
             return True, entropy, entropy_above_border
         # if entropy >= 60 and entropy_above_border >= 80:
         #     return True, entropy, entropy_above_border
@@ -28,10 +26,10 @@ class EncryptionDeterminator:
         return False, entropy, entropy_above_border
 
 
-def main():
+def main(border):
     tp = tn = fp = fn = 0
 
-    ed = EncryptionDeterminator(EntropyAnalyzer(Entropy()))
+    ed = EncryptionDeterminator(EntropyAnalyzer(Entropy()), border)
     prefixes = ['../../source/orig/', '../../source/encr/']
     postfix = '.txt'
     files = [str(i) for i in range(1, 21)]
@@ -76,4 +74,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    for bdr in range(93, 94):
+        print(f'BORDER = {bdr}')
+        main(bdr)
+        print('------------------------\n')
