@@ -1,12 +1,10 @@
-import numpy as np
-
 from src.main.app.encryption.entropy import Entropy
 from src.main.app.encryption.entropy_analyzer import EntropyAnalyzer
-from src.main.app.encryption.file_reader import read_file
+from src.main.app.file_reader import read_file
 
 
 class EncryptionDeterminator:
-    def __init__(self, entropy_analyzer, border):
+    def __init__(self, entropy_analyzer, border=93):
         self._entropy_analyzer = entropy_analyzer
         self._encryption_border = border
 
@@ -15,26 +13,20 @@ class EncryptionDeterminator:
         entropies, window_size, hop = self._entropy_analyzer.window_analyze(data)
         count_above_border = len(list(filter(lambda entr: entr >= self._encryption_border, entropies)))
         entropy_above_border = round(100 * count_above_border / len(entropies))
-
-        if entropy >= 90:
+        if entropy >= 75 and entropy_above_border >= 8:
             return True, entropy, entropy_above_border
-        if entropy >= 77 and entropy_above_border >= 15:
-            return True, entropy, entropy_above_border
-        # if entropy >= 60 and entropy_above_border >= 80:
-        #     return True, entropy, entropy_above_border
-
         return False, entropy, entropy_above_border
 
 
-def main(border):
+def make_stat():
     tp = tn = fp = fn = 0
 
-    ed = EncryptionDeterminator(EntropyAnalyzer(Entropy()), border)
+    ed = EncryptionDeterminator(EntropyAnalyzer(Entropy()))
     prefixes = ['../../source/orig/', '../../source/encr/']
     postfix = '.txt'
     files = [str(i) for i in range(1, 21)]
 
-    with open('stat.txt', 'w') as file_stat:
+    with open('../../source/encr_stat.txt', 'w') as file_stat:
         for prefix in prefixes:
             for filename in files:
                 text = list(read_file(prefix + filename + postfix))
@@ -74,7 +66,4 @@ def main(border):
 
 
 if __name__ == '__main__':
-    for bdr in range(93, 94):
-        print(f'BORDER = {bdr}')
-        main(bdr)
-        print('------------------------\n')
+    make_stat()

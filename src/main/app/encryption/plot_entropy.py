@@ -3,7 +3,7 @@ import numpy as np
 from scipy.signal import savgol_filter
 from src.main.app.encryption.entropy import Entropy
 from src.main.app.encryption.entropy_analyzer import EntropyAnalyzer
-from src.main.app.encryption.file_reader import read_file
+from src.main.app.file_reader import read_file
 
 
 def plot_entropy(title, entropy, entropies, hop, window_size, limit):
