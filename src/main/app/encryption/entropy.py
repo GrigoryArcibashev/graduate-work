@@ -7,7 +7,7 @@ class Entropy:
         if len(data) == 0:
             return 0
         entropy, number_of_unique = self._calc_entropy(data, number_of_unique=True)
-        if entropy:
+        if number_of_unique > 1:
             return round(100 * entropy / log2(number_of_unique), 2)
         return entropy
 
@@ -26,3 +26,10 @@ class Entropy:
         unique, counts = np.unique(data, return_counts=True)
         data_length = len(data)
         return {unique[i]: counts[i] / data_length for i in range(len(unique))}
+
+
+if __name__ == '__main__':
+    en = Entropy()
+    strings = ["let codedMessage = getValueOfElementById('codedMessage');"]
+    for string in strings:
+        print(f'{string}\n{en.calc_entropy_in_percent(list(string))}\n')
