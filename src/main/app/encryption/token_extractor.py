@@ -7,14 +7,10 @@ Token = namedtuple('Token', ['value', 'type'])
 class TokenType(Enum):
     LETTERS = 0
     DIGITS = 1
-    TERMINATOR = 2
-    OTHER = 3
+    OTHER = 2
 
 
 class TokenExtractor:
-    def __init__(self):
-        self._terminator = ord(b'_')
-
     def extract_tokens_from_string(self, string):
         """
         extract by camelCase, snake_case, terminator and non alphanum symbols
@@ -49,12 +45,7 @@ class TokenExtractor:
             return TokenType.LETTERS
         if self._is_digit(symbol):
             return TokenType.DIGITS
-        if self._is_terminator(symbol):
-            return TokenType.TERMINATOR
         return TokenType.OTHER
-
-    def _is_terminator(self, symbol):
-        return symbol == self._terminator
 
     def _is_non_alphanum(self, symbol):
         return not (self._is_letter(symbol) or self._is_digit(symbol))
