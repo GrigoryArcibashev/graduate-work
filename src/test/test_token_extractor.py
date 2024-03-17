@@ -30,13 +30,7 @@ class Test(unittest.TestCase):
 
     def test_camel_case(self):
         string = b'firstSecondThird'
-        expected = self._make_tokens_by_mapping_from_str_values(
-            [
-                Token('first', TokenType.LETTERS),
-                Token('Second', TokenType.LETTERS),
-                Token('Third', TokenType.LETTERS)
-            ]
-        )
+        expected = self._make_tokens_by_mapping_from_str_values([Token('firstSecondThird', TokenType.LETTERS)])
         actual = TokenExtractor().extract_tokens_from_string(string)
         self.assertEqual(actual, expected)
 
@@ -116,8 +110,7 @@ class Test(unittest.TestCase):
         string = b'TwentyOne-6 == 15!'
         expected = self._make_tokens_by_mapping_from_str_values(
             [
-                Token('Twenty', TokenType.LETTERS),
-                Token('One', TokenType.LETTERS),
+                Token('TwentyOne', TokenType.LETTERS),
                 Token('-', TokenType.OTHER),
                 Token('6', TokenType.DIGITS),
                 Token(' ', TokenType.OTHER),
