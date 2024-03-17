@@ -1,5 +1,8 @@
 from enum import Enum
 from collections import namedtuple
+from typing import Iterator
+
+from src.main.app.encryption.extractors.extractor_interface import ExtractorInterface
 
 Token = namedtuple('Token', ['value', 'type'])
 
@@ -10,9 +13,9 @@ class TokenType(Enum):
     OTHER = 2
 
 
-class TokenExtractor:
-    def extract_tokens_from_string(self, string) -> list[Token]:
-        tokens = list()
+class TokenExtractor(ExtractorInterface):
+    def next_element(self, string) -> Iterator[Token]:
+        # tokens = list()
         current_lexeme = list()
         symbol_type = None
         prev_symbol_type = None
@@ -20,13 +23,15 @@ class TokenExtractor:
             symbol = string[i]
             symbol_type = self._determinate_type(symbol)
             if self._is_new_lexeme(prev_symbol_type, symbol, symbol_type):
-                tokens.append(Token(current_lexeme, prev_symbol_type))
+                # tokens.append(Token(current_lexeme, prev_symbol_type))
+                yield Token(current_lexeme, prev_symbol_type)
                 current_lexeme = []
             current_lexeme.append(symbol)
             prev_symbol_type = symbol_type
         if current_lexeme:
-            tokens.append(Token(current_lexeme, symbol_type))
-        return tokens
+            # tokens.append(Token(current_lexeme, symbol_type))
+            yield Token(current_lexeme, symbol_type)
+        # return tokens
 
     def _is_new_lexeme(self, prev_symbol_type, symbol, symbol_type) -> bool:
         return prev_symbol_type and (symbol_type != prev_symbol_type or self._is_non_alphanum(symbol))

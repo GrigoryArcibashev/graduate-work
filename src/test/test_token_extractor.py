@@ -1,19 +1,19 @@
 import unittest
 
-from src.main.app.encryption.token_extractor import TokenExtractor, Token, TokenType
+from src.main.app.encryption.extractors.token_extractor import TokenExtractor, Token, TokenType
 
 
 class Test(unittest.TestCase):
     def test_simplest_letters(self):
         string = b'first'
         expected = self._make_tokens_by_mapping_from_str_values([Token('first', TokenType.LETTERS)])
-        actual = TokenExtractor().extract_tokens_from_string(string)
+        actual = list(TokenExtractor().next_element(string))
         self.assertEqual(actual, expected)
 
     def test_simplest_digits(self):
         string = b'1234'
         expected = self._make_tokens_by_mapping_from_str_values([Token('1234', TokenType.DIGITS)])
-        actual = TokenExtractor().extract_tokens_from_string(string)
+        actual = list(TokenExtractor().next_element(string))
         self.assertEqual(actual, expected)
 
     def test_simplest_other(self):
@@ -25,13 +25,13 @@ class Test(unittest.TestCase):
                 Token('$', TokenType.OTHER)
             ]
         )
-        actual = TokenExtractor().extract_tokens_from_string(string)
+        actual = list(TokenExtractor().next_element(string))
         self.assertEqual(actual, expected)
 
     def test_camel_case(self):
         string = b'firstSecondThird'
         expected = self._make_tokens_by_mapping_from_str_values([Token('firstSecondThird', TokenType.LETTERS)])
-        actual = TokenExtractor().extract_tokens_from_string(string)
+        actual = list(TokenExtractor().next_element(string))
         self.assertEqual(actual, expected)
 
     def test_snake_case(self):
@@ -45,7 +45,7 @@ class Test(unittest.TestCase):
                 Token('Third', TokenType.LETTERS)
             ]
         )
-        actual = TokenExtractor().extract_tokens_from_string(string)
+        actual = list(TokenExtractor().next_element(string))
         self.assertEqual(actual, expected)
 
     def test_string_with_spaces1(self):
@@ -61,7 +61,7 @@ class Test(unittest.TestCase):
                 Token(' ', TokenType.OTHER)
             ]
         )
-        actual = TokenExtractor().extract_tokens_from_string(string)
+        actual = list(TokenExtractor().next_element(string))
         self.assertEqual(actual, expected)
 
     def test_string_with_spaces2(self):
@@ -73,7 +73,7 @@ class Test(unittest.TestCase):
                 Token('second', TokenType.LETTERS)
             ]
         )
-        actual = TokenExtractor().extract_tokens_from_string(string)
+        actual = list(TokenExtractor().next_element(string))
         self.assertEqual(actual, expected)
 
     def test_string_with_spaces3(self):
@@ -89,7 +89,7 @@ class Test(unittest.TestCase):
                 Token('\n', TokenType.OTHER)
             ]
         )
-        actual = TokenExtractor().extract_tokens_from_string(string)
+        actual = list(TokenExtractor().next_element(string))
         self.assertEqual(actual, expected)
 
     def test_simple1(self):
@@ -103,7 +103,7 @@ class Test(unittest.TestCase):
                 Token('9', TokenType.DIGITS)
             ]
         )
-        actual = TokenExtractor().extract_tokens_from_string(string)
+        actual = list(TokenExtractor().next_element(string))
         self.assertEqual(actual, expected)
 
     def test_simple2(self):
@@ -121,7 +121,7 @@ class Test(unittest.TestCase):
                 Token('!', TokenType.OTHER)
             ]
         )
-        actual = TokenExtractor().extract_tokens_from_string(string)
+        actual = list(TokenExtractor().next_element(string))
         self.assertEqual(actual, expected)
 
     def test_php_variable_assignment(self):
@@ -137,7 +137,7 @@ class Test(unittest.TestCase):
                 Token(';', TokenType.OTHER)
             ]
         )
-        actual = TokenExtractor().extract_tokens_from_string(string)
+        actual = list(TokenExtractor().next_element(string))
         self.assertEqual(actual, expected)
 
     def _make_tokens_by_mapping_from_str_values(self, tokens: list[Token[str, TokenType]]) \
