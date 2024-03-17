@@ -4,16 +4,16 @@ from src.main.app.file_reader import read_file
 
 
 class EncryptionDeterminator:
-    def __init__(self, entropy_analyzer, border=93):
+    def __init__(self, entropy_analyzer):
         self._entropy_analyzer = entropy_analyzer
-        self._encryption_border = border
+        self._window_encryption_border = 60
 
     def determinate(self, data):
         entropy = self._entropy_analyzer.analyze(data)
         entropies, window_size, hop = self._entropy_analyzer.window_analyze(data)
-        count_above_border = len(list(filter(lambda entr: entr >= self._encryption_border, entropies)))
+        count_above_border = len(list(filter(lambda entr: entr >= self._window_encryption_border, entropies)))
         entropy_above_border = round(100 * count_above_border / len(entropies))
-        if entropy >= 75 and entropy_above_border >= 8:
+        if entropy >= 65 or entropy >= 50 and entropy_above_border >= 50:
             return True, entropy, entropy_above_border
         return False, entropy, entropy_above_border
 
