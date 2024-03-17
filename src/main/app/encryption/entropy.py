@@ -8,7 +8,7 @@ class Entropy:
             return 0
         entropy, number_of_unique = self._calc_entropy(data, number_of_unique=True)
         if number_of_unique > 1:
-            return round(100 * entropy / log2(number_of_unique), 2)
+            return round(100 * entropy / log2(256), 2)
         return entropy
 
     def _calc_entropy(self, data, number_of_unique=False):
@@ -18,7 +18,7 @@ class Entropy:
             freq = frequency[symbol]
             result -= freq * log2(freq)
         if number_of_unique:
-            return result, len(frequency.keys())
+            return result, len(frequency)
         return result
 
     @staticmethod
@@ -30,6 +30,9 @@ class Entropy:
 
 if __name__ == '__main__':
     en = Entropy()
-    strings = ["let codedMessage = getValueOfElementById('codedMessage');"]
+    strings = [
+        "let codedMessage = getValueOfElementById('codedMessage');",
+        "bGV0IGNvZGVkTWVzc2FnZSA9IGdldFZhbHVlT2ZFbGVtZW50QnlJZCgnY29kZWRNZXNzYWdlJyk7"
+    ]
     for string in strings:
-        print(f'{string}\n{en.calc_entropy_in_percent(list(string))}\n')
+        print(f'{string}\n{en.calc_entropy_in_percent(list(string))}%\n')
