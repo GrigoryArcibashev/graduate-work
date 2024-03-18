@@ -1,6 +1,6 @@
 class EntropyAnalyzer:
-    def __init__(self, entropy):
-        self._entropy = entropy
+    def __init__(self, entropy_calculator):
+        self._entropy_calculator = entropy_calculator
         self._min_window_size = 100
         self._min_hope = 1
 
@@ -22,4 +22,4 @@ class EntropyAnalyzer:
         return entropies, window_size, hop
 
     def analyze(self, data):
-        return self._entropy.calc_entropy_in_percent(data)
+        return self._entropy_calculator.calc_entropy_in_percent(data)
