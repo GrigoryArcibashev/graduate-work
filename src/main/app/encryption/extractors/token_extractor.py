@@ -15,7 +15,6 @@ class TokenType(Enum):
 
 class TokenExtractor(ExtractorInterface):
     def next_element(self, string) -> Iterator[Token]:
-        # tokens = list()
         current_lexeme = list()
         symbol_type = None
         prev_symbol_type = None
@@ -23,15 +22,12 @@ class TokenExtractor(ExtractorInterface):
             symbol = string[i]
             symbol_type = self._determinate_type(symbol)
             if self._is_new_lexeme(prev_symbol_type, symbol, symbol_type):
-                # tokens.append(Token(current_lexeme, prev_symbol_type))
                 yield Token(current_lexeme, prev_symbol_type)
                 current_lexeme = []
             current_lexeme.append(symbol)
             prev_symbol_type = symbol_type
         if current_lexeme:
-            # tokens.append(Token(current_lexeme, symbol_type))
             yield Token(current_lexeme, symbol_type)
-        # return tokens
 
     def _is_new_lexeme(self, prev_symbol_type, symbol, symbol_type) -> bool:
         return prev_symbol_type and (symbol_type != prev_symbol_type or self._is_non_alphanum(symbol))
