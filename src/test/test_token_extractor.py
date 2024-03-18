@@ -10,13 +10,13 @@ class Test(unittest.TestCase):
     def test_simplest_letters(self):
         string = b'first'
         expected = self._make_tokens_by_mapping_from_str_values([Token('first', TokenType.LETTERS)])
-        actual = list(self._extractor.next_element(string))
+        actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_simplest_digits(self):
         string = b'1234'
         expected = self._make_tokens_by_mapping_from_str_values([Token('1234', TokenType.DIGITS)])
-        actual = list(self._extractor.next_element(string))
+        actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_simplest_other(self):
@@ -28,13 +28,13 @@ class Test(unittest.TestCase):
                 Token('$', TokenType.OTHER)
             ]
         )
-        actual = list(self._extractor.next_element(string))
+        actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_camel_case(self):
         string = b'firstSecondThird'
         expected = self._make_tokens_by_mapping_from_str_values([Token('firstSecondThird', TokenType.LETTERS)])
-        actual = list(self._extractor.next_element(string))
+        actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_snake_case(self):
@@ -48,7 +48,7 @@ class Test(unittest.TestCase):
                 Token('Third', TokenType.LETTERS)
             ]
         )
-        actual = list(self._extractor.next_element(string))
+        actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_string_with_spaces1(self):
@@ -64,7 +64,7 @@ class Test(unittest.TestCase):
                 Token(' ', TokenType.OTHER)
             ]
         )
-        actual = list(self._extractor.next_element(string))
+        actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_string_with_spaces2(self):
@@ -76,7 +76,7 @@ class Test(unittest.TestCase):
                 Token('second', TokenType.LETTERS)
             ]
         )
-        actual = list(self._extractor.next_element(string))
+        actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_string_with_spaces3(self):
@@ -92,7 +92,7 @@ class Test(unittest.TestCase):
                 Token('\n', TokenType.OTHER)
             ]
         )
-        actual = list(self._extractor.next_element(string))
+        actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_simple1(self):
@@ -106,7 +106,7 @@ class Test(unittest.TestCase):
                 Token('9', TokenType.DIGITS)
             ]
         )
-        actual = list(self._extractor.next_element(string))
+        actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_simple2(self):
@@ -124,7 +124,7 @@ class Test(unittest.TestCase):
                 Token('!', TokenType.OTHER)
             ]
         )
-        actual = list(self._extractor.next_element(string))
+        actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_php_variable_assignment(self):
@@ -140,15 +140,15 @@ class Test(unittest.TestCase):
                 Token(';', TokenType.OTHER)
             ]
         )
-        actual = list(self._extractor.next_element(string))
+        actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def _make_tokens_by_mapping_from_str_values(self, tokens: list[Token[str, TokenType]]) \
             -> list[Token[list[int], TokenType]]:
-        return list(map(self._map_str_val_to_numbers, tokens))
+        return list(map(self._map_str_to_numbers, tokens))
 
     @staticmethod
-    def _map_str_val_to_numbers(token: Token[str, TokenType]) -> Token[list[int], TokenType]:
+    def _map_str_to_numbers(token: Token[str, TokenType]) -> Token[list[int], TokenType]:
         new_val = list(map(ord, token.value))
         return Token(new_val, token.type)
 
