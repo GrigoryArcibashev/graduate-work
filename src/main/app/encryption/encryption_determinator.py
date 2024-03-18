@@ -1,5 +1,5 @@
-from src.main.app.encryption.entropy import Entropy
-from src.main.app.encryption.entropy_analyzer import EntropyAnalyzer
+from src.main.app.encryption.entropy.entropy import Entropy
+from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
 from src.main.app.file_reader import read_file
 
 
