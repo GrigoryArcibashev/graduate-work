@@ -1,8 +1,6 @@
-from enum import Enum
 from collections import namedtuple
+from enum import Enum
 from typing import Iterator
-
-from src.main.app.encryption.extractors.extractor_interface import ExtractorInterface
 
 Token = namedtuple('Token', ['value', 'type'])
 
@@ -13,8 +11,8 @@ class TokenType(Enum):
     OTHER = 2
 
 
-class TokenExtractor(ExtractorInterface):
-    def next_element(self, string) -> Iterator[Token]:
+class TokenExtractor:
+    def get_token_iter(self, string) -> Iterator[Token]:
         current_lexeme = list()
         symbol_type = None
         prev_symbol_type = None
