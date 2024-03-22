@@ -23,11 +23,3 @@ class WordLoader:
 class SimpleWordLoader(WordLoader):
     def load(self) -> list[tuple[int]]:
         return list(map(lambda x: tuple(x.strip()), read_file(self.path).split()))
-
-
-if __name__ == '__main__':
-    loader = SimpleWordLoader(path='words.txt')
-    words = loader.load()
-    print(f'{len(words)}\n')
-    for word in words:
-        print(word)

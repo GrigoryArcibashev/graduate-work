@@ -30,14 +30,6 @@ def get_next_word(byte_text, token_extr, word_extr):
                 yield word
 
 
-def main():
-    token_extr = TokenExtractor()
-    word_extr = WordExtractor()
-    existed = read_as_text('words.txt')
-    result = sorted(list(get_new_words(existed, token_extr, word_extr)))
-    write_as_text(result)
-
-
 def write_as_text(text_list):
     with open('words2.txt', mode='w', encoding='utf-8') as f:
         for line in text_list:
@@ -58,6 +50,14 @@ def get_new_words(words: set[str], token_extr, word_extr) -> set[str]:
         else:
             bad_words.add(word)
     return words
+
+
+def main():
+    token_extr = TokenExtractor()
+    word_extr = WordExtractor()
+    existed = read_as_text('words.txt')
+    result = sorted(list(get_new_words(existed, token_extr, word_extr)))
+    write_as_text(result)
 
 
 if __name__ == '__main__':

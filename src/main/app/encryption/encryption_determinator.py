@@ -70,18 +70,5 @@ def make_stat():
         print(f'F-score = {round(100 * f_score)}%')
 
 
-def enc_filter():
-    ed = EncryptionDeterminator(EntropyAnalyzer(Entropy()))
-    ef = EncryptionFilter(WordProvider(SimpleWordLoader('encr_filter/words/words.txt')))
-    text = list(read_file('../../source/orig/0.txt'))
-
-    is_encr, entropy, entropy_above_border = ed.determinate(text)
-    print(f'{is_encr}\n{entropy}% | {entropy_above_border}%\n')
-
-    is_encr, entropy, entropy_above_border = ed.determinate(ef.filter(text))
-    print(f'{is_encr}\n{entropy}% | {entropy_above_border}%\n')
-
-
 if __name__ == '__main__':
     make_stat()
-    # enc_filter()

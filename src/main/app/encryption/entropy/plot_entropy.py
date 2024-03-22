@@ -24,7 +24,7 @@ def plot_entropy(title, entropy, entropies, hop, window_size, limit):
 
 def main():
     folder = 'encr'
-    filename = 12#input()
+    filename = input()
     data = list(read_file(f'../../../source/{folder}/{filename}.txt'))
 
     entropy_analyzer = EntropyAnalyzer(Entropy())

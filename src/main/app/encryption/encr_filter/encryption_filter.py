@@ -1,6 +1,3 @@
-from functools import reduce
-from typing import Tuple, List
-
 from src.main.app.encryption.encr_filter.words.word_provider import WordProvider
 from src.main.app.encryption.extractors.token_extractor import TokenExtractor, Token, TokenType
 from src.main.app.encryption.extractors.word_extractor import WordExtractor
