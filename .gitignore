@@ -161,3 +161,4 @@ cython_debug/
 
 src/main/source/
 Notes.docx
+/src/main/app/encryption/encr_filter/words/words2.txt

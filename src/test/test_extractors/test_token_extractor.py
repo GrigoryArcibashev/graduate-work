@@ -28,6 +28,8 @@ class Test(unittest.TestCase):
                 Token('$', TokenType.OTHER)
             ]
         )
+        for i in self._extractor.get_token_iter(string):
+            print(i)
         actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 

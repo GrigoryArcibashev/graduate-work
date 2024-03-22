@@ -30,7 +30,7 @@ class TokenExtractor:
     def _is_new_lexeme(self, prev_symbol_type, symbol, symbol_type) -> bool:
         return prev_symbol_type and (symbol_type != prev_symbol_type or self._is_non_alphanum(symbol))
 
-    def _determinate_type(self, symbol: bytes) -> TokenType:
+    def _determinate_type(self, symbol) -> TokenType:
         if self._is_letter(symbol):
             return TokenType.LETTERS
         if self._is_digit(symbol):

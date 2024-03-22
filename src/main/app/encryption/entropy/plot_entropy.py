@@ -9,7 +9,7 @@ from src.main.app.file_reader import read_file
 
 def plot_entropy(title, entropy, entropies, hop, window_size, limit):
     x = np.linspace(window_size, limit, len(entropies))
-    y_smooth = savgol_filter(entropies, 51, 3)
+    y_smooth = savgol_filter(entropies, 10, 3)
     avg_entropy = entropy
     y_avg = [avg_entropy] * len(x)
     plt.grid()
@@ -24,8 +24,8 @@ def plot_entropy(title, entropy, entropies, hop, window_size, limit):
 
 def main():
     folder = 'encr'
-    filename = input()
-    data = list(read_file(f'../../source/{folder}/{filename}.txt'))
+    filename = 12#input()
+    data = list(read_file(f'../../../source/{folder}/{filename}.txt'))
 
     entropy_analyzer = EntropyAnalyzer(Entropy())
     entropies, window_size, hop = entropy_analyzer.window_analyze(data)
