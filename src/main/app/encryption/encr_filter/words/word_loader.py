@@ -16,13 +16,13 @@ class WordLoader:
         self._path = new
 
     @abstractmethod
-    def load(self) -> list[list[int]]:
+    def load(self) -> list[tuple[int]]:
         pass
 
 
 class SimpleWordLoader(WordLoader):
-    def load(self) -> list[list[int]]:
-        return list(map(lambda x: list(x.strip()), read_file(self.path).split()))
+    def load(self) -> list[tuple[int]]:
+        return list(map(lambda x: tuple(x.strip()), read_file(self.path).split()))
 
 
 if __name__ == '__main__':

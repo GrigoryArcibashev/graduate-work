@@ -15,7 +15,7 @@ def map_bytes_to_str(byte_arr) -> str:
 def get_word_stream(token_extr, word_extr):
     prefixes = ['../../../../source/orig/']
     postfix = '.txt'
-    files = [str(i) for i in range(1)]
+    files = [str(i) for i in range(8, 9)]
     for prefix in prefixes:
         for filename in files:
             print(f'\n---ФАЙЛ №{filename}---\n')

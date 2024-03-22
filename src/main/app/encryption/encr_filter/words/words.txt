@@ -443,6 +443,7 @@ enumerate
 environment
 equalizer
 equals
+equiv
 errno
 error
 errors
@@ -607,6 +608,7 @@ hotspot
 hours
 hover
 how
+hsqldb
 html
 http
 https
@@ -680,6 +682,9 @@ jackson
 java
 javascript
 jdk
+jetty
+job
+jobseeker
 join
 jquery
 json
@@ -811,6 +816,7 @@ multiple
 music
 must
 muted
+mysql
 name
 named
 nameof
@@ -1051,6 +1057,7 @@ render
 repeat
 replace
 replay
+repo
 repositories
 repository
 representation
@@ -1196,6 +1203,7 @@ split
 splitted
 spreadsheet
 spy
+sql
 src
 stack
 stackalloc
@@ -1439,7 +1447,9 @@ written
 wrong
 www
 xhtml
+xml
 xmlns
+xmlschema
 xor
 year
 yield
