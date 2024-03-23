@@ -3,15 +3,15 @@ class EntropyAnalyzer:
         self._entropy_calculator = entropy_calculator
         self._min_window_size = 100
         self._min_hope = 1
+        self._divider_for_window = 120
+        self._divider_for_hop = 5
 
-    def window_analyze(self, data, window_size=None, hop=None):
-        if window_size is None:
-            window_size = len(data) // 120
-        window_size = min(max(window_size, self._min_window_size), len(data))
-        if hop is None:
-            hop = max(window_size // 5, self._min_hope)
-        hop = max(hop, self._min_hope)
+    def analyze(self, data):
+        return self._entropy_calculator.calc_entropy_in_percent(data)
 
+    def window_analyze(self, data):
+        window_size = self._calc_window_size(data)
+        hop = self._calc_hop_size(window_size)
         shift = 0
         limit = len(data)
         entropies = []
@@ -21,5 +21,10 @@ class EntropyAnalyzer:
             shift += hop
         return entropies, window_size, hop
 
-    def analyze(self, data):
-        return self._entropy_calculator.calc_entropy_in_percent(data)
+    def _calc_hop_size(self, window_size):
+        hop = window_size // self._divider_for_hop
+        return max(hop, self._min_hope)
+
+    def _calc_window_size(self, data):
+        window_size = len(data) // self._divider_for_window
+        return min(max(window_size, self._min_window_size), len(data))
