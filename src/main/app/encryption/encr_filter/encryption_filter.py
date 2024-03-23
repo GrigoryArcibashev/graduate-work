@@ -22,6 +22,7 @@ class EncryptionFilter:
         self._word_provider = word_provider
         self._token_extractor = TokenExtractor()
         self._word_extractor = WordExtractor()
+        self._encryption_boundary = 0.5
 
     def filter(self, data: list[int]) -> list[int]:
         result = list()
@@ -39,13 +40,6 @@ class EncryptionFilter:
             else:
                 current_non_letter_tokens.append(token)
         return self.map_tokens_to_bytes(result)
-
-    @staticmethod
-    def map_tokens_to_bytes(tokens: list[Token[list[int], TokenType]]) -> list[int]:
-        result = list()
-        for token in tokens:
-            result.extend(token.value)
-        return result
 
     def process_letter_token(self, token, current_non_letter_tokens, prev_let_token_is_encr) -> (list[Token], bool):
         res = list()
@@ -69,4 +63,11 @@ class EncryptionFilter:
         for word in self._word_extractor.get_word_iter(token.value):
             if self._word_provider.check_word(tuple(word)):
                 good_count += len(word)
-        return good_count / len(token.value) < 0.5
+        return good_count / len(token.value) < self._encryption_boundary
+
+    @staticmethod
+    def map_tokens_to_bytes(tokens: list[Token[list[int], TokenType]]) -> list[int]:
+        result = list()
+        for token in tokens:
+            result.extend(token.value)
+        return result
