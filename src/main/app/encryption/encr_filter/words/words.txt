@@ -2,6 +2,7 @@ aaaa
 abbr
 abbreviation
 abbreviations
+abc
 able
 abort
 abortcontroller
@@ -27,6 +28,7 @@ accesssync
 acct
 acknowledgments
 active
+actually
 add
 addabortlistener
 addaddress
@@ -35,6 +37,7 @@ addcslashes
 added
 addeventlistener
 addition
+additional
 additionaldata
 additionalheaders
 addlistener
@@ -96,9 +99,11 @@ also
 alt
 alternate
 alternative
+alternatives
 altphys
 altsvc
 always
+ambiguity
 an
 anchor
 ancillary
@@ -121,6 +126,7 @@ appendfile
 appendfilesync
 appendheader
 appendline
+appends
 apple
 appletalk
 application
@@ -185,6 +191,7 @@ atomics
 attach
 attached
 attacks
+attempting
 attribute
 attributes
 auth
@@ -231,12 +238,15 @@ basename
 basic
 bavail
 bcrypt
+be
+become
 been
 before
 begin
 beginning
 begins
 being
+below
 between
 beyond
 bfree
@@ -298,6 +308,7 @@ buffers
 buffersize
 build
 building
+builds
 built
 builtin
 builtinmodules
@@ -310,6 +321,7 @@ bytearray
 bytelength
 bytelengthqueuingstrategy
 bytes
+bytesio
 bytesread
 byteswritten
 cache
@@ -415,6 +427,7 @@ class
 classes
 classmethod
 clear
+clearer
 clearimmediate
 clearinterval
 clearstatcache
@@ -454,7 +467,9 @@ columnoffset
 combination
 combine
 combined
+comma
 command
+commas
 commit
 common
 commonjs
@@ -490,7 +505,9 @@ computed
 computer
 computesecret
 concat
+concatenating
 concatenation
+concrete
 condition
 conditional
 conditions
@@ -514,15 +531,18 @@ connwait
 cons
 considerations
 considered
+consistency
 console
 const
 constant
 constants
 construct
+constructed
 constructive
 constructor
 contain
 container
+containers
 contains
 content
 contents
@@ -541,10 +561,12 @@ converter
 convertkey
 cookie
 cookies
+copied
 copy
 copyfile
 copyfileobj
 copyfilesync
+copying
 copymode
 copyright
 copystat
@@ -851,6 +873,7 @@ ecomm
 econnaborted
 econnrefused
 econnreset
+economy
 edestaddrreq
 edge
 ediscon
@@ -858,6 +881,8 @@ edquot
 eduot
 eexist
 efault
+effect
+efficient
 ehostdown
 ehostunreach
 eidrm
@@ -869,6 +894,7 @@ eisdir
 eisnam
 either
 element
+elements
 elif
 eliminating
 elnrng
@@ -1063,6 +1089,7 @@ expandvars
 expansions
 expectation
 explain
+explained
 explicit
 explode
 exploit
@@ -1087,6 +1114,7 @@ external
 extkeyusage
 extname
 extr
+extra
 extract
 extractable
 ezmlm
@@ -1192,6 +1220,7 @@ fn
 fnmatch
 fnmatchcase
 folders
+follow
 following
 follows
 fontcolor
@@ -1260,6 +1289,7 @@ futimessync
 fwrite
 gateway
 gen
+generally
 generate
 generatekey
 generatekeypair
@@ -1380,6 +1410,7 @@ goaway
 gone
 goto
 granted
+greater
 group
 groupaddress
 groupby
@@ -1427,6 +1458,8 @@ height
 hello
 help
 helps
+hence
+heterogeneous
 hex
 hexdecode
 hexdigest
@@ -1492,7 +1525,9 @@ ignored
 image
 immediateobject
 immutable
+implement
 implementation
+implementations
 implemented
 implementing
 implements
@@ -1525,6 +1560,7 @@ indexof
 indicate
 indicates
 indicating
+indices
 inet
 inf
 infinity
@@ -1541,6 +1577,8 @@ inline
 inodes
 input
 inputencoding
+insert
+inserts
 inspect
 inspector
 inspectornotification
@@ -1548,6 +1586,7 @@ install
 installed
 instance
 instanceof
+instances
 instead
 insteadof
 instruction
@@ -1580,6 +1619,8 @@ introduction
 invalid
 invert
 inverts
+investigate
+io
 ioctl
 ioerror
 ios
@@ -1643,6 +1684,8 @@ isview
 iswellformed
 it
 italics
+item
+items
 iter
 iterable
 iteration
@@ -1854,6 +1897,7 @@ may
 mcast
 mdtm
 means
+mechanism
 media
 mem
 member
@@ -1904,6 +1948,7 @@ modes
 modification
 modified
 modifier
+modifies
 modify
 module
 modulename
@@ -1943,11 +1988,13 @@ multiple
 multisort
 must
 mutable
+mutablesequence
 mutex
 my
 name
 named
 namedcurve
+namedtuple
 nameof
 nameornid
 namereqd
@@ -2099,6 +2146,7 @@ oldbuffer
 oldmimetype
 oldpath
 omit
+omitted
 on
 onabort
 once
@@ -2122,6 +2170,7 @@ opensync
 opera
 operand
 operands
+operates
 operating
 operation
 operations
@@ -2157,6 +2206,7 @@ outgoingmessage
 output
 outputencoding
 over
+overallocation
 overflow
 overlapping
 override
@@ -2270,6 +2320,7 @@ pkey
 pktinfo
 pktoptions
 pkttype
+place
 plain
 platform
 platforms
@@ -2365,6 +2416,7 @@ proto
 protocol
 protocols
 prototype
+provide
 provider
 provides
 providing
@@ -2399,6 +2451,7 @@ puts
 puttextfile
 pwd
 python
+quadratic
 query
 question
 queue
@@ -2425,6 +2478,7 @@ randomuuid
 randrange
 range
 rangeerror
+ranges
 rassoc
 rate
 rather
@@ -2445,6 +2499,7 @@ rcvtimeo
 rdev
 rdm
 rdwr
+reached
 read
 readable
 readablebytestreamcontroller
@@ -2517,10 +2572,12 @@ redirected
 redirection
 redo
 reduce
+reduced
 reduceright
 ref
 refer
 reference
+referenced
 referenceerror
 references
 referencing
@@ -2541,12 +2598,14 @@ relative
 release
 released
 releases
+relevant
 reliable
 reliably
 relpath
 remainder
 remains
 remember
+remind
 remoteaddress
 remotefamily
 remoteport
@@ -2554,10 +2613,12 @@ remotesettings
 removal
 remove
 removealllisteners
+removed
 removedirs
 removeeventlistener
 removeheader
 removelistener
+removes
 rename
 renamed
 renames
@@ -2566,11 +2627,14 @@ renaming
 renegotiate
 repair
 repeat
+repeated
+repetition
 repl
 replace
 replaceall
 replaced
 replacement
+replacing
 replicate
 report
 reported
@@ -2637,6 +2701,8 @@ reuseport
 reusesocket
 reverse
 reversed
+reverses
+reversing
 revision
 revoked
 revokeobjecturl
@@ -2655,6 +2721,7 @@ rnd
 root
 rootcertificates
 rooted
+roughly
 round
 route
 router
@@ -2710,6 +2777,7 @@ seal
 sealed
 search
 searches
+searching
 searchparams
 sec
 second
@@ -2752,11 +2820,13 @@ sentinfoheaders
 senttrailers
 sep
 separate
+separating
 separator
 seq
 seqpacket
 sequence
 sequenced
+sequences
 sequential
 serializable
 serialize
@@ -2817,6 +2887,7 @@ setttl
 severity
 sftp
 sha
+shallow
 share
 shared
 sharedarraybuffer
@@ -2851,6 +2922,7 @@ signer
 signing
 sigpipe
 similar
+similarly
 simple
 simplex
 simplify
@@ -2870,6 +2942,7 @@ slashesdenotehost
 slave
 sleep
 slice
+slicing
 slightly
 small
 smart
@@ -2890,6 +2963,7 @@ sockets
 socks
 socktype
 solaris
+sole
 somaxconn
 some
 sopri
@@ -2971,10 +3045,12 @@ step
 sticky
 stop
 stopimmediatepropagation
+stopping
 stoppropagation
 storage
 storbinary
 store
+stored
 storlines
 str
 strcasecmp
@@ -2992,6 +3068,7 @@ strike
 string
 stringbuilder
 stringify
+stringio
 strings
 strip
 stripcslashes
@@ -3029,6 +3106,7 @@ subn
 subpath
 subpaths
 subs
+subsections
 subsequent
 subset
 substitute
@@ -3069,6 +3147,7 @@ syncbuiltinesmexports
 synchronized
 synchronous
 syncnt
+syntactic
 syntax
 syntaxerror
 sys
@@ -3126,10 +3205,12 @@ things
 this
 thisarg
 thisvalue
+those
 thread
 threading
 threadpool
 threads
+three
 threshold
 through
 throw
@@ -3139,6 +3220,7 @@ time
 timeout
 timeoutobject
 timeouts
+times
 timespec
 timestamp
 timestamping
@@ -3208,6 +3290,7 @@ transpilation
 transport
 transports
 trap
+treated
 tree
 trigger
 triggerasyncid
@@ -3233,6 +3316,7 @@ typed
 typedarray
 typeerror
 typeof
+types
 typical
 uasort
 uassoc
@@ -3262,11 +3346,13 @@ unconfigurable
 uncork
 undef
 undefined
+under
 underlying
 undirected
 unescape
 unescaped
 unhandled
+unhashable
 unicast
 unicode
 uniqid
@@ -3310,8 +3396,10 @@ unwrapkey
 unwrappedkeyalgo
 unwrapping
 unwrappingkey
+up
 update
 updated
+updates
 updatesettings
 upgrade
 uploaded
@@ -3342,6 +3430,7 @@ useragent
 userinfo
 username
 userreserved
+users
 uses
 ushort
 using
@@ -3410,6 +3499,7 @@ watcher
 watchfile
 water
 way
+ways
 we
 weak
 weakmap
@@ -3444,6 +3534,7 @@ windowsize
 with
 without
 word
+words
 wordwrap
 worked
 working
