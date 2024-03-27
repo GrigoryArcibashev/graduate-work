@@ -20,7 +20,9 @@ def make_stat():
         for prefix in prefixes:
             for filename in files:
                 text = list(read_file(prefix + filename + postfix))
+                len_before = len(text)
                 filtered_text = ef.filter(text)
+                cut_out = round(100 - len(filtered_text) / (len_before / 100), 2)
                 is_encr, entropy, entropy_above_border = ed.determinate(filtered_text)
                 if prefix == prefixes[0]:
                     # шифра быть не должно
@@ -35,10 +37,10 @@ def make_stat():
                     else:
                         fn += 1
 
-                file_stat.write(f'ИМЯ ФАЙЛА: {prefix + filename + postfix}\n')
-                file_stat.write(f'\tЭнтропия = {entropy}%\n')
-                file_stat.write(f'\tВыше черты = {entropy_above_border}%\n')
-                file_stat.write(f'ИТОГ: {"YES" if is_encr else "NO"}\n\n')
+                file_stat.write(f'ИМЯ: {prefix + filename + postfix}\n')
+                file_stat.write(f'\tЭнтропия {entropy}% | {entropy_above_border}%\n')
+                file_stat.write(f'\tВырезано {cut_out}%\n')
+                file_stat.write(f'{">ЕСТЬ ШИФР" if is_encr else ">НЕТ ШИФРА"}\n\n')
             file_stat.write('-' * 20 + '\n\n')
 
         precision = tp / (tp + fp)

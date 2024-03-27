@@ -11,26 +11,22 @@ from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
 from src.main.app.file_reader import read_file
 
 
-def plot_entropy(title, entropy, entropies, hop, window_size, limit):
+def plot_entropy(title, entropies, hop, window_size, limit):
     x = np.linspace(window_size, limit, len(entropies))
-    y_smooth = savgol_filter(entropies, 10, 3)
-    avg_entropy = entropy
-    y_avg = [avg_entropy] * len(x)
+    y_smooth = savgol_filter(entropies, 40, 3)
     plt.grid()
     plt.title(title)
     plt.xlabel(f'байты', fontsize=12)
     plt.ylabel('энтропия %', fontsize=12)
     plt.plot(x, y_smooth, label=f'скользящее окно [{window_size}+{hop}] * {len(entropies)}')
-    plt.plot(x, y_avg, label=f'среднее = {avg_entropy}%')
     plt.legend()
     plt.show()
 
 
 def main():
-    folder = 'orig'
     filename = 'x'  # input()
-    # data = list(read_file(f'../../../source/{folder}/{filename}.txt'))
-    data = list(map(ord, input()))
+    data = list(read_file(f'../../../source/{filename}.txt'))
+    # data = list(map(ord, input()))
     len_before = len(data)
 
     ed = EncryptionDeterminator(EntropyAnalyzer(Entropy()))
@@ -38,15 +34,16 @@ def main():
     data = ef.filter(data)
     is_encr, entropy, entropy_above_border = ed.determinate(data)
 
-    print(f'\nОбъем стал {round(len(data) / (len_before / 100), 2)}%')
+    cut_out = round(100 - len(data) / (len_before / 100), 2)
+    print(f'\nВырезано {cut_out}%')
     print(f'{is_encr}\n{entropy}% | {entropy_above_border}%')
 
     entropy_analyzer = EntropyAnalyzer(Entropy())
     entropies, window_size, hop = entropy_analyzer.window_analyze(data)
 
-    entropy = entropy_analyzer.analyze(data)
-    title = f'{folder}/{filename}'
-    plot_entropy(title, entropy, entropies, hop, window_size, len(data))
+    title = f'{"ЕСТЬ ШИФР" if is_encr else "НЕТ ШИФРА"}, вырезано {cut_out}%'
+    title += f'\nЭнтропия {entropy}% | {entropy_above_border}%'
+    plot_entropy(title, entropies, hop, window_size, len(data))
 
 
 if __name__ == '__main__':

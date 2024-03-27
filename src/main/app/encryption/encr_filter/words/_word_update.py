@@ -26,7 +26,8 @@ def get_next_word(byte_text, token_extr, word_extr):
 
 
 def get_word_stream(token_extr, word_extr):
-    filename = './words2.txt'
+    # filename = '../../../../source/encr/12.txt'
+    filename = 'words2.txt'
     text = list(read_file(filename))  # список из номеров
     yield from get_next_word(text, token_extr, word_extr)
 
@@ -75,4 +76,4 @@ def remove_rus_letters(src: str, tgt: str):
 
 if __name__ == '__main__':
     remove_rus_letters('./raw_words.txt', './words2.txt')
-    main()
+    # main()

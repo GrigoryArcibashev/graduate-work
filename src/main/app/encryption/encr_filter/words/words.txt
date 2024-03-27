@@ -79,7 +79,6 @@ allowed
 allows
 allzones
 alpha
-alphaencodewithunicodeuppercaseesi
 alpine
 alpn
 alpnprotocol
@@ -100,10 +99,9 @@ android
 anode
 anonymous
 ansi
+answer
 any
 api
-apos
-appdomainapppath
 append
 appendfile
 appendfilesync
@@ -209,8 +207,6 @@ bavail
 bcrypt
 before
 begin
-beginerrorreadline
-beginoutputreadline
 being
 between
 bfree
@@ -240,6 +236,7 @@ blocking
 blocklist
 blocks
 blowfish
+body
 bold
 bonding
 bool
@@ -355,7 +352,6 @@ checkpurpose
 checkserveridentity
 checksum
 checksums
-checkvalidationresult
 chgrp
 children
 chmod
@@ -694,6 +690,8 @@ division
 dli
 dlopen
 dns
+doctype
+document
 does
 dom
 domain
@@ -799,6 +797,7 @@ emitted
 emitter
 emitterortarget
 emlink
+employer
 empty
 emsgsize
 emultihop
@@ -858,6 +857,7 @@ enotty
 enotuniq
 ensure
 ent
+entered
 entire
 entities
 entity
@@ -885,6 +885,7 @@ eprototype
 epsilon
 eql
 equals
+equiv
 eremchg
 eremote
 eremoteio
@@ -893,7 +894,6 @@ erofs
 err
 errno
 error
-errordatareceived
 errorfds
 errormonitor
 errors
@@ -940,7 +940,6 @@ exclusive
 exdev
 exec
 executable
-executecommand
 executed
 executes
 execution
@@ -1078,6 +1077,7 @@ forbidden
 force
 foreach
 foreign
+forget
 fork
 form
 format
@@ -1177,7 +1177,6 @@ gethostbyname
 gethostbynamel
 gethostname
 getifaddrs
-getifheader
 getloadavg
 getmaxlisteners
 getmxrr
@@ -1314,7 +1313,6 @@ htmlentities
 htmlspecialchars
 hton
 http
-httpruntime
 https
 httpversion
 hylink
@@ -1582,6 +1580,7 @@ locale
 localecompare
 localeconv
 localfamily
+localhost
 localport
 localsettings
 localtime
@@ -1723,6 +1722,7 @@ mtimems
 mtimens
 mtu
 much
+mult
 multi
 multicast
 multicastaddress
@@ -1835,6 +1835,7 @@ notsent
 noverify
 now
 nowait
+npm
 nread
 nsc
 nsync
@@ -1842,6 +1843,7 @@ ntoh
 ntop
 nuint
 null
+num
 number
 numbers
 numeric
@@ -1896,7 +1898,7 @@ ord
 order
 orderby
 ordering
-ordinalignorecase
+org
 oriented
 origin
 original
@@ -1913,7 +1915,6 @@ out
 outgoing
 outgoingmessage
 output
-outputdatareceived
 outputencoding
 overflow
 override
@@ -2086,10 +2087,10 @@ problems
 proc
 process
 processing
-processstartinfo
 producer
 product
 profiler
+program
 progress
 promisc
 promise
@@ -2134,6 +2135,7 @@ puts
 puttextfile
 pwd
 query
+question
 queue
 queued
 queuemicrotask
@@ -2215,6 +2217,7 @@ recipient
 recommendation
 record
 recording
+records
 recoverable
 recovery
 recurrences
@@ -2242,8 +2245,6 @@ recvucred
 redirect
 redirected
 redirection
-redirectstandarderror
-redirectstandardoutput
 redo
 reduce
 reduceright
@@ -2267,7 +2268,6 @@ reliable
 reliably
 remains
 remoteaddress
-remotecertificatevalidationcallback
 remotefamily
 remoteport
 remotesettings
@@ -2461,12 +2461,10 @@ serializable
 serialize
 serialnumber
 server
-servercertificatevalidationcallback
 serverhttp
 serverrequest
 serverresponse
 service
-servicepointmanager
 services
 servname
 session
@@ -2477,8 +2475,6 @@ setauthtag
 setautopadding
 setbroadcast
 setcookie
-setdefaultautoselectfamily
-setdefaultautoselectfamilyattempttimeout
 setencoding
 setengine
 setfib
@@ -2610,6 +2606,7 @@ spki
 splice
 split
 sprintf
+sql
 srand
 src
 srcelement
@@ -2619,7 +2616,6 @@ ssh
 ssl
 sslcontext
 sslerror
-sslpolicyerrors
 sslserver
 sslsocket
 sslv
@@ -2671,13 +2667,11 @@ stream
 streams
 strerror
 strftime
-stricmp
 strict
 strictcontentlength
 strike
 string
 stringbuilder
-stringcomparison
 stringify
 strip
 stripcslashes
@@ -2818,6 +2812,7 @@ timeval
 timezone
 timingsafeequal
 tips
+title
 tls
 tlsclienterror
 tlsext
@@ -2961,6 +2956,7 @@ unspecified
 unsupported
 untaint
 until
+untitled
 untrace
 untrust
 untrusted
@@ -3001,7 +2997,6 @@ userinfo
 username
 userreserved
 uses
-useshellexecute
 ushort
 using
 usleep
@@ -3051,8 +3046,6 @@ vprintf
 vsprintf
 wait
 waitall
-waitfordebugger
-waitforexit
 wakeup
 walk
 wan
@@ -3101,8 +3094,8 @@ without
 wmem
 word
 wordwrap
+worked
 working
-workingdirectory
 world
 wrapalgo
 wrapkey
@@ -3146,6 +3139,7 @@ xerox
 xhtml
 xmit
 xml
+xmlns
 xor
 xoshiro
 xpress
