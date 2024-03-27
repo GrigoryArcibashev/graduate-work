@@ -36,7 +36,7 @@ def get_new_words(words: set[str], token_extr, word_extr) -> set[str]:
     bad_words = set()
     for word_as_bytes in get_word_stream(token_extr, word_extr):
         word = map_bytes_to_str(word_as_bytes).lower()
-        if word in words or word in bad_words or len(word) < 3:
+        if word in words or word in bad_words or len(word) < 2:
             continue
         # print(f'{repr(word)} | ', end='')
         inp = False
@@ -74,6 +74,20 @@ def remove_rus_letters(src: str, tgt: str):
         f.write(result)
 
 
+def filter_all_words_with_lens(lengths: set[int]):
+    words = set()
+    for word in read_as_text('words.txt'):
+        if len(word) not in lengths:
+            words.add(word)
+        else:
+            print(f'{repr(word)} | ', end='')
+            if not input().strip():
+                words.add(word)
+    result = sorted(list(words))
+    write_as_text(result, 'words.txt')
+
+
 if __name__ == '__main__':
     remove_rus_letters('./raw_words.txt', './words2.txt')
-    # main()
+    main()
+    # filter_all_words_with_lens({1, 2, 3})
