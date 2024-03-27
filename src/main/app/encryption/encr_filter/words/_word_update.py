@@ -74,5 +74,5 @@ def remove_rus_letters(src: str, tgt: str):
 
 
 if __name__ == '__main__':
+    remove_rus_letters('./raw_words.txt', './words2.txt')
     main()
-    # remove_rus_letters()
