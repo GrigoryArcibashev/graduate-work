@@ -36,11 +36,11 @@ def get_new_words(words: set[str], token_extr, word_extr) -> set[str]:
     bad_words = set()
     for word_as_bytes in get_word_stream(token_extr, word_extr):
         word = map_bytes_to_str(word_as_bytes).lower()
-        if word in words or word in bad_words or len(word) < 3:
+        if word in words or word in bad_words or len(word) < 2:
             continue
         print(f'{repr(word)} | ', end='')
         # inp = False
-        inp = input().strip().lower()
+        inp = input().strip()
         if not inp:
             words.add(word)
         else:

@@ -13,7 +13,7 @@ from src.main.app.file_reader import read_file
 
 def plot_entropy(title, entropies, hop, window_size, limit):
     x = np.linspace(window_size, limit, len(entropies))
-    y_smooth = savgol_filter(entropies, 40, 3)
+    y_smooth = savgol_filter(entropies, 10, 3)
     plt.grid()
     plt.title(title)
     plt.xlabel(f'байты', fontsize=12)
@@ -24,7 +24,7 @@ def plot_entropy(title, entropies, hop, window_size, limit):
 
 
 def main():
-    filename = 'x'  # input()
+    filename = 'orig/8'  # input()
     data = list(read_file(f'../../../source/{filename}.txt'))
     # data = list(map(ord, input()))
     len_before = len(data)
