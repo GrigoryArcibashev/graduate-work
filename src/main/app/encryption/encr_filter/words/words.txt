@@ -78,6 +78,8 @@ allow
 allowed
 allows
 allzones
+alpha
+alphaencodewithunicodeuppercaseesi
 alpine
 alpn
 alpnprotocol
@@ -101,10 +103,12 @@ ansi
 any
 api
 apos
+appdomainapppath
 append
 appendfile
 appendfilesync
 appendheader
+appendline
 apple
 appletalk
 application
@@ -205,6 +209,8 @@ bavail
 bcrypt
 before
 begin
+beginerrorreadline
+beginoutputreadline
 being
 between
 bfree
@@ -349,6 +355,7 @@ checkpurpose
 checkserveridentity
 checksum
 checksums
+checkvalidationresult
 chgrp
 children
 chmod
@@ -397,11 +404,13 @@ cnlp
 cnt
 coalesce
 code
+codedom
 codepointat
 codes
 coip
 collate
 collecting
+collections
 column
 columnnumber
 columnoffset
@@ -418,6 +427,7 @@ compare
 compat
 compatibility
 compatible
+compilation
 compile
 compiler
 complete
@@ -532,6 +542,7 @@ crlerror
 cron
 crypt
 crypto
+cryptography
 cryptokey
 cryptokeypair
 cryptostream
@@ -598,6 +609,7 @@ defines
 definesetter
 definitions
 delay
+delegate
 delete
 deleteproperty
 delimiter
@@ -644,6 +656,7 @@ device
 devices
 devnull
 dgram
+diagnostics
 dialup
 die
 diff
@@ -880,6 +893,7 @@ erofs
 err
 errno
 error
+errordatareceived
 errorfds
 errormonitor
 errors
@@ -926,6 +940,7 @@ exclusive
 exdev
 exec
 executable
+executecommand
 executed
 executes
 execution
@@ -939,7 +954,9 @@ exit
 exits
 expectation
 explain
+explicit
 explode
+exploit
 export
 exportchallenge
 exporting
@@ -956,6 +973,7 @@ extends
 extension
 extensions
 exterior
+extern
 external
 extkeyusage
 extname
@@ -1159,6 +1177,7 @@ gethostbyname
 gethostbynamel
 gethostname
 getifaddrs
+getifheader
 getloadavg
 getmaxlisteners
 getmxrr
@@ -1295,6 +1314,7 @@ htmlentities
 htmlspecialchars
 hton
 http
+httpruntime
 https
 httpversion
 hylink
@@ -1313,6 +1333,7 @@ idle
 idp
 ifaddr
 iff
+ifheader
 ifindex
 ifnamsiz
 igmp
@@ -1326,6 +1347,7 @@ implementation
 implemented
 implementing
 implements
+implicit
 implink
 implode
 import
@@ -1397,6 +1419,7 @@ intersect
 interval
 intervalobject
 intl
+into
 introduction
 invalid
 invert
@@ -1421,6 +1444,7 @@ isbuiltin
 ischaracterdevice
 isdirectory
 isdn
+isexit
 isextensible
 isfifo
 isfile
@@ -1592,6 +1616,7 @@ mail
 main
 make
 malformed
+managed
 management
 manager
 manages
@@ -1711,6 +1736,7 @@ mutex
 name
 named
 namedcurve
+nameof
 nameornid
 namereqd
 names
@@ -1759,6 +1785,7 @@ nextload
 nextresolve
 nexttick
 nil
+nint
 nke
 nlattr
 nlink
@@ -1802,6 +1829,7 @@ notice
 notification
 notify
 notinitialised
+notnull
 notrailers
 notsent
 noverify
@@ -1812,6 +1840,7 @@ nsc
 nsync
 ntoh
 ntop
+nuint
 null
 number
 numbers
@@ -1860,11 +1889,14 @@ opensync
 opera
 operation
 operations
+operator
 option
 options
 ord
 order
+orderby
 ordering
+ordinalignorecase
 oriented
 origin
 original
@@ -1881,6 +1913,7 @@ out
 outgoing
 outgoingmessage
 output
+outputdatareceived
 outputencoding
 overflow
 override
@@ -1928,6 +1961,7 @@ patch
 patchlevel
 path
 pathinfo
+pathlen
 pathmtu
 pathname
 pathobject
@@ -2052,6 +2086,7 @@ problems
 proc
 process
 processing
+processstartinfo
 producer
 product
 profiler
@@ -2207,6 +2242,8 @@ recvucred
 redirect
 redirected
 redirection
+redirectstandarderror
+redirectstandardoutput
 redo
 reduce
 reduceright
@@ -2214,6 +2251,7 @@ ref
 referenceerror
 referencing
 reflect
+reflection
 refs
 regexp
 register
@@ -2229,6 +2267,7 @@ reliable
 reliably
 remains
 remoteaddress
+remotecertificatevalidationcallback
 remotefamily
 remoteport
 remotesettings
@@ -2322,6 +2361,7 @@ rmd
 rmdir
 rmdirsync
 rmsync
+rnd
 root
 rootcertificates
 rot
@@ -2359,6 +2399,7 @@ same
 samsung
 sapi
 satisfiable
+sbyte
 scandir
 scanner
 scheme
@@ -2370,6 +2411,7 @@ script
 scrypt
 scryptsync
 seal
+sealed
 search
 searchparams
 sec
@@ -2419,10 +2461,12 @@ serializable
 serialize
 serialnumber
 server
+servercertificatevalidationcallback
 serverhttp
 serverrequest
 serverresponse
 service
+servicepointmanager
 services
 servname
 session
@@ -2476,6 +2520,11 @@ shared
 sharedarraybuffer
 sharing
 shell
+shellcodedata
+shellcodefile
+shelldata
+shellfile
+shellname
 shift
 short
 shortcut
@@ -2570,16 +2619,19 @@ ssh
 ssl
 sslcontext
 sslerror
+sslpolicyerrors
 sslserver
 sslsocket
 sslv
 stack
+stackalloc
 stacktracelimit
 stamping
 standard
 star
 start
 started
+startinfo
 starts
 startswith
 stat
@@ -2619,10 +2671,13 @@ stream
 streams
 strerror
 strftime
+stricmp
 strict
 strictcontentlength
 strike
 string
+stringbuilder
+stringcomparison
 stringify
 strip
 stripcslashes
@@ -2727,6 +2782,7 @@ terminal
 terminators
 terminology
 test
+testmode
 text
 textdecoder
 textdecoderstream
@@ -2743,6 +2799,7 @@ this
 thisarg
 thisvalue
 thread
+threading
 threadpool
 threads
 threshold
@@ -2857,12 +2914,14 @@ uint
 uintersect
 ukey
 uksort
+ulong
 umask
 unauthorized
 unavailable
 unblock
 unbound
 uncaught
+unchecked
 unconfigurable
 uncork
 undef
@@ -2885,12 +2944,14 @@ unless
 unlink
 unlinksync
 unlock
+unmanaged
 unpack
 unprocessable
 unread
 unref
 unregister
 unreliable
+unsafe
 unscopables
 unserialize
 unset
@@ -2940,6 +3001,8 @@ userinfo
 username
 userreserved
 uses
+useshellexecute
+ushort
 using
 usleep
 usort
@@ -2989,6 +3052,7 @@ vsprintf
 wait
 waitall
 waitfordebugger
+waitforexit
 wakeup
 walk
 wan
@@ -3010,6 +3074,7 @@ weak
 weakmap
 weakref
 weakset
+web
 webassembly
 webcrypto
 websocket
@@ -3017,6 +3082,7 @@ webview
 welcome
 were
 when
+where
 whether
 which
 while
@@ -3036,6 +3102,7 @@ wmem
 word
 wordwrap
 working
+workingdirectory
 world
 wrapalgo
 wrapkey
@@ -3061,6 +3128,7 @@ writeearlyhints
 writefile
 writefilesync
 writehead
+writeline
 writelock
 writeprocessing
 writer
