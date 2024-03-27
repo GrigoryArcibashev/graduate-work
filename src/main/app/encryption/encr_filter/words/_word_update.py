@@ -8,19 +8,14 @@ def read_as_text(path: str) -> set[str]:
         return set(map(lambda w: w.strip(), f.read().split()))
 
 
+def write_as_text(text_list, filename):
+    with open(filename, mode='w', encoding='cp1251') as f:
+        for line in text_list:
+            f.write(f'{line}\n')
+
+
 def map_bytes_to_str(byte_arr) -> str:
     return ''.join(map(chr, byte_arr))
-
-
-def get_word_stream(token_extr, word_extr):
-    prefixes = ['../../../../source/orig/']
-    postfix = '.txt'
-    files = [str(i) for i in range(8, 9)]
-    for prefix in prefixes:
-        for filename in files:
-            print(f'\n---ФАЙЛ №{filename}---\n')
-            text = list(read_file(prefix + filename + postfix))  # список из номеров
-            yield from get_next_word(text, token_extr, word_extr)
 
 
 def get_next_word(byte_text, token_extr, word_extr):
@@ -30,21 +25,21 @@ def get_next_word(byte_text, token_extr, word_extr):
                 yield word
 
 
-def write_as_text(text_list):
-    with open('words2.txt', mode='w', encoding='utf-8') as f:
-        for line in text_list:
-            f.write(f'{line}\n')
+def get_word_stream(token_extr, word_extr):
+    filename = './words2.txt'
+    text = list(read_file(filename))  # список из номеров
+    yield from get_next_word(text, token_extr, word_extr)
 
 
 def get_new_words(words: set[str], token_extr, word_extr) -> set[str]:
     bad_words = set()
     for word_as_bytes in get_word_stream(token_extr, word_extr):
         word = map_bytes_to_str(word_as_bytes).lower()
-        if word in words or word in bad_words or len(word) < 2:
+        if word in words or word in bad_words or len(word) < 3:
             continue
-        print(f'{repr(word)} | ', end='')
-        # inp = False
-        inp = input().strip().lower()
+        # print(f'{repr(word)} | ', end='')
+        inp = False
+        # inp = input().strip().lower()
         if not inp:
             words.add(word)
         else:
@@ -57,8 +52,27 @@ def main():
     word_extr = WordExtractor()
     existed = read_as_text('words.txt')
     result = sorted(list(get_new_words(existed, token_extr, word_extr)))
-    write_as_text(result)
+    write_as_text(result, 'words.txt')
+
+
+def filter_english(text: list[str]):
+    rus_letters = set('йцукенгшщзхъфывапролджэячсмитьбюё' + 'йцукенгшщзхъфывапролджэячсмитьбюё'.upper())
+    result = []
+    for symb in text:
+        if symb in rus_letters:
+            continue
+        result.append(symb)
+    return ''.join(result)
+
+
+def remove_rus_letters(src: str, tgt: str):
+    with open(src, 'r', encoding='utf-8') as f:
+        result = filter_english(list(f.read())).lower()
+
+    with open(tgt, 'w', encoding='utf-8') as f:
+        f.write(result)
 
 
 if __name__ == '__main__':
     main()
+    # remove_rus_letters()
