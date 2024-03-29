@@ -13,18 +13,32 @@ from src.main.app.file_reader import read_file
 
 def plot_entropy(title, entropies, hop, window_size, limit):
     x = np.linspace(window_size, limit, len(entropies))
-    y_smooth = savgol_filter(entropies, 10, 3)
+    params = _get_savgol_filter_params(len(entropies))
+    y_smooth = savgol_filter(entropies, params[0], params[1]) if params else entropies
     plt.grid()
     plt.title(title)
     plt.xlabel(f'байты', fontsize=12)
     plt.ylabel('энтропия %', fontsize=12)
-    plt.plot(x, y_smooth, label=f'скользящее окно [{window_size}+{hop}] * {len(entropies)}')
+    description = f'скользящее окно [{window_size}+{hop}] * {len(entropies)}'
+    if params:
+        description += f'\nws/order = {params[0]}/{params[1]}'
+    plt.plot(x, y_smooth, label=description)
     plt.legend()
     plt.show()
 
 
+def _get_savgol_filter_params(entropies_len: int):
+    order = 3
+    size = 20
+    while size >= entropies_len and size > order:
+        size /= 2
+    if order < size < entropies_len:
+        return size, order
+    return None
+
+
 def main():
-    filename = 'orig/8'  # input()
+    filename = 'x'
     data = list(read_file(f'../../../source/{filename}.txt'))
     # data = list(map(ord, input()))
     len_before = len(data)
