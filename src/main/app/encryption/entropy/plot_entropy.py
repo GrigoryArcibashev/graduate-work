@@ -5,7 +5,7 @@ from scipy.signal import savgol_filter
 from src.main.app.encryption.encr_filter.encryption_filter import EncryptionFilter
 from src.main.app.encryption.encr_filter.words.word_loader import SimpleWordLoader
 from src.main.app.encryption.encr_filter.words.word_provider import WordProvider
-from src.main.app.encryption.encryption_determinator import EncryptionDeterminator
+from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy
 from src.main.app.encryption.entropy.entropy import Entropy
 from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
 from src.main.app.file_reader import read_file
@@ -38,12 +38,12 @@ def _get_savgol_filter_params(entropies_len: int):
 
 
 def main():
-    filename = 'x'
-    data = list(read_file(f'../../../source/{filename}.txt'))
+    text = read_file(f'../../../source/x.txt')
+    data = list(text)
     # data = list(map(ord, input()))
     len_before = len(data)
 
-    ed = EncryptionDeterminator(EntropyAnalyzer(Entropy()))
+    ed = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()))
     ef = EncryptionFilter(WordProvider(SimpleWordLoader('../encr_filter/words/words.txt')))
     data = ef.filter(data)
     is_encr, entropy, entropy_above_border = ed.determinate(data)
