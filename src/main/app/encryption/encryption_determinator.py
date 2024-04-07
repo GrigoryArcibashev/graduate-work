@@ -3,8 +3,8 @@ class EncryptionDeterminator:
         self._entropy_analyzer = entropy_analyzer
         self._window_encryption_border = 60
         self._unconditional_lower_bound_of_entropy = 70
-        self._conditional_lower_bound_of_entropy = 65
-        self._percent_of_entropy_vals_for_window = 65
+        self._conditional_lower_bound_of_entropy = 60
+        self._percent_of_entropy_vals_for_window = 60
 
     def determinate(self, data):
         entropy = self._entropy_analyzer.analyze(data)
