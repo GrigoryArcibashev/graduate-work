@@ -11,9 +11,17 @@ class EncryptionDeterminatorByHEX:
     def __init__(self):
         self._pattern = re.compile(br'(?:\\x|0x)[0-9AaBbCcDdEeFf]{2}', re.DOTALL)
         self._unicode_special = [
-            ('\\xef', '\\xbb', '\\xbf'),  # utf8
-            ('\\xff', '\\xfe'),  # utf16 LE
-            ('\\xfe', '\\xff')  # utf16 BE
+            ('\\xef', '\\xbb', '\\xbf'),  # UTF8
+            ('\\xff', '\\xfe'),  # UTF16 LE
+            ('\\xfe', '\\xff'),  # UTF16 BE
+            ('\\xff', '\\xfe', '\\x00', '\\x00'),  # UTF32 LE
+            ('\\x00', '\\x00', '\\xfe', '\\xff',),  # UTF32 BE
+            ('\\x2b', '\\x2f', '\\x76', '\\x38',),  # UTF7
+            ('\\x2b', '\\x2f', '\\x76', '\\x39',),  # UTF7
+            ('\\x2b', '\\x2f', '\\x76', '\\x2b',),  # UTF7
+            ('\\x2b', '\\x2f', '\\x76', '\\x2f',),  # UTF7
+            ('\\xf7', '\\x64', '\\x4c'),  # UTF1
+            ('\\xdd', '\\x73', '\\x66', '\\x73',)  # UTF-EBCDIC
         ]
 
     def determinate(self, data):
