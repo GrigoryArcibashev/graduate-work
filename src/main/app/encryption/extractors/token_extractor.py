@@ -1,14 +1,31 @@
-from collections import namedtuple
 from enum import Enum
 from typing import Iterator
-
-Token = namedtuple('Token', ['value', 'type'])
 
 
 class TokenType(Enum):
     LETTERS = 0
     DIGITS = 1
     OTHER = 2
+
+
+class Token:
+    def __init__(self, value, token_type: TokenType):
+        self._value = value
+        self._type = token_type
+
+    @property
+    def value(self):
+        return self._value
+
+    @property
+    def type(self):
+        return self._type
+
+    def __len__(self):
+        return len(self.value)
+
+    def __str__(self):
+        return f'type = {self.type}, val = {self.value}'
 
 
 class TokenExtractor:

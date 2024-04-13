@@ -1,4 +1,4 @@
-from src.main.app.encryption.extractors.token_extractor import TokenExtractor, TokenType, Token
+from src.main.app.encryption.extractors.token_extractor import TokenExtractor, TokenType
 from src.main.app.encryption.extractors.word_extractor import WordExtractor
 from src.main.app.file_reader import read_file
 
@@ -22,7 +22,7 @@ def get_next_word(byte_text, token_extr, word_extr):
     for token in token_extr.get_token_iter(byte_text):
         if token.type == TokenType.LETTERS:
             for word in word_extr.get_word_iter(token.value):
-                yield word
+                yield word.value
 
 
 def get_word_stream(token_extr, word_extr):
