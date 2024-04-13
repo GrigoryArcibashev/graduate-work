@@ -1,63 +1,94 @@
 import re
+from enum import Enum
 from typing import Iterator
 
 from src.main.app.encryption.extractors.token_extractor import TokenExtractor, Token, TokenType
-from src.main.app.obfuscation.searchers.common import Searcher, Language, Name
+from src.main.app.obfuscation.searchers.common import Searcher, Name
+
+
+class Language(Enum):
+    PHP = 0
+    JS = 1
+    C_SHARP = 2
+    PYTHON = 3
+    RUBY = 4
+    PYTHON_OR_RUBY = 5
+
+    def __str__(self):
+        return self.name
 
 
 class VariableSearcher(Searcher):
     def __init__(self, token_extractor: TokenExtractor):
         super().__init__(token_extractor)
         self._patterns = {
-            Language.JS: [
+            Language.PHP: (
+                re.compile(rb'((?:\$\w+\s*=\s*)+)'),
+                re.compile(rb'\$(\w+)((?:\s*,\s*\$\w+)*)'),
+            ),
+            Language.JS: (
                 re.compile(rb'(?:let|var|const)\s+(\w+)((?:\s*,\s*\w+)*)\s*[=;]'),
-                re.compile(rb'(?:let|var|const)\s+(\w+)((?:\s*=\s*\w+)*)\s*[=;]')
-            ],
-            Language.PYTHON_RUBY: [
+                re.compile(rb'(?:let|var|const)\s+((?:\w+\s*=\s*)+)]')
+            ),
+            Language.PYTHON_OR_RUBY: (
                 re.compile(rb'(\w+)((?: *, *\w+)*) *='),
-                re.compile(rb'(\w+)((?: *= *\w+)*) *=')
-            ],
-            Language.PHP: [re.compile(rb'\$(\w+)\s*[=;]')]
+                re.compile(rb'((?:\w+ *= *)+)')
+            ),
+            Language.C_SHARP: (
+                # protected static readonly List<int , int, Float<double>>[,,] var1
+                re.compile(
+                    rb'(?:(?:private\s+protected\s|protected\s+internal\s)' +
+                    rb'|(?:public\s|private\s|protected\s|internal\s|file\s))' +
+                    rb'\s*(?:const\s|(?:static\s)?\s*(?:readonly\s)?)?' +
+                    rb'\s*\w+\s*<[\w\s,<>]+>\s*\s*(?:\[[\s,]*])*\s+(\w+)'
+                ),
+                # }   List < int, int, Float < double >> [,, ] var1, var2, var3
+                re.compile(rb'[};]\s*\w+\s*(?:<[\w\s,<>]+>)*\s*(?:\[[\s,]*])*\s+(\w+)((?:\s*,\s*\w+)*)\s*[=;]')
+            )
         }
 
-    def get_name_iter(self, string) -> Iterator[Name]:
+    @property
+    def patterns(self) -> Iterator[re.Pattern]:
         for lang in self._patterns:
+            print(f'>{lang}')
             for pattern in self._patterns[lang]:
-                found = pattern.findall(string)
-                if not found:
-                    continue
-                for match in found[0]:
-                    if match:
-                        for name in self._extract_names(match):
-                            yield Name(value=name, lang=lang)
+                yield pattern
 
 
 class FunctionSearcher(Searcher):
+
     def __init__(self, token_extractor: TokenExtractor):
         super().__init__(token_extractor)
         self._patterns = {
-            Language.JS: [
+            Language.JS: (
                 re.compile(rb'function\s+(\w+)\s*\(((\s*\w+\s*,?)*)\s*\)\s*{'),
                 re.compile(rb'(const\s+(\w+)\s*=\s*)?(\(((\s*\w+\s*,?)*)\)|(\s*\w+\s*))\s*=>')
-            ],
-            Language.PYTHON_RUBY: [
+            ),
+            Language.PYTHON_OR_RUBY: (
                 re.compile(rb'def +(\w+) *\(((?: *\w+ *,?)*) *\) *:')
-            ],
-            Language.PHP: [re.compile(rb'function\s+(\w+)\s*\(((?:\s*\$\w+\s*,?)*)\s*\)\s*{')]
+            ),
+            Language.PHP: (re.compile(rb'function\s+(\w+)\s*\(((?:\s*\$\w+\s*,?)*)\s*\)\s*{'))
         }
 
-    def get_name_iter(self, string) -> Iterator[Name]:
-        pass
+    @property
+    def patterns(self) -> Iterator[re.Pattern]:
+        for lang in self._patterns:
+            for pattern in self._patterns[lang]:
+                yield pattern
 
 
 def main():
-    text = b'123'  # b"let var1, var2 ;"
+    variables = set()
+    # text = b"let var1 = var2 = 12;"
+    text = b"const var0 = 'string';\nlet var1 , var2 = 12, 22;"
     var_searcher = VariableSearcher(TokenExtractor())
     for var in var_searcher.get_name_iter(text):
-        print(f'ПЕРЕМЕННАЯ ({var.lang})')
+        print('ПЕРЕМЕННАЯ', end='')
+        print('_OLD' if var in variables else '_NEW')
         for name in var.value:
             print(f'\t{name}')
         print()
+        variables.add(var)
 
 
 if __name__ == '__main__':

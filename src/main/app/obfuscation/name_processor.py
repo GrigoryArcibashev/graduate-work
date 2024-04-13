@@ -2,15 +2,14 @@ from typing import Iterator
 
 from src.main.app.encryption.extractors.token_extractor import TokenType
 from src.main.app.encryption.extractors.word_extractor import WordExtractor, Word
-from src.main.app.obfuscation.searchers.common import Searcher, Name, Language
+from src.main.app.obfuscation.searchers.common import Searcher, Name
 
 
 class NameInfo:
-    def __init__(self, words: list[Word], name_len: int, digit_len: int, lang: Language):
+    def __init__(self, words: list[Word], name_len: int, digit_len: int):
         self._words = words
         self._name_len = name_len
         self._digit_len = digit_len
-        self._lang = lang
 
     @property
     def words(self) -> list[Word]:
@@ -23,10 +22,6 @@ class NameInfo:
     @property
     def digit_len(self) -> int:
         return self._digit_len
-
-    @property
-    def lang(self) -> Language:
-        return self._lang
 
 
 class NameProcessor:
@@ -48,4 +43,4 @@ class NameProcessor:
                 words.extend(list(self._word_extractor.get_word_iter(token.value)))
             else:
                 digit_len += len(token)
-        return NameInfo(words, name_len, digit_len, name.lang)
+        return NameInfo(words, name_len, digit_len)

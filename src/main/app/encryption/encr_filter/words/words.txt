@@ -124,6 +124,7 @@ allows
 allzones
 along
 alpha
+alphanum
 alphanumeric
 alpine
 alpn
@@ -142,6 +143,7 @@ am
 ambiguity
 amount
 an
+analyze
 anchor
 ancillary
 and
@@ -160,6 +162,7 @@ anyone
 anywhere
 api
 apis
+app
 append
 appended
 appendfile
@@ -380,6 +383,7 @@ both
 bottom
 bound
 boundaries
+boundary
 box
 brace
 breach
@@ -431,7 +435,9 @@ byteswritten
 cache
 caches
 caching
+calc
 calculated
+calculator
 call
 callable
 callback
@@ -935,6 +941,7 @@ details
 detect
 detected
 detecting
+determinate
 determine
 determined
 determines
@@ -967,6 +974,7 @@ digest
 digests
 digit
 digital
+digits
 dir
 direct
 direction
@@ -1001,6 +1009,7 @@ distinguished
 div
 divert
 divided
+divider
 division
 divmod
 dll
@@ -1163,6 +1172,7 @@ encodeuri
 encodeuricomponent
 encoding
 encountered
+encr
 encrypt
 encrypted
 encryption
@@ -1226,7 +1236,10 @@ entered
 entire
 entities
 entity
+entr
 entries
+entropies
+entropy
 entry
 enum
 enumerable
@@ -1370,6 +1383,7 @@ extr
 extra
 extract
 extractable
+extractor
 ezmlm
 face
 facing
@@ -1672,6 +1686,7 @@ getservbyport
 getsession
 getsharedsigalgs
 getsize
+getsizeof
 getsocketoption
 getsockname
 getstate
@@ -1707,6 +1722,7 @@ gnu
 go
 goaway
 gone
+good
 goto
 granted
 graphical
@@ -1722,6 +1738,7 @@ grow
 gsub
 guaranteed
 had
+half
 halt
 handle
 handled
@@ -1794,6 +1811,7 @@ homedir
 hook
 hooks
 hop
+hope
 hoplimit
 hopopts
 hops
@@ -2145,6 +2163,7 @@ letters
 level
 levels
 levenshtein
+lexeme
 lexists
 lib
 libargon
@@ -2189,6 +2208,7 @@ live
 load
 loadavg
 loaded
+loader
 loaders
 loading
 loads
@@ -3894,6 +3914,8 @@ together
 toggle
 tojson
 token
+tokens
+tokentype
 tolegacyobject
 tolocalelowercase
 tolocalestring
@@ -3986,6 +4008,7 @@ typefaces
 typeof
 types
 typical
+typing
 typographic
 uasort
 uassoc

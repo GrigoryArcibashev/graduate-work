@@ -43,7 +43,7 @@ def make_stat():
 
 
 def get_files_for_stat():
-    path_to_encr = ['../../source/encr/', '../../source/encr/CSS/']
+    path_to_encr = ['../../source/encr/']
     path_to_non_encr = ['../../source/orig/']
     encr_files = get_filenames_by_path(path_to_encr)
     no_encr_files = get_filenames_by_path(path_to_non_encr)

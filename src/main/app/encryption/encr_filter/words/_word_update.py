@@ -38,9 +38,9 @@ def get_new_words(words: set[str], token_extr, word_extr) -> set[str]:
         word = map_bytes_to_str(word_as_bytes).lower()
         if word in words or word in bad_words or len(word) < 2:
             continue
-        # print(f'{repr(word)} | ', end='')
-        inp = False
-        # inp = input().strip()
+        print(f'{repr(word)} | ', end='')
+        # inp = False
+        inp = input().strip()
         if not inp:
             words.add(word)
         else:
@@ -89,5 +89,5 @@ def filter_all_words_with_lens(lengths: set[int]):
 
 if __name__ == '__main__':
     # remove_rus_letters('./raw_words.txt', './words2.txt')
-    # main()
-    filter_all_words_with_lens({1, 2, 3})
+    main()
+    # filter_all_words_with_lens({1, 2, 3})
