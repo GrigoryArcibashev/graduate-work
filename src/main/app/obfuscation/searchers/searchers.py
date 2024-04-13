@@ -2,8 +2,8 @@ import re
 from enum import Enum
 from typing import Iterator
 
-from src.main.app.encryption.extractors.token_extractor import TokenExtractor, Token, TokenType
-from src.main.app.obfuscation.searchers.common import Searcher, Name
+from src.main.app.encryption.extractors.token_extractor import TokenExtractor
+from src.main.app.obfuscation.searchers.common import Searcher
 
 
 class Language(Enum):

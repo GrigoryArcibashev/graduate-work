@@ -40,7 +40,7 @@ class Token:
         return f'\'{self.__str__()}\''
 
     @staticmethod
-    def _numbers_of_bytes_to_str(numbers: list[int]) -> str:
+    def _numbers_of_bytes_to_str(numbers: tuple[int]) -> str:
         return ''.join(tuple(map(chr, numbers)))
 
 
