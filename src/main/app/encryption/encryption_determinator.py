@@ -2,39 +2,53 @@ import re
 
 
 class EncryptionDeterminatorByHEX:
-    """
-    \x08
-    0x4A
-    0x54EF
-    """
-
     def __init__(self):
-        self._pattern = re.compile(br'(?:\\x|0x)[0-9AaBbCcDdEeFf]{2}', re.DOTALL)
-        self._unicode_special = [
-            ('\\xef', '\\xbb', '\\xbf'),  # UTF8
-            ('\\xff', '\\xfe'),  # UTF16 LE
-            ('\\xfe', '\\xff'),  # UTF16 BE
-            ('\\xff', '\\xfe', '\\x00', '\\x00'),  # UTF32 LE
-            ('\\x00', '\\x00', '\\xfe', '\\xff',),  # UTF32 BE
-            ('\\x2b', '\\x2f', '\\x76', '\\x38',),  # UTF7
-            ('\\x2b', '\\x2f', '\\x76', '\\x39',),  # UTF7
-            ('\\x2b', '\\x2f', '\\x76', '\\x2b',),  # UTF7
-            ('\\x2b', '\\x2f', '\\x76', '\\x2f',),  # UTF7
-            ('\\xf7', '\\x64', '\\x4c'),  # UTF1
-            ('\\xdd', '\\x73', '\\x66', '\\x73',)  # UTF-EBCDIC
+        self._pattern = re.compile(br'(?:\\x|0x)[0-9abcdef]{2}', re.IGNORECASE)
+        self._unicode_markers = [
+            (br'\xef', br'\xbb', br'\xbf'),  # UTF8
+            (br'0xef', br'0xbb', br'0xbf'),
+            (br'\xff', br'\xfe'),  # UTF16 LE
+            (br'0xff', br'0xfe'),
+            (br'\xfe', br'\xff'),  # UTF16 BE
+            (br'0xfe', br'0xff'),
+            (br'\xff', br'\xfe', br'\x00', br'\x00'),  # UTF32 LE
+            (br'0xff', br'0xfe', br'0x00', br'0x00'),
+            (br'\x00', br'\x00', br'\xfe', br'\xff'),  # UTF32 BE
+            (br'0x00', br'0x00', br'0xfe', br'0xff'),
+            (br'\x2b', br'\x2f', br'\x76', br'\x38'),  # UTF7 (1)
+            (br'0x2b', br'0x2f', br'0x76', br'0x38'),
+            (br'\x2b', br'\x2f', br'\x76', br'\x39'),  # UTF7 (2)
+            (br'0x2b', br'0x2f', br'0x76', br'0x39'),
+            (br'\x2b', br'\x2f', br'\x76', br'\x2b'),  # UTF7 (3)
+            (br'0x2b', br'0x2f', br'0x76', br'0x2b'),
+            (br'\x2b', br'\x2f', br'\x76', br'\x2f'),  # UTF7 (4)
+            (br'0x2b', br'0x2f', br'0x76', br'0x2f'),
+            (br'\xf7', br'\x64', br'\x4c'),  # UTF1
+            (br'0xf7', br'0x64', br'0x4c'),
+            (br'\xdd', br'\x73', br'\x66', br'\x73'),  # UTF-EBCDIC
+            (br'0xdd', br'0x73', br'0x66', br'0x73')
         ]
 
     def determinate(self, data):
         found = re.findall(self._pattern, data)
         count = len(self._filter_unicode(found))
-        return count >= 5
+        return count > 3
 
     def _filter_unicode(self, found):
-        for spec in self._unicode_special:
-            len_sp = len(spec)
-            if len_sp <= len(found) and spec == tuple(found[:len_sp]):
-                return found[len_sp:]
+        for marker in self._unicode_markers:
+            len_mkr = len(marker)
+            if len_mkr <= len(found) and self._hex_eq(marker, found[:len_mkr]):
+                return found[len_mkr:]
         return found
+
+    @staticmethod
+    def _hex_eq(hex1, hex2):
+        if len(hex1) != len(hex2):
+            return False
+        for i in range(len(hex1)):
+            if hex1[i].lower() != hex2[i].lower():
+                return False
+        return True
 
 
 class EncryptionDeterminatorByEntropy:
@@ -62,7 +76,7 @@ class EncryptionDeterminatorByEntropy:
 
 def main():
     det = EncryptionDeterminatorByHEX()
-    string = br'0xFF0xA3\\x32\\x430x33'
+    string = br'\xfe \xff 0xFF 0xFF 0xFF'
     print(det.determinate(string))
 
 
