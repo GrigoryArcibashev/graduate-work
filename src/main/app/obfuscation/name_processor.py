@@ -2,7 +2,8 @@ from typing import Iterator
 
 from src.main.app.encryption.extractors.token_extractor import TokenType
 from src.main.app.encryption.extractors.word_extractor import WordExtractor, Word
-from src.main.app.obfuscation.searchers.common import Searcher, Name
+from src.main.app.obfuscation.searchers.name import Name
+from src.main.app.obfuscation.searchers.searchers import AbstractSearcher
 
 
 class NameInfo:
@@ -25,7 +26,7 @@ class NameInfo:
 
 
 class NameProcessor:
-    def __init__(self, searchers: list[Searcher], word_extractor: WordExtractor):
+    def __init__(self, searchers: list[AbstractSearcher], word_extractor: WordExtractor):
         self._searchers = searchers
         self._word_extractor = word_extractor
 

@@ -1,80 +1,140 @@
 import re
-from enum import Enum
+from abc import abstractmethod
+from re import Pattern
 from typing import Iterator
 
-from src.main.app.encryption.extractors.token_extractor import TokenExtractor
-from src.main.app.obfuscation.searchers.common import Searcher
+from src.main.app.encryption.extractors.token_extractor import TokenExtractor, TokenType, Token
+from src.main.app.obfuscation.searchers.name import Name
 
 
-class Language(Enum):
-    PHP = 0
-    JS = 1
-    C_SHARP = 2
-    PYTHON = 3
-    RUBY = 4
-    PYTHON_OR_RUBY = 5
+class AbstractSearcher:
+    def __init__(self, token_extractor: TokenExtractor):
+        self._token_extractor = token_extractor
 
-    def __str__(self):
-        return self.name
+    @property
+    @abstractmethod
+    def patterns(self) -> tuple[Pattern]:
+        pass
+
+    def get_name_iter(self, string) -> Iterator[Name]:
+        for pattern in self.patterns:
+            found = pattern.findall(string)
+            if not found:
+                continue
+            for group_num in range(len(found)):
+                for match in self.__wrap_in_tuple_if_necessary(found[group_num]):
+                    if not match:
+                        continue
+                    for name in self._extract_names(match):
+                        yield Name(value=name)
+
+    @staticmethod
+    def __wrap_in_tuple_if_necessary(group):
+        if not isinstance(group, tuple):
+            return (group,)
+        return group
+
+    def _extract_names(self, raw_str) -> Iterator[tuple[Token]]:
+        current_name = list()
+        for token in self._token_extractor.get_token_iter(list(raw_str)):
+            if token.type == TokenType.LETTERS or token.type == TokenType.DIGITS:
+                current_name.append(token)
+            elif current_name and token.type != TokenType.UNDERLINING:
+                yield tuple(current_name)
+                current_name.clear()
+        if current_name:
+            yield tuple(current_name)
 
 
-class VariableSearcher(Searcher):
+class VariableSearcher(AbstractSearcher):
     def __init__(self, token_extractor: TokenExtractor):
         super().__init__(token_extractor)
         self._patterns = {
-            Language.PHP: (
-                re.compile(rb'((?:\$\w+\s*=\s*)+)'),
-                re.compile(rb'\$(\w+)((?:\s*,\s*\$\w+)*)'),
-            ),
-            Language.JS: (
-                re.compile(rb'(?:let|var|const)\s+(\w+)((?:\s*,\s*\w+)*)\s*[=;]'),
-                re.compile(rb'(?:let|var|const)\s+((?:\w+\s*=\s*)+)]')
-            ),
-            Language.PYTHON_OR_RUBY: (
-                re.compile(rb'(\w+)((?: *, *\w+)*) *='),
-                re.compile(rb'((?:\w+ *= *)+)')
-            ),
-            Language.C_SHARP: (
-                # protected static readonly List<int , int, Float<double>>[,,] var1
-                re.compile(
-                    rb'(?:(?:private\s+protected\s|protected\s+internal\s)' +
-                    rb'|(?:public\s|private\s|protected\s|internal\s|file\s))' +
-                    rb'\s*(?:const\s|(?:static\s)?\s*(?:readonly\s)?)?' +
-                    rb'\s*\w+\s*<[\w\s,<>]+>\s*\s*(?:\[[\s,]*])*\s+(\w+)'
-                ),
-                # }   List < int, int, Float < double >> [,, ] var1, var2, var3
-                re.compile(rb'[};]\s*\w+\s*(?:<[\w\s,<>]+>)*\s*(?:\[[\s,]*])*\s+(\w+)((?:\s*,\s*\w+)*)\s*[=;]')
+            # PHP
+            re.compile(rb'((?:\$\w+\s*=\s*)+)'),
+            re.compile(rb'\$(\w+)((?:\s*,\s*\$\w+)*)'),
+            re.compile(rb'(?:array\s*\(|\[)\s*\"(\w+)\"\s*=>'),
+
+            # PYTHON, RUBY, JS and C#
+            re.compile(rb'(\w+)((?:\s*,\s*\w+)*)\s*[=;]'),
+            re.compile(rb'((?:\w+\s*=\s*)+)'),
+
+            # C#
+            # }   List < int, int, Float < double >> [,, ] var1, var2, var3
+            re.compile(rb'\w+\s*(?:<[.,<>\w\s]*>)?\s*(?:\[[\s,]*])*\s+(\w+)((?:\s*,\s*\w+)*)\s*[=;{]')
+        }
+
+    @property
+    def patterns(self) -> Iterator[re.Pattern]:
+        for pattern in self._patterns:
+            print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
+            yield pattern
+
+
+class FunctionSearcher(AbstractSearcher):
+    def __init__(self, token_extractor: TokenExtractor):
+        super().__init__(token_extractor)
+        self._patterns = {
+            # JS
+            # function func(var1, var2, var3){ ИЛИ function (var1, var2, var3){
+            re.compile(rb'function(?:\s+(\w+)|)\s*\(((?:\s*\w+\s*,?)*)\s*\)\s*{'),
+            # Функциональный стиль и lambda
+            re.compile(rb'(?:const\s+(\w+)\s*=\s*)?(?:\(.*?\)|\s*\w+\s*)\s*=>'),
+
+            # PYTHON and RUBY
+            # def func(var1, *args1, ** args2)
+            re.compile(rb'def +(\w+) *\(((?: *\*{,2} *\w+ *(?:,|=.*?)?)*) *\)'),
+
+            # PYTHON
+            re.compile(rb'(\w+) *= *lambda[ \w,]+:'),
+
+            # RUBY
+            # my_lambda = -> (v) { puts "hello "+v }
+            re.compile(rb'(\w+) *= *-> *(?:\([ \w,]*\))? *(?:{|do)'),
+            # my_lambda = lambda { puts "hello" }
+            re.compile(rb'(\w+) *= *lambda *(?:{|do)'),
+
+            # PHP
+            # function displayInfo($name, ...$age){
+            re.compile(rb'function\s+(\w+)\s*\(((?:\s*(?:\.\.\.)?\$\w+\s*(?:,|=.*?)?)*)\s*\)\s*{'),
+            # $displayInfo = function($name, $age){
+            re.compile(rb'\$(\w+)\s*=\s*function\s*\(((?:\s*(?:\.\.\.)?\$\w+\s*(?:,|=.*?)?)*)\s*\)\s*{'),
+
+            # C_SHARP
+            re.compile(
+                rb'\w+\s*(?:<[.,<>\w\s]*>)?\s*(?:\[[\s,]*])*\s+(\w+)\s*(?:<[.,<>\w\s]*>)?\s*\(.*?\)\s*(?:{|=>|;)'
             )
         }
 
     @property
     def patterns(self) -> Iterator[re.Pattern]:
-        for lang in self._patterns:
-            print(f'>{lang}')
-            for pattern in self._patterns[lang]:
-                yield pattern
+        for pattern in self._patterns:
+            print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
+            yield pattern
 
 
-class FunctionSearcher(Searcher):
-
+class ClassSearcher(AbstractSearcher):
     def __init__(self, token_extractor: TokenExtractor):
         super().__init__(token_extractor)
         self._patterns = {
-            Language.JS: (
-                re.compile(rb'function\s+(\w+)\s*\(((\s*\w+\s*,?)*)\s*\)\s*{'),
-                re.compile(rb'(const\s+(\w+)\s*=\s*)?(\(((\s*\w+\s*,?)*)\)|(\s*\w+\s*))\s*=>')
-            ),
-            Language.PYTHON_OR_RUBY: (
-                re.compile(rb'def +(\w+) *\(((?: *\w+ *,?)*) *\) *:')
-            ),
-            Language.PHP: (re.compile(rb'function\s+(\w+)\s*\(((?:\s*\$\w+\s*,?)*)\s*\)\s*{'))
+            # RUBY
+            re.compile(rb'class +(\w+) *(?:< *(\.\w+) *)?[\n;#]'),
+
+            # C#
+            re.compile(rb'(?:class|interface)\s+(\w+)\s*(?:<[.,<>\w\s]*>)?(?:\s*(?:where .*?)?\s*:.*?)?\s*{'),
+
+            # PYTHON
+            re.compile(rb'class +(\w+) *(?:\(.*?\))?:'),
+
+            # PHP and JS (уже есть C#; тут то, что не найдет в C#)
+            re.compile(rb'(?:class|trait)\s+(\w+)(?:\s+extends .*?)?\s*{')
         }
 
     @property
     def patterns(self) -> Iterator[re.Pattern]:
-        for lang in self._patterns:
-            for pattern in self._patterns[lang]:
-                yield pattern
+        for pattern in self._patterns:
+            print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
+            yield pattern
 
 
 def main():
@@ -83,8 +143,7 @@ def main():
     text = b"const var0 = 'string';\nlet var1 , var2 = 12, 22;"
     var_searcher = VariableSearcher(TokenExtractor())
     for var in var_searcher.get_name_iter(text):
-        print('ПЕРЕМЕННАЯ', end='')
-        print('_OLD' if var in variables else '_NEW')
+        print('OLD' if var in variables else 'NEW', end=' VARIABLE\n')
         for name in var.value:
             print(f'\t{name}')
         print()
