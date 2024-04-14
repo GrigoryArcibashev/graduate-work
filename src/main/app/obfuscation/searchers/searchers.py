@@ -37,13 +37,17 @@ class AbstractSearcher:
     def _extract_names(self, raw_str) -> Iterator[tuple[Token]]:
         current_name = list()
         for token in self._token_extractor.get_token_iter(list(raw_str)):
-            if token.type == TokenType.LETTERS or token.type == TokenType.DIGITS:
+            if self._is_token_include_in_name(token, current_name):
                 current_name.append(token)
             elif current_name and token.type != TokenType.UNDERLINING:
                 yield tuple(current_name)
                 current_name.clear()
         if current_name:
             yield tuple(current_name)
+
+    @staticmethod
+    def _is_token_include_in_name(token: Token, current_name: list[Token]):
+        return token.type == TokenType.LETTERS or current_name and token.type == TokenType.DIGITS
 
 
 class VariableSearcher(AbstractSearcher):
