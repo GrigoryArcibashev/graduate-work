@@ -1,15 +1,15 @@
 from typing import Iterator
 
-from src.main.app.encryption.extractors.token_extractor import TokenType
+from src.main.app.encryption.extractors.token_extractor import TokenType, TokenExtractor
 from src.main.app.encryption.extractors.word_extractor import WordExtractor, Word
 from src.main.app.obfuscation.searchers.name import Name
-from src.main.app.obfuscation.searchers.searchers import AbstractSearcher
+from src.main.app.obfuscation.searchers.searchers import AbstractSearcher, VariableSearcher
 
 
 class NameInfo:
-    def __init__(self, words: list[Word], name_len: int, digit_len: int):
+    def __init__(self, words: list[Word], letters_len: int, digit_len: int):
         self._words = words
-        self._name_len = name_len
+        self._letters_len = letters_len
         self._digit_len = digit_len
 
     @property
@@ -17,12 +17,15 @@ class NameInfo:
         return self._words
 
     @property
-    def name_len(self) -> int:
-        return self._name_len
+    def letters_len(self) -> int:
+        return self._letters_len
 
     @property
     def digit_len(self) -> int:
         return self._digit_len
+
+    def __str__(self):
+        return f'name_len: {self._letters_len}, digit_len: {self._digit_len}'
 
 
 class NameProcessor:
@@ -37,11 +40,30 @@ class NameProcessor:
 
     def _make_name_info(self, name: Name) -> NameInfo:
         words = list()
-        name_len = digit_len = 0
+        letters_len = digit_len = 0
         for token in name.value:
-            name_len += len(token)
             if token.type == TokenType.LETTERS:
+                letters_len += len(token)
                 words.extend(list(self._word_extractor.get_word_iter(token.value)))
             else:
                 digit_len += len(token)
-        return NameInfo(words, name_len, digit_len)
+        return NameInfo(words, letters_len, digit_len)
+
+
+def main():
+    variables = set()
+    # text = b"let var1 = var2 = 12;"
+    text = b"const var0 = 'string';\nlet var431 , var_var_2 = 12, 22;"
+    var_searcher = VariableSearcher(TokenExtractor())
+    processor = NameProcessor([var_searcher, ], WordExtractor())
+    for var in var_searcher.get_name_iter(text):
+        print('OLD' if var in variables else 'NEW', end=' VARIABLE\n')
+        for name in var.value:
+            print(f'\t{name}')
+        print(processor._make_name_info(var))
+        print()
+        variables.add(var)
+
+
+if __name__ == '__main__':
+    main()
