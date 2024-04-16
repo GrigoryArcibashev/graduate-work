@@ -5,12 +5,15 @@ class Word:
     def __init__(self, value):
         self._value = tuple(value)
 
+    def __str__(self):
+        return f'{self.value} ({repr(self._numbers_of_bytes_to_str(self.value))})'
+
+    def __len__(self):
+        return len(self.value)
+
     @property
     def value(self) -> tuple[int]:
         return self._value
-
-    def __str__(self):
-        return f'{self.value} ({repr(self._numbers_of_bytes_to_str(self.value))})'
 
     @staticmethod
     def _numbers_of_bytes_to_str(numbers: tuple[int]) -> str:

@@ -14,14 +14,6 @@ class Token:
         self.__value = tuple(value)
         self.__type = token_type
 
-    @property
-    def value(self) -> tuple:
-        return self.__value
-
-    @property
-    def type(self) -> TokenType:
-        return self.__type
-
     def __hash__(self):
         return hash((self.__value, self.__type))
 
@@ -38,6 +30,14 @@ class Token:
 
     def __repr__(self):
         return f'\'{self.__str__()}\''
+
+    @property
+    def value(self) -> tuple:
+        return self.__value
+
+    @property
+    def type(self) -> TokenType:
+        return self.__type
 
     @staticmethod
     def _numbers_of_bytes_to_str(numbers: tuple[int]) -> str:
