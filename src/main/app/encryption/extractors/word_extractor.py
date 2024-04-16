@@ -6,7 +6,7 @@ class Word:
         self._value = tuple(value)
 
     @property
-    def value(self):
+    def value(self) -> tuple[int]:
         return self._value
 
     def __str__(self):
