@@ -60,13 +60,7 @@ class SearcherByLevenshteinMetric:
         self._metric_calculator = CalculatorLevenshteinMetric()
 
     def search(self, word: Word, k: int, first_appropriate: bool = True) -> (Word, int):
-
-        # TODO сделать проверку на длину слова и границы
-
-        left = max(self._word_provider.get_min_len(), len(word) - k)
-        right = min(self._word_provider.get_max_len(), len(word) + k)
-        order = [len(word)] + [i for i in range(left, right + 1) if i != len(word)]
-
+        order = self.get_len_order(len(word), k)
         best_metric = float('+inf')
         best_word = None
         for length in order:
@@ -83,6 +77,16 @@ class SearcherByLevenshteinMetric:
         if best_word is None:
             return None
         return best_word, best_metric
+
+    def get_len_order(self, word_len: int, k: int) -> list[int]:
+        if (
+                word_len - k > self._word_provider.get_max_len()
+                or word_len + k < self._word_provider.get_min_len()
+        ):
+            return list()
+        left = max(self._word_provider.get_min_len(), word_len - k)
+        right = min(self._word_provider.get_max_len(), word_len + k)
+        return sorted(range(left, right + 1), key=lambda x: abs(word_len - x))
 
 
 if __name__ == '__main__':
