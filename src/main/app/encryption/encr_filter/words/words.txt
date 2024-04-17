@@ -3815,8 +3815,3 @@ simultaneously
 specifications
 transformation
 unconfigurable
-interconnection
-socketexception
-unconditionally
-interoperability
-internationalization

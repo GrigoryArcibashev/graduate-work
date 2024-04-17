@@ -1,3 +1,4 @@
+from src.main.app.encryption.encr_filter.words.word_provider import WordProvider
 from src.main.app.encryption.extractors.word_extractor import Word
 
 
@@ -51,6 +52,37 @@ class CalculatorLevenshteinMetric:
         if len(word1) > len(word2):
             word1, word2 = word2, word1
         return word1, word2
+
+
+class SearcherByLevenshteinMetric:
+    def __init__(self, word_provider: WordProvider):
+        self._word_provider = word_provider
+        self._metric_calculator = CalculatorLevenshteinMetric()
+
+    def search(self, word: Word, k: int, first_appropriate: bool = True) -> (Word, int):
+
+        # TODO сделать проверку на длину слова и границы
+
+        left = max(self._word_provider.get_min_len(), len(word) - k)
+        right = min(self._word_provider.get_max_len(), len(word) + k)
+        order = [len(word)] + [i for i in range(left, right + 1) if i != len(word)]
+
+        best_metric = float('+inf')
+        best_word = None
+        for length in order:
+            dict_words = self._word_provider.get_words_with_len(length)
+            for dict_word in dict_words:
+                metric = self._metric_calculator.calculate(word, dict_word)
+                if metric > k:
+                    continue
+                elif first_appropriate:
+                    return dict_word, metric
+                elif metric < best_metric:
+                    best_metric = metric
+                    best_word = dict_word
+        if best_word is None:
+            return None
+        return best_word, best_metric
 
 
 if __name__ == '__main__':

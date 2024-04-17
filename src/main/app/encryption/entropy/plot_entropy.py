@@ -44,7 +44,7 @@ def main():
     len_before = len(data)
 
     ed = EncryptionDeterminator(EntropyAnalyzer(Entropy()))
-    ef = EncryptionFilter(WordProvider(SimpleWordLoader('../encr_filter/words/words.txt')))
+    ef = EncryptionFilter(WordProvider(SimpleWordLoader('../encr_filter/words/words_by_len.bin')))
     data = ef.filter(data)
     is_encr, entropy, entropy_above_border = ed.determinate(data)
 
