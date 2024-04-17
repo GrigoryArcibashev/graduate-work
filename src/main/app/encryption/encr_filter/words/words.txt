@@ -3732,6 +3732,7 @@ asynchronous
 availability
 cancellation
 certificates
+configurable
 constructive
 constructors
 continuation

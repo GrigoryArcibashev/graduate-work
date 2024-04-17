@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from src.main.app.file_reader import read_file
+from src.main.app.file_reader import read_file_by_pickle
 
 
 class WordLoader:
@@ -16,10 +16,10 @@ class WordLoader:
         self._path = new
 
     @abstractmethod
-    def load(self) -> list[tuple[int]]:
+    def load(self) -> dict[int, set[tuple[int]]]:
         pass
 
 
 class SimpleWordLoader(WordLoader):
-    def load(self) -> list[tuple[int]]:
-        return list(map(lambda x: tuple(x.strip()), read_file(self.path).split()))
+    def load(self) -> dict[int, set[tuple[int]]]:
+        return read_file_by_pickle(self.path)
