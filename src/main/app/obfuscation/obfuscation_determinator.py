@@ -9,21 +9,16 @@ class ObfuscationChecker:
     def __init__(self, searcher_by_levenshtein_metric: SearcherByLevenshteinMetric):
         self._searcher_by_levenshtein_metric = searcher_by_levenshtein_metric
 
-    # def check(self, name_info: NameInfo) -> bool:
-    #     """
-    #     :return: True (obf) / False (no obf)
-    #     """
-    #     for word in name_info.words:
-    #         k = round(0.4 * len(word))
-    #         result = self._searcher_by_levenshtein_metric.search(word, k)
-    #         print(result)
-    #     return True
-    def check(self, words):
-        for word in words:
+    def is_obfuscated(self, name_info: NameInfo) -> bool:
+        obf_count = 0
+        for word in name_info.words:
             k = round(0.4 * len(word))
-            result = self._searcher_by_levenshtein_metric.search(word, k, first_appropriate=False)
+            result = self._searcher_by_levenshtein_metric.search(word, k)
             print(f'{word}')
-            print('None' if result is None else f'{result[1]}: {result[0]}', end='\n\n')
+            print('OBF' if result is None else f'{result[1]}: {result[0]}', end='\n\n')
+            if result is None:
+                obf_count += 1
+        return obf_count / len(name_info.words) >= 0.5
 
 
 class ObfuscationDeterminator:
@@ -35,10 +30,9 @@ class ObfuscationDeterminator:
         count = obf_count = 0
         for name_info in self._name_processor.get_next_name_info(text):
             count += 1
-            if self._obfuscation_checker.check(name_info):
+            if self._obfuscation_checker.is_obfuscated(name_info):
                 obf_count += 1
-        # TODO переделать
-        return round(100 * obf_count / count, 2)
+        return obf_count / count >= 0.5
 
 
 def main():
@@ -49,11 +43,11 @@ def main():
             )
         )
     )
-    str_words = ['impor', 'excet', 'acknlegment']
+    str_words = ['aabcxec', 'uuebfuea', 'iioavyanev']
     words = []
     for word in str_words:
         words.append(Word(list(map(ord, list(word)))))
-    checker.check(words)
+    print(checker.is_obfuscated(NameInfo(words, 0, 0)))
 
 
 if __name__ == '__main__':
