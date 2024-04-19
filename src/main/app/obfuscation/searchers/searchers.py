@@ -16,20 +16,20 @@ class AbstractSearcher:
     def patterns(self) -> tuple[Pattern]:
         pass
 
-    def get_name_iter(self, string) -> Iterator[Name]:
+    def get_name_iter(self, text) -> Iterator[Name]:
         for pattern in self.patterns:
-            found = pattern.findall(string)
+            found = pattern.findall(text)
             if not found:
                 continue
             for group_num in range(len(found)):
-                for match in self.__wrap_in_tuple_if_necessary(found[group_num]):
+                for match in self._wrap_in_tuple_if_necessary(found[group_num]):
                     if not match:
                         continue
                     for name in self._extract_names(match):
                         yield Name(value=name)
 
     @staticmethod
-    def __wrap_in_tuple_if_necessary(group):
+    def _wrap_in_tuple_if_necessary(group):
         if not isinstance(group, tuple):
             return (group,)
         return group
@@ -39,7 +39,7 @@ class AbstractSearcher:
         for token in self._token_extractor.get_token_iter(list(raw_str)):
             if self._is_token_include_in_name(token, current_name):
                 current_name.append(token)
-            elif current_name and token.type != TokenType.UNDERLINING:
+            elif self._is_name_over(token, current_name):
                 yield tuple(current_name)
                 current_name.clear()
         if current_name:
@@ -47,7 +47,15 @@ class AbstractSearcher:
 
     @staticmethod
     def _is_token_include_in_name(token: Token, current_name: list[Token]):
-        return token.type == TokenType.LETTERS or current_name and token.type == TokenType.DIGITS
+        return (
+                token.type == TokenType.LETTERS
+                or token.type == TokenType.UNDERLINING
+                or current_name and token.type == TokenType.DIGITS
+        )
+
+    @staticmethod
+    def _is_name_over(token: Token, current_name: list[Token]):
+        return current_name and token.type != TokenType.UNDERLINING
 
 
 class VariableSearcher(AbstractSearcher):
@@ -60,8 +68,8 @@ class VariableSearcher(AbstractSearcher):
             re.compile(rb'(?:array\s*\(|\[)\s*\"(\w+)\"\s*=>'),
 
             # PYTHON, RUBY, JS and C#
-            re.compile(rb'(\w+)((?:\s*,\s*\w+)*)\s*[=;]'),
-            re.compile(rb'((?:\w+\s*=\s*)+)'),
+            re.compile(rb'(\w+)((?:\s*,\s*\w+)*)\s*(?:=[^=]|;)'),
+            re.compile(rb'((?:\w+\s*=[^=]+?)+)'),
 
             # C#
             # }   List < int, int, Float < double >> [,, ] var1, var2, var3
@@ -144,14 +152,15 @@ class ClassSearcher(AbstractSearcher):
 def main():
     variables = set()
     # text = b"let var1 = var2 = 12;"
-    text = b"const var0 = 'string';\nlet var1 , var2 = 12, 22;"
-    var_searcher = VariableSearcher(TokenExtractor())
+    text = b"}function findSubstringWithAutomat(_0x445b5,_0x5d4735){"
+    var_searcher = FunctionSearcher(TokenExtractor())
     for var in var_searcher.get_name_iter(text):
         print('OLD' if var in variables else 'NEW', end=' VARIABLE\n')
         for name in var.value:
             print(f'\t{name}')
         print()
         variables.add(var)
+    print(f'Кол-во уникальных имён: {len(variables)}')
 
 
 if __name__ == '__main__':

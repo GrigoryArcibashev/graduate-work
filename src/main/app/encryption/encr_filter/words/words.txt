@@ -8,9 +8,8 @@ db
 do
 en
 fn
+fs
 go
-he
-hi
 id
 if
 in
@@ -27,8 +26,6 @@ os
 so
 to
 up
-us
-we
 ws
 abc
 abs
