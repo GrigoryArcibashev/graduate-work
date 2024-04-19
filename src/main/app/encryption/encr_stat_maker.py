@@ -9,7 +9,7 @@ from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
 from src.main.app.file_reader import read_file
 
 
-def make_stat():
+def make_entropy_for_encr():
     tp = tn = fp = fn = 0
 
     ed_entropy = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()))
@@ -95,4 +95,4 @@ def write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is
 
 
 if __name__ == '__main__':
-    make_stat()
+    make_entropy_for_encr()
