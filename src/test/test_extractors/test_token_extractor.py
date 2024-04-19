@@ -44,9 +44,9 @@ class Test(unittest.TestCase):
         expected = self._make_tokens_by_mapping_from_str_values(
             [
                 Token('first', TokenType.LETTERS),
-                Token('_', TokenType.OTHER),
+                Token('_', TokenType.UNDERLINING),
                 Token('second', TokenType.LETTERS),
-                Token('_', TokenType.OTHER),
+                Token('_', TokenType.UNDERLINING),
                 Token('Third', TokenType.LETTERS)
             ]
         )
@@ -145,12 +145,11 @@ class Test(unittest.TestCase):
         actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
-    def _make_tokens_by_mapping_from_str_values(self, tokens: list[Token[str, TokenType]]) \
-            -> list[Token[list[int], TokenType]]:
+    def _make_tokens_by_mapping_from_str_values(self, tokens: list[Token]) -> list[Token]:
         return list(map(self._map_str_to_numbers, tokens))
 
     @staticmethod
-    def _map_str_to_numbers(token: Token[str, TokenType]) -> Token[list[int], TokenType]:
+    def _map_str_to_numbers(token: Token) -> Token:
         new_val = list(map(ord, token.value))
         return Token(new_val, token.type)
 

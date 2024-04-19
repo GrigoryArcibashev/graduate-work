@@ -61,12 +61,12 @@ class EncryptionFilter:
     def is_letter_token_encr(self, token):
         good_count = 0
         for word in self._word_extractor.get_word_iter(token.value):
-            if self._word_provider.check_word(tuple(word)):
+            if self._word_provider.check_word(word):
                 good_count += len(word)
-        return good_count / len(token.value) < self._encryption_boundary
+        return good_count / len(token) < self._encryption_boundary
 
     @staticmethod
-    def map_tokens_to_bytes(tokens: list[Token[list[int], TokenType]]) -> list[int]:
+    def map_tokens_to_bytes(tokens: list[Token]) -> list[int]:
         result = list()
         for token in tokens:
             result.extend(token.value)

@@ -12,6 +12,8 @@ from src.main.app.file_reader import read_file
 def make_stat():
     tp = tn = fp = fn = 0
 
+    ed = EncryptionDeterminator(EntropyAnalyzer(Entropy()))
+    ef = EncryptionFilter(WordProvider(SimpleWordLoader('encr_filter/words/words_by_len.bin')))
     ed_entropy = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()))
     ed_hex = EncryptionDeterminatorByHEX()
     ef = EncryptionFilter(WordProvider(SimpleWordLoader('encr_filter/words/words.txt')))
@@ -19,6 +21,7 @@ def make_stat():
     encr_files, no_encr_files = get_files_for_stat()
 
     file_stat = open('../../source/encr_stat.txt', 'w')
+    print('НАЧАЛО СКАНИРОВАНИЯ\n')
     for filename in no_encr_files:
         cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
         write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)

@@ -1,14 +1,47 @@
-from collections import namedtuple
 from enum import Enum
 from typing import Iterator
-
-Token = namedtuple('Token', ['value', 'type'])
 
 
 class TokenType(Enum):
     LETTERS = 0
     DIGITS = 1
-    OTHER = 2
+    UNDERLINING = 2
+    OTHER = 3
+
+
+class Token:
+    def __init__(self, value, token_type: TokenType):
+        self.__value = tuple(value)
+        self.__type = token_type
+
+    def __hash__(self):
+        return hash((self.__value, self.__type))
+
+    def __len__(self):
+        return len(self.value)
+
+    def __eq__(self, other):
+        if not isinstance(other, Token):
+            raise TypeError(f'Operand type: expected {type(self)}, but actual is {type(other)}')
+        return self.value == other.value and self.type == other.type
+
+    def __str__(self):
+        return f'type = {self.type}, val = {self.value} ({repr(self._numbers_of_bytes_to_str(self.value))})'
+
+    def __repr__(self):
+        return f'\'{self.__str__()}\''
+
+    @property
+    def value(self) -> tuple:
+        return self.__value
+
+    @property
+    def type(self) -> TokenType:
+        return self.__type
+
+    @staticmethod
+    def _numbers_of_bytes_to_str(numbers: tuple[int]) -> str:
+        return ''.join(tuple(map(chr, numbers)))
 
 
 class TokenExtractor:
@@ -35,6 +68,8 @@ class TokenExtractor:
             return TokenType.LETTERS
         if self._is_digit(symbol):
             return TokenType.DIGITS
+        if self._is_underlining(symbol):
+            return TokenType.UNDERLINING
         return TokenType.OTHER
 
     def _is_non_alphanum(self, symbol) -> bool:
@@ -50,3 +85,7 @@ class TokenExtractor:
     @staticmethod
     def _is_digit(symbol) -> bool:
         return ord(b'0') <= symbol <= ord(b'9')
+
+    @staticmethod
+    def _is_underlining(symbol) -> bool:
+        return symbol == ord(b'_')
