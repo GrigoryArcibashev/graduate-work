@@ -12,11 +12,9 @@ from src.main.app.file_reader import read_file
 def make_stat():
     tp = tn = fp = fn = 0
 
-    ed = EncryptionDeterminator(EntropyAnalyzer(Entropy()))
-    ef = EncryptionFilter(WordProvider(SimpleWordLoader('encr_filter/words/words_by_len.bin')))
     ed_entropy = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()))
     ed_hex = EncryptionDeterminatorByHEX()
-    ef = EncryptionFilter(WordProvider(SimpleWordLoader('encr_filter/words/words.txt')))
+    ef = EncryptionFilter(WordProvider(SimpleWordLoader('encr_filter/words/words_by_len.bin')))
 
     encr_files, no_encr_files = get_files_for_stat()
 
