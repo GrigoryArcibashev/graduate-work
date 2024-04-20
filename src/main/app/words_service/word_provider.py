@@ -1,5 +1,5 @@
-from src.main.app.encryption.encr_filter.words.word_loader import WordLoader
-from src.main.app.encryption.extractors.word_extractor import Word
+from src.main.app.words_service.word_loader import WordLoader
+from src.main.app.extractors.word import Word
 
 
 class WordProvider:

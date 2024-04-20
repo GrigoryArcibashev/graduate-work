@@ -161,10 +161,10 @@ cython_debug/
 
 src/main/source/
 Notes.docx
-/src/main/app/encryption/encr_filter/words/words2.txt
+/~$Notes.docx
 /src/test/words.txt
 /src/test/test_encr_filter/test_words/words.txt
 /src/test/test_encr_filter/words.txt
-/src/main/app/encryption/encr_filter/words/TODO.txt
-/src/main/app/encryption/encr_filter/words/raw_words.txt
-/~$Notes.docx
+/src/main/app/words_service/_word_update.py
+/src/main/app/words_service/raw_words.txt
+/src/main/app/words_service/words2.txt

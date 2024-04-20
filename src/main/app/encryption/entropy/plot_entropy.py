@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import savgol_filter
 
-from src.main.app.encryption.encr_filter.encryption_filter import EncryptionFilter
-from src.main.app.encryption.encr_filter.words.word_loader import SimpleWordLoader
-from src.main.app.encryption.encr_filter.words.word_provider import WordProvider
+from src.main.app.encryption.encryption_filter import EncryptionFilter
+from src.main.app.words_service import SimpleWordLoader
+from src.main.app.words_service.word_provider import WordProvider
 from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy, EncryptionDeterminatorByHEX
 from src.main.app.encryption.entropy.entropy import Entropy
 from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
@@ -45,7 +45,7 @@ def main():
 
     ed = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()))
     ed_hex = EncryptionDeterminatorByHEX()
-    ef = EncryptionFilter(WordProvider(SimpleWordLoader('../encr_filter/words/words_by_len.bin')))
+    ef = EncryptionFilter(WordProvider(SimpleWordLoader('../../words_service/words_by_len.bin')))
     data = ef.filter(data)
     is_encr, entropy, entropy_above_border = ed.determinate(data)
     is_hex = ed_hex.determinate(text)

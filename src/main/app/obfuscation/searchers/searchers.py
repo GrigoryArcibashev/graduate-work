@@ -3,7 +3,8 @@ from abc import abstractmethod
 from re import Pattern
 from typing import Iterator
 
-from src.main.app.encryption.extractors.token_extractor import TokenExtractor, TokenType, Token
+from src.main.app.extractors.token import Token, TokenType
+from src.main.app.extractors.token_extractor import TokenExtractor
 from src.main.app.obfuscation.searchers.name import Name
 
 

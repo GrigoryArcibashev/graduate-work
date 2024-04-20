@@ -1,6 +1,6 @@
 import unittest
 
-from src.main.app.encryption.extractors.word_extractor import WordExtractor
+from src.main.app.extractors.word_extractor import WordExtractor
 
 
 class Test(unittest.TestCase):

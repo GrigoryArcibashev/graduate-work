@@ -1,7 +1,8 @@
-from src.main.app.encryption.encr_filter.words.word_loader import SimpleWordLoader
-from src.main.app.encryption.encr_filter.words.word_provider import WordProvider
-from src.main.app.encryption.extractors.token_extractor import TokenExtractor
-from src.main.app.encryption.extractors.word_extractor import Word, WordExtractor
+from src.main.app.words_service.word_loader import SimpleWordLoader
+from src.main.app.words_service.word_provider import WordProvider
+from src.main.app.extractors.token_extractor import TokenExtractor
+from src.main.app.extractors.word import Word
+from src.main.app.extractors.word_extractor import WordExtractor
 from src.main.app.file_reader import read_file
 from src.main.app.obfuscation.levenshtein_metric import SearcherByLevenshteinMetric
 from src.main.app.obfuscation.name_processor import NameInfo, NameProcessor
@@ -76,7 +77,7 @@ def simple_main():
         name_processor=processor,
         searcher_by_levenshtein_metric=SearcherByLevenshteinMetric(
             WordProvider(
-                SimpleWordLoader('../encryption/encr_filter/words/words_by_len.bin')
+                SimpleWordLoader('../words_service/words_by_len.bin')
             )
         )
     )
@@ -94,7 +95,7 @@ def main():
         name_processor=processor,
         searcher_by_levenshtein_metric=SearcherByLevenshteinMetric(
             WordProvider(
-                SimpleWordLoader('../encryption/encr_filter/words/words_by_len.bin')
+                SimpleWordLoader('../words_service/words_by_len.bin')
             )
         )
     )

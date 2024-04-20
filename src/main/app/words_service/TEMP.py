@@ -3,7 +3,7 @@ import pickle
 from _word_update import read_as_text
 from numpy import mean, median
 
-from src.main.app.encryption.extractors.word_extractor import Word
+from src.main.app.extractors.word import Word
 from src.main.app.file_reader import read_file
 
 

@@ -1,13 +1,13 @@
 import unittest
 
-from src.main.app.encryption.encr_filter.words.word_provider import WordProvider
+from src.main.app.words_service.word_provider import WordProvider
 from src.test.test_encr_filter.test_words.util import *
-from src.main.app.encryption.encr_filter.words.word_loader import SimpleWordLoader
+from src.main.app.words_service import SimpleWordLoader
 
 
 class Test(unittest.TestCase):
     def setUp(self) -> None:
-        self._path = 'words.txt'
+        self._path = 'words_service.txt'
         self._loader = SimpleWordLoader(self._path)
 
     def test_true(self):

@@ -1,6 +1,7 @@
-from src.main.app.encryption.encr_filter.words.word_provider import WordProvider
-from src.main.app.encryption.extractors.token_extractor import TokenExtractor, Token, TokenType
-from src.main.app.encryption.extractors.word_extractor import WordExtractor
+from src.main.app.words_service.word_provider import WordProvider
+from src.main.app.extractors.token import TokenType, Token
+from src.main.app.extractors.token_extractor import TokenExtractor
+from src.main.app.extractors.word_extractor import WordExtractor
 
 """
 ШИФР ШИФР

@@ -1,4 +1,4 @@
-from src.main.app.encryption.extractors.token_extractor import Token
+from src.main.app.extractors.token import Token
 
 
 class Name:

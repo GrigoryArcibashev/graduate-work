@@ -1,5 +1,6 @@
-from src.main.app.encryption.extractors.token_extractor import TokenExtractor, TokenType
-from src.main.app.encryption.extractors.word_extractor import WordExtractor
+from src.main.app.extractors.token import TokenType
+from src.main.app.extractors.token_extractor import TokenExtractor
+from src.main.app.extractors.word_extractor import WordExtractor
 from src.main.app.file_reader import read_file
 
 

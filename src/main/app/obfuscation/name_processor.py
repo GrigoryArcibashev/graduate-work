@@ -1,7 +1,9 @@
 from typing import Iterator
 
-from src.main.app.encryption.extractors.token_extractor import TokenType, TokenExtractor
-from src.main.app.encryption.extractors.word_extractor import WordExtractor, Word
+from src.main.app.extractors.token import TokenType
+from src.main.app.extractors.token_extractor import TokenExtractor
+from src.main.app.extractors.word import Word
+from src.main.app.extractors.word_extractor import WordExtractor
 from src.main.app.obfuscation.searchers.name import Name
 from src.main.app.obfuscation.searchers.searchers import AbstractSearcher, VariableSearcher
 

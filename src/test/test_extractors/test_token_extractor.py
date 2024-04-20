@@ -1,6 +1,6 @@
 import unittest
 
-from src.main.app.encryption.extractors.token_extractor import TokenExtractor, Token, TokenType
+from src.main.app.extractors.token_extractor import TokenExtractor, Token, TokenType
 
 
 class Test(unittest.TestCase):

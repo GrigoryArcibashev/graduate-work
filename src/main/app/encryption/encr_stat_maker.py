@@ -1,8 +1,8 @@
 from os import listdir
 from os.path import isfile, join
-from src.main.app.encryption.encr_filter.encryption_filter import EncryptionFilter
-from src.main.app.encryption.encr_filter.words.word_loader import SimpleWordLoader
-from src.main.app.encryption.encr_filter.words.word_provider import WordProvider
+from src.main.app.encryption.encryption_filter import EncryptionFilter
+from src.main.app.words_service.word_loader import SimpleWordLoader
+from src.main.app.words_service.word_provider import WordProvider
 from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy, EncryptionDeterminatorByHEX
 from src.main.app.encryption.entropy.entropy import Entropy
 from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
@@ -14,7 +14,7 @@ def make_entropy_for_encr():
 
     ed_entropy = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()))
     ed_hex = EncryptionDeterminatorByHEX()
-    ef = EncryptionFilter(WordProvider(SimpleWordLoader('encr_filter/words/words_by_len.bin')))
+    ef = EncryptionFilter(WordProvider(SimpleWordLoader('../words_service/words_by_len.bin')))
 
     encr_files, no_encr_files = get_files_for_stat()
 
