@@ -3,7 +3,7 @@ import re
 
 class EncryptionDeterminatorByHEX:
     def __init__(self):
-        self._pattern = re.compile(br'(?:\\x|0x)[0-9abcdef]{2}', re.IGNORECASE)
+        self._pattern = re.compile(br'(?:\\x|0x|\\u)[0-9abcdef]{2}', re.IGNORECASE)
         self._unicode_markers = [
             (br'\xef', br'\xbb', br'\xbf'),  # UTF8
             (br'0xef', br'0xbb', br'0xbf'),
