@@ -3,7 +3,7 @@ import numpy as np
 from scipy.signal import savgol_filter
 
 from src.main.app.encryption.encryption_filter import EncryptionFilter
-from src.main.app.words_service import SimpleWordLoader
+from src.main.app.words_service.word_loader import SimpleWordLoader
 from src.main.app.words_service.word_provider import WordProvider
 from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy, EncryptionDeterminatorByHEX
 from src.main.app.encryption.entropy.entropy import Entropy
@@ -59,7 +59,7 @@ def main():
     entropy_analyzer = EntropyAnalyzer(Entropy())
     entropies, window_size, hop = entropy_analyzer.window_analyze(data)
 
-    title = f'{"ЕСТЬ ШИФР" if is_encr or is_hex else "НЕТ ШИФРА"}, вырезано {cut_out}%'
+    title = f'{f"ЕСТЬ ШИФР (entr={is_encr}) (hex={is_hex})" if is_encr or is_hex else "НЕТ ШИФРА"}, вырезано {cut_out}%'
     title += f'\nЭнтропия {entropy}% | {entropy_above_border}%{",  => HEX!" if is_hex else ""}'
     plot_entropy(title, entropies, hop, window_size, len(data))
 
