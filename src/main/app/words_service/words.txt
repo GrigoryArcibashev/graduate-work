@@ -1,8 +1,5 @@
-am
-an
 as
 at
-be
 by
 db
 do
@@ -27,7 +24,6 @@ so
 to
 up
 ws
-abc
 abs
 ack
 add
@@ -42,11 +38,9 @@ app
 are
 arg
 arp
-asc
 bad
 big
 bin
-bip
 bit
 box
 bsd

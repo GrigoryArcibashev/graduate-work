@@ -17,8 +17,8 @@ class ObfuscationDeterminator:
     ):
         self._searcher_by_levenshtein_metric = searcher_by_levenshtein_metric
         self._name_processor = name_processor
-        self._obf_text_border = 0.5
-        self._obf_name_border = 0.5
+        self._obf_text_border = 0.35
+        self._obf_name_border = 0.35
         self._words: dict[Word, bool] = dict()
 
     def _clear_words(self) -> None:
@@ -31,7 +31,9 @@ class ObfuscationDeterminator:
             count += 1
             if self.is_obfuscated(name_info):
                 obf_count += 1
-        print(f'\nobf_count ({obf_count}) / count ({count}) = {round(obf_count / max(1, count), 2)}')
+        print_res = round(obf_count / max(1, count), 2)
+        print(f'\nobf_count ({obf_count}) / count ({count}) = {print_res} ', end='')
+        print(f'[{">=" if print_res >= self._obf_text_border else "<"}{self._obf_text_border}]')
         return count and obf_count / count >= self._obf_text_border
 
     def is_obfuscated(self, name_info: NameInfo) -> bool:
@@ -99,7 +101,8 @@ def main():
             )
         )
     )
-    text = read_file('../../source/obf/obf_js.txt')
+    # text = read_file('../../source/obf/obf_js.txt')
+    text = input().encode()
     is_obf_text = checker.determinate(text)
     print(f"VERDICT: {'OBF' if is_obf_text else 'NO OBF'}")
 

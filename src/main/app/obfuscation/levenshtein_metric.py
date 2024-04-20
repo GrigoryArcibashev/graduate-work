@@ -60,10 +60,7 @@ class SearcherByLevenshteinMetric:
         self._metric_calculator = CalculatorLevenshteinMetric()
 
     def search(self, word: Word, k: int, first_appropriate: bool = True) -> (Word, int):
-        if (
-                self._word_provider.get_words_with_len(len(word))
-                and word in self._word_provider.get_words_with_len(len(word))
-        ):
+        if self._word_provider.check_word(word):
             return word, 0
         order = self.get_len_order(len(word), k)
         best_metric = float('+inf')
