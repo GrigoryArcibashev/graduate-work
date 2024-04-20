@@ -5,7 +5,7 @@ from scipy.signal import savgol_filter
 from src.main.app.encryption.encr_filter.encryption_filter import EncryptionFilter
 from src.main.app.encryption.encr_filter.words.word_loader import SimpleWordLoader
 from src.main.app.encryption.encr_filter.words.word_provider import WordProvider
-from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy
+from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy, EncryptionDeterminatorByHEX
 from src.main.app.encryption.entropy.entropy import Entropy
 from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
 from src.main.app.file_reader import read_file
@@ -44,19 +44,23 @@ def main():
     len_before = len(data)
 
     ed = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()))
+    ed_hex = EncryptionDeterminatorByHEX()
     ef = EncryptionFilter(WordProvider(SimpleWordLoader('../encr_filter/words/words_by_len.bin')))
     data = ef.filter(data)
     is_encr, entropy, entropy_above_border = ed.determinate(data)
+    is_hex = ed_hex.determinate(text)
 
     cut_out = round(100 - len(data) / (len_before / 100), 2)
     print(f'\nВырезано {cut_out}%')
     print(f'{is_encr}\n{entropy}% | {entropy_above_border}%')
+    if is_hex:
+        print('!Обнаружен HEX!')
 
     entropy_analyzer = EntropyAnalyzer(Entropy())
     entropies, window_size, hop = entropy_analyzer.window_analyze(data)
 
-    title = f'{"ЕСТЬ ШИФР" if is_encr else "НЕТ ШИФРА"}, вырезано {cut_out}%'
-    title += f'\nЭнтропия {entropy}% | {entropy_above_border}%'
+    title = f'{"ЕСТЬ ШИФР" if is_encr or is_hex else "НЕТ ШИФРА"}, вырезано {cut_out}%'
+    title += f'\nЭнтропия {entropy}% | {entropy_above_border}%{",  => HEX!" if is_hex else ""}'
     plot_entropy(title, entropies, hop, window_size, len(data))
 
 

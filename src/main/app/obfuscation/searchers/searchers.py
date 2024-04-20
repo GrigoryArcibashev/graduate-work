@@ -17,6 +17,7 @@ class AbstractSearcher:
         pass
 
     def get_name_iter(self, text) -> Iterator[Name]:
+        names = set()
         for pattern in self.patterns:
             found = pattern.findall(text)
             if not found:
@@ -26,7 +27,9 @@ class AbstractSearcher:
                     if not match:
                         continue
                     for name in self._extract_names(match):
-                        yield Name(value=name)
+                        if name not in names:
+                            names.add(name)
+                            yield Name(value=name)
 
     @staticmethod
     def _wrap_in_tuple_if_necessary(group):
@@ -61,7 +64,7 @@ class AbstractSearcher:
 class VariableSearcher(AbstractSearcher):
     def __init__(self, token_extractor: TokenExtractor):
         super().__init__(token_extractor)
-        self._patterns = {
+        self._patterns = (
             # PHP
             re.compile(rb'((?:\$\w+\s*=\s*)+)'),
             re.compile(rb'\$(\w+)((?:\s*,\s*\$\w+)*)'),
@@ -74,7 +77,7 @@ class VariableSearcher(AbstractSearcher):
             # C#
             # }   List < int, int, Float < double >> [,, ] var1, var2, var3
             re.compile(rb'\w+\s*(?:<[.,<>\w\s]*>)?\s*(?:\[[\s,]*])*\s+(\w+)((?:\s*,\s*\w+)*)\s*[=;{]')
-        }
+        )
 
     @property
     def patterns(self) -> Iterator[re.Pattern]:
@@ -86,7 +89,7 @@ class VariableSearcher(AbstractSearcher):
 class FunctionSearcher(AbstractSearcher):
     def __init__(self, token_extractor: TokenExtractor):
         super().__init__(token_extractor)
-        self._patterns = {
+        self._patterns = (
             # JS
             # function func(var1, var2, var3){ ИЛИ function (var1, var2, var3){
             re.compile(rb'function(?:\s+(\w+)|)\s*\(((?:\s*\w+\s*,?)*)\s*\)\s*{'),
@@ -116,7 +119,7 @@ class FunctionSearcher(AbstractSearcher):
             re.compile(
                 rb'\w+\s*(?:<[.,<>\w\s]*>)?\s*(?:\[[\s,]*])*\s+(\w+)\s*(?:<[.,<>\w\s]*>)?\s*\(.*?\)\s*(?:{|=>|;)'
             )
-        }
+        )
 
     @property
     def patterns(self) -> Iterator[re.Pattern]:
@@ -128,7 +131,7 @@ class FunctionSearcher(AbstractSearcher):
 class ClassSearcher(AbstractSearcher):
     def __init__(self, token_extractor: TokenExtractor):
         super().__init__(token_extractor)
-        self._patterns = {
+        self._patterns = (
             # RUBY
             re.compile(rb'class +(\w+) *(?:< *(\.\w+) *)?[\n;#]'),
 
@@ -140,7 +143,7 @@ class ClassSearcher(AbstractSearcher):
 
             # PHP and JS (уже есть C#; тут то, что не найдет в C#)
             re.compile(rb'(?:class|trait)\s+(\w+)(?:\s+extends .*?)?\s*{')
-        }
+        )
 
     @property
     def patterns(self) -> Iterator[re.Pattern]:
