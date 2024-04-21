@@ -1,13 +1,14 @@
 import re
 from enum import Enum
+from typing import Iterator
 
 from src.main.app.file_reader import read_file
 
 
 class DangerLevel(Enum):
-    DANGEROUS = 'Опасно'
-    SUSPICIOUS = 'Подозрительно'
-    PAY_ATTENTION = 'Обратить внимание'
+    DANGEROUS = 0
+    SUSPICIOUS = 1
+    PAY_ATTENTION = 2
 
 
 class Language(Enum):
@@ -19,7 +20,7 @@ class Language(Enum):
     C_SHARP = 5
 
 
-class Type(Enum):
+class SuspiciousType(Enum):
     GENERAL = 'Подозрительная лексема'
     COMMAND = 'Команды bash/cmd'
     ENCRYPT = '[Де]шифрование'
@@ -30,8 +31,86 @@ class Type(Enum):
     OS = 'Взаимодействие с функциями ОС'
 
 
+class SuspiciousCode:
+    def __init__(self, code: bytes, code_type: SuspiciousType, danger_lvl: DangerLevel):
+        self.__code = code
+        self.__type = code_type
+        self.__lvl = danger_lvl
+
+    @property
+    def code(self) -> bytes:
+        return self.__code
+
+    @property
+    def type(self) -> SuspiciousType:
+        return self.__type
+
+    @property
+    def danger_lvl(self) -> DangerLevel:
+        return self.__lvl
+
+    def __hash__(self):
+        return hash((self.__code, self.__type, self.__lvl))
+
+    def __eq__(self, other):
+        if not isinstance(other, SuspiciousCode):
+            raise TypeError(f'Operand type: expected {type(self)}, but actual is {type(other)}')
+        return self.code == other.code and self.type == other.type and self.danger_lvl == other.danger_lvl
+
+    def __str__(self):
+        return f'{self.danger_lvl} => {self.type} => {self.code}'
+
+
+class SuspySearcher:
+    def __init__(self):
+        self._patterns = {
+            DangerLevel.DANGEROUS: {
+                SuspiciousType.GENERAL: {},
+                SuspiciousType.COMMAND: {},
+                SuspiciousType.ENCRYPT: {},
+                SuspiciousType.EXECUTION: {},
+                SuspiciousType.FILES: {},
+                SuspiciousType.IMPORT: {},
+                SuspiciousType.NET: {},
+                SuspiciousType.OS: {},
+            },
+            DangerLevel.SUSPICIOUS: {
+                SuspiciousType.GENERAL: {},
+                SuspiciousType.COMMAND: {},
+                SuspiciousType.ENCRYPT: {},
+                SuspiciousType.EXECUTION: {},
+                SuspiciousType.FILES: {},
+                SuspiciousType.IMPORT: {},
+                SuspiciousType.NET: {},
+                SuspiciousType.OS: {},
+            },
+            DangerLevel.PAY_ATTENTION: {
+                SuspiciousType.GENERAL: {},
+                SuspiciousType.COMMAND: {},
+                SuspiciousType.ENCRYPT: {},
+                SuspiciousType.EXECUTION: {},
+                SuspiciousType.FILES: {},
+                SuspiciousType.IMPORT: {},
+                SuspiciousType.NET: {},
+                SuspiciousType.OS: {},
+            },
+        }
+
+    def search(self, text: bytes) -> tuple[SuspiciousCode]:
+        searched: set[SuspiciousCode] = set()
+        for pattern, lvl, _type in self._get_next_pattern():
+            found = set(pattern.findall(text))
+            for fnd in set(found):
+                searched.add(SuspiciousCode(fnd, _type, lvl))
+        return tuple(searched)
+
+    def _get_next_pattern(self) -> Iterator[(re.Pattern, DangerLevel, SuspiciousType)]:
+        pass
+
+
+# TODO команды cmd bash
 PATTERNS = {
-    Language.GENERAL: {  # TODO команды cmd bash
+    Language.GENERAL: {
         DangerLevel.SUSPICIOUS: (
             re.compile(br'\W([\"\']cmd(?:\.exe)?[\"\'])\W', re.IGNORECASE),
             re.compile(br'\W([\"\']/bin/sh[\"\'])\W', re.IGNORECASE),
@@ -192,6 +271,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    for type_ in Type:
-        print(f'{type_.name}: {type_.value}')
+    main()
