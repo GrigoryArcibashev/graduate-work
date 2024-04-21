@@ -1,6 +1,8 @@
 import re
 from enum import Enum
 
+from src.main.app.file_reader import read_file
+
 
 class DangerLevel(Enum):
     DANGEROUS = 0
@@ -9,85 +11,104 @@ class DangerLevel(Enum):
 
 
 class Language(Enum):
-    PHP = 0,
-    JS = 1
-    PYTHON = 2
-    RUBY = 3
-    C_SHARP = 4
+    GENERAL = 0,
+    PHP = 1,
+    JS = 2
+    PYTHON = 3
+    RUBY = 4
+    C_SHARP = 5
 
 
 PATTERNS = {
-    Language.PHP: {
+    Language.GENERAL: {  # TODO команды cmd bash
         DangerLevel.DANGEROUS: (
-            re.compile(br'eval\s*\('),
-            re.compile(br'include(?:_once)?\s*\('),
-            re.compile(br'require(?:_once)?\s*\('),
-
-            re.compile(br'exec\s*\('),
-            re.compile(br'passthru\s*\('),
-            re.compile(br'proc_open\s*\('),
-            re.compile(br'shell_exec\s*\('),
-            re.compile(br'system\s*\('),
-
-            re.compile(br'pcntl_exec\s*\('),
+            re.compile(br'\W([\"\']cmd(?:\.exe)?[\"\'])\W', re.IGNORECASE),
+            re.compile(br'(webshell)', re.IGNORECASE),
         ),
         DangerLevel.SUSPICIOUS: (
-            re.compile(br'gzinflate\s*\('),
-            re.compile(br'base64_(?:en|de)code\s*\('),
-            re.compile(br'convert_uu(?:en|de)code\s*\('),
-            re.compile(br'str_rot13\s*\('),
+            re.compile(br'[_\W](base_?(?:64|32|85))', re.IGNORECASE),
+            re.compile(br'[_\W](rot_?13)', re.IGNORECASE),
+        )
+    },
+    Language.PHP: {
+        DangerLevel.DANGEROUS: (
+            re.compile(br'\W(eval)\s*\('),
 
-            re.compile(br'basename\s*\('),
-            re.compile(br'ch(?:grp|mod|own)\s*\('),
-            re.compile(br'clearstatcache\s*\('),
-            re.compile(br'copy\s*\('),
-            re.compile(br'dirname\s*\('),
-            re.compile(br'disk(?:free|_free_|_total_)space\s*\('),
-            re.compile(
-                br'file(?:_exists|_get_contents|_put_contents|atime|'
-                + br'ctime|group|inode|mtime|owner|perms|size|type)?\s*\('
-            ),
-            re.compile(
-                br'f(?:close|eof|flush|get(?:csv|c|ss|s)|lock|nmatch|'
-                + br'open|passthru|put(?:csv|s)|read|scanf|seek|stat|'
-                + br'sync|tell|truncate|write)\s*\('),
-            re.compile(br'glob\s*\('),
-            re.compile(br'is_(?:dir|executable|file|link|readable|uploaded_file|write?able)\s*\('),
-            re.compile(br'lch(?:grp|own)\s*\('),
-            re.compile(br'link(?:info)?\s*\('),
-            re.compile(br'lstat\s*\('),
-            re.compile(br'mkdir\s*\('),
-            re.compile(br'move_uploaded_file\s*\('),
-            re.compile(br'parse_ini_(?:file|string)\s*\('),
-            re.compile(br'pathinfo\s*\('),
-            re.compile(br'pclose\s*\('),
-            re.compile(br'popen\s*\('),
-            re.compile(br'read(?:file|link)\s*\('),
-            re.compile(br'realpath(?:_cache_(?:get|size))?\s*\('),
-            re.compile(br're(?:name|wind)\s*\('),
-            re.compile(br'rmdir\s*\('),
-            re.compile(br'set_file_buffer\s*\('),
-            re.compile(br'stat\s*\('),
-            re.compile(br'symlink\s*\('),
-            re.compile(br'tempnam\s*\('),
-            re.compile(br'tmpfile\s*\('),
-            re.compile(br'touch\s*\('),
-            re.compile(br'umask\s*\('),
-            re.compile(br'unlink\s*\('),
+            re.compile(br'\W(passthru)\s*\('),
+            re.compile(br'\W(proc_open)\s*\('),
+            re.compile(br'\W(system)\s*\('),
+        ),
+        DangerLevel.SUSPICIOUS: (
+            re.compile(br'\W(include(?:_once)?\s*\(.+?\))'),
+            re.compile(br'\W(require(?:_once)?\s*\(.+?\))'),
+
+            re.compile(br'\W(gzinflate)\s*\('),
+            re.compile(br'\W(base64_(?:en|de)code)\s*\('),
+            re.compile(br'\W(convert_uu(?:en|de)code)\s*\('),
+            re.compile(br'\W(str_rot13)\s*\('),
+
+            re.compile(br'\W([lf]?ch(?:grp|mod|own)(?:Sync|))\s*\('),
+            re.compile(br'\W(file(?:_exists|_get_contents|_put_contents|inode|size|type)?)\s*\('),
+            re.compile(br'\W(f(?:eof|lock|open|passthru|read|scanf|seek|sync|write))\s*\('),
+            re.compile(br'\W(dirname)\s*\('),
+            re.compile(br'\W(is_(?:dir|executable|file|link|readable|uploaded_file|write?able))\s*\('),
+            re.compile(br'\W(mkdir(?:Sync|))\s*\('),
+            re.compile(br'\W(move_uploaded_file)\s*\('),
+            re.compile(br'\W(pathinfo)\s*\('),
+            re.compile(br'\W(popen)\s*\('),
+            re.compile(br'\W(rm(?:dir|)(?:Sync|))\s*\('),
 
             re.compile(
-                br'eio_(?:chmod|chown|fallocate|fchmod|fchown|'
-                + br'fstat|fstatvfs|ftruncate|futime|init|link|'
-                + br'lstat|mkdir|mknod|open|read|readdir|readlink|'
-                + br'realpath|rename|rmdir|seek|sendfile|stat|statvfs|'
-                + br'symlink|sync_file_range|truncate|unlink|utime|write)'
-                + br'\s*\('
+                br'\W(eio_(?:f?ch(?:mod|own)|fallocate|'
+                + br'ftruncate|init|link|mk(?:dir|nod)|open|'
+                + br'read(?:dir|link)?|realpath|rmdir|'
+                + br'seek|sendfile|write))\s*\('
             )
         ),
         DangerLevel.PAY_ATTENTION: (
-            re.compile(br'\$_GET\s*\['),
-            re.compile(br'\$_POST\s*\['),
-            re.compile(br'\$_REQUEST\s*\['),
+            re.compile(br'\W(\$_GET\s*\[.+?])'),
+            re.compile(br'\W(\$_POST\s*\[.+?])'),
+            re.compile(br'\W(\$_REQUEST\s*\[.+?])'),
+        )
+    },
+    Language.JS: {
+        DangerLevel.DANGEROUS: (
+            re.compile(br'\W(document\s*\.\s*write)\s*\('),
+            re.compile(br'\W(innerHTML)\s*\('),
+
+            re.compile(br'\W((?:shell_|pcntl_)?exec(?:File|)(?:Sync|))\s*\('),
+        ),
+        DangerLevel.SUSPICIOUS: (
+            re.compile(br'\W(atob)\s*\('),
+            re.compile(br'\W(btoa)\s*\('),
+
+            re.compile(br'\W(appendFile(?:Sync|))\s*\('),
+            re.compile(br'\W(create(?:Read|Write)Stream)\s*\('),
+            re.compile(br'\.(fd)\W'),
+            re.compile(br'\W(read(?:v|dir|[Ff]ile|link|Lines|ableWebStream)(?:Sync|))\s*\('),
+            re.compile(br'\W(write(?:v|File)(?:Sync|))\s*\('),
+            re.compile(br'\W(open(?:dir|AsBlob)(?:Sync|))\s*\('),
+
         )
     }
 }
+
+
+def main():
+    text = read_file('../../source/x.txt')
+    # text = input().encode()
+    pat_set = set()
+    for lang in Language:
+        for lvl in DangerLevel:
+            for pat in PATTERNS[lang][lvl]:
+                if pat in pat_set:
+                    continue
+                pat_set.add(pat)
+                found = pat.findall(text)
+                if found:
+                    print(pat)
+                    print(found, end='\n\n')
+
+
+if __name__ == '__main__':
+    main()
