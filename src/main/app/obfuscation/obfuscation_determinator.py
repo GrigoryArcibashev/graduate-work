@@ -92,7 +92,9 @@ def simple_main():
 
 def main():
     var_searcher = VariableSearcher(TokenExtractor())
-    processor = NameProcessor([var_searcher, ], WordExtractor())
+    func_searcher = FunctionSearcher(TokenExtractor())
+    class_searcher = ClassSearcher(TokenExtractor())
+    processor = NameProcessor([var_searcher, func_searcher, class_searcher], WordExtractor())
     checker = ObfuscationDeterminator(
         name_processor=processor,
         searcher_by_levenshtein_metric=SearcherByLevenshteinMetric(
@@ -101,8 +103,8 @@ def main():
             )
         )
     )
-    # text = read_file('../../source/obf/obf_js.txt')
-    text = input().encode()
+    text = read_file('../../source/x.txt')
+    # text = input().encode()
     is_obf_text = checker.determinate(text)
     print(f"VERDICT: {'OBF' if is_obf_text else 'NO OBF'}")
 
