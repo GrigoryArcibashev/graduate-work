@@ -5,9 +5,9 @@ from src.main.app.file_reader import read_file
 
 
 class DangerLevel(Enum):
-    DANGEROUS = 0
-    SUSPICIOUS = 1
-    PAY_ATTENTION = 2
+    DANGEROUS = 'Опасно'
+    SUSPICIOUS = 'Подозрительно'
+    PAY_ATTENTION = 'Обратить внимание'
 
 
 class Language(Enum):
@@ -17,6 +17,17 @@ class Language(Enum):
     PYTHON = 3
     RUBY = 4
     C_SHARP = 5
+
+
+class Type(Enum):
+    GENERAL = 'Подозрительная лексема'
+    COMMAND = 'Команды bash/cmd'
+    ENCRYPT = '[Де]шифрование'
+    EXECUTION = 'Вычисление переданного выражения'
+    FILES = 'Взаимодействие с файлами'
+    IMPORT = 'Подключение внешних скриптов/библиотек'
+    NET = 'Загрузка/отправка файлов по сети'
+    OS = 'Взаимодействие с функциями ОС'
 
 
 PATTERNS = {
@@ -147,7 +158,7 @@ PATTERNS = {
             re.compile(br'\W(Create(?:Subd|D)irectory|SymbolicLink)\s*\('),
             re.compile(br'\W(Enumerate(?:File(?:System(?:Infos)?|s)|Directories))\s*\('),
             re.compile(
-                br'\W(Get(?:Drives|File(?:SystemEntries|s|)|(?:Current)?Directory|Directories))\s*\('
+                br'\W(Get(?:Drives|File(?:SystemEntries|s|Name|)|(?:Current)?Directory(?:Name)?|Directories))\s*\('
             ),
             re.compile(br'\W(Open(?:Read|Text|Write))\s*\('),
             re.compile(br'\W((?:Read|Write)All(?:Lines|Bytes|Text)(?:Async)?)\s*\('),
@@ -181,4 +192,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    for type_ in Type:
+        print(f'{type_.name}: {type_.value}')
