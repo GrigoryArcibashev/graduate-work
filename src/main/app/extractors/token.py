@@ -16,13 +16,13 @@ class Token:
     def __hash__(self):
         return hash((self.__value, self.__type))
 
-    def __len__(self):
-        return len(self.value)
-
     def __eq__(self, other):
         if not isinstance(other, Token):
             raise TypeError(f'Operand type: expected {type(self)}, but actual is {type(other)}')
         return self.value == other.value and self.type == other.type
+
+    def __len__(self):
+        return len(self.value)
 
     def __str__(self):
         return f'type = {self.type}, val = {self.value} ({repr(self._numbers_of_bytes_to_str(self.value))})'

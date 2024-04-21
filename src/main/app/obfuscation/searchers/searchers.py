@@ -17,7 +17,7 @@ class AbstractSearcher:
     def patterns(self) -> tuple[Pattern]:
         pass
 
-    def get_name_iter(self, text) -> Iterator[Name]:
+    def get_name_iter(self, text: bytes) -> Iterator[Name]:
         names = set()
         for pattern in self.patterns:
             found = pattern.findall(text)

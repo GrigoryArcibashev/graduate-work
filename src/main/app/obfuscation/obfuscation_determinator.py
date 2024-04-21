@@ -24,7 +24,7 @@ class ObfuscationDeterminator:
     def _clear_words(self) -> None:
         self._words.clear()
 
-    def determinate(self, text) -> bool:
+    def determinate(self, text: bytes) -> bool:
         self._clear_words()
         count = obf_count = 0
         for name_info in self._name_processor.get_next_name_info(text):
