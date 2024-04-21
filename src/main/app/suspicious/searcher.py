@@ -21,10 +21,10 @@ class Language(Enum):
 
 PATTERNS = {
     Language.GENERAL: {  # TODO команды cmd bash
-        DangerLevel.DANGEROUS: (
+        DangerLevel.SUSPICIOUS: (
             re.compile(br'\W([\"\']cmd(?:\.exe)?[\"\'])\W', re.IGNORECASE),
             re.compile(br'\W([\"\']/bin/sh[\"\'])\W', re.IGNORECASE),
-            re.compile(br'(webshell)', re.IGNORECASE),
+            re.compile(br'((?:web)?shell(?:exec)?)', re.IGNORECASE),
         ),
         DangerLevel.PAY_ATTENTION: (
             re.compile(br'[_\W](base_?(?:16|32|64|85))', re.IGNORECASE),
@@ -33,11 +33,11 @@ PATTERNS = {
     },
     Language.PHP: {
         DangerLevel.DANGEROUS: (
-            re.compile(br'[^\w\'\"](eval)\s*[\'\"\w(]'),
+            re.compile(br'[^\w\'\"]([Ee]val)(?:\s+[\'\"\w]|\s*\()'),
 
             re.compile(br'\W(passthru)\s*\('),
             re.compile(br'\W(proc_open)\s*\('),
-            re.compile(br'[^\w\'\"](system)\s*[\'\"\w(]'),
+            re.compile(br'[^\w\'\"](system)(?:\s+[\'\"\w]|\s*\()'),
         ),
         DangerLevel.SUSPICIOUS: (
             re.compile(br'\W(include(?:_once)?\s*\(.+?\))'),
@@ -79,7 +79,7 @@ PATTERNS = {
             re.compile(br'\W(document\s*\.\s*write)\s*\('),
             re.compile(br'\W(innerHTML)\s*\('),
 
-            re.compile(br'[^\w\'\"]((?:shell_|pcntl_)?exec(?:File|[vl]p?e?|)(?:Sync|))\s*[\'\"\w(]'),
+            re.compile(br'[^\w\'\"]((?:shell_|pcntl_)?exec(?:File|[vl]p?e?|)(?:Sync|))(?:\s+[\'\"\w]|\s*\()'),
         ),
         DangerLevel.SUSPICIOUS: (
             re.compile(br'\W(atob)\s*\('),
@@ -129,6 +129,32 @@ PATTERNS = {
             re.compile(br'\W(Net\s*::\s*HTTP\s*\.\s*get(?:_response)?\s*\(.+\))'),
             re.compile(br'\W(http\s*\.\s*request(?:_get)?\s*\(.+\))'),
             re.compile(br'\W((?:popen|capture)(?:3|2e?))\s*\('),
+        )
+    },
+    Language.C_SHARP: {
+        DangerLevel.SUSPICIOUS: (
+            re.compile(br'\W(FileStream)\W'),
+            re.compile(br'\W(ICodeCompiler)\W'),
+            re.compile(br'\W(CodeDom\.Compiler[.;])\W'),
+            re.compile(br'\W(CodeAnalysis\.(?:CSharp\.)?Scripting[.;])\W'),
+            re.compile(br'\W(CSharpScript\.(?:Run|Evaluate)Async)\W'),
+
+            re.compile(br'\W(Download(?:Data|File|String)(?:(?:Task)?Async)?)\s*\('),
+            re.compile(br'\W(FileMode\s*.\s*OpenOrCreate)\W'),
+
+            re.compile(br'\W(DriveInfo)\W'),
+            re.compile(br'\W(DirectoryInfo)\W'),
+            re.compile(br'\W(Create(?:Subd|D)irectory|SymbolicLink)\s*\('),
+            re.compile(br'\W(Enumerate(?:File(?:System(?:Infos)?|s)|Directories))\s*\('),
+            re.compile(
+                br'\W(Get(?:Drives|File(?:SystemEntries|s|)|(?:Current)?Directory|Directories))\s*\('
+            ),
+            re.compile(br'\W(Open(?:Read|Text|Write))\s*\('),
+            re.compile(br'\W((?:Read|Write)All(?:Lines|Bytes|Text)(?:Async)?)\s*\('),
+            re.compile(br'\W(ReadLines(?:Async)?)\s*\('),
+
+            re.compile(br'\W((?:From|To)Base64(?:Transform|String|CharArray))\W'),
+            re.compile(br'\W(SoapHexBinary)\W'),
         )
     }
 }
