@@ -72,13 +72,3 @@ class EncryptionDeterminatorByEntropy:
                 or entropy >= self._conditional_lower_bound_of_entropy
                 and entropy_above_border >= self._percent_of_entropy_vals_for_window
         )
-
-
-def main():
-    det = EncryptionDeterminatorByHEX()
-    string = br'\xfe \xff 0xFF 0xFF 0xFF'
-    print(det.determinate(string))
-
-
-if __name__ == '__main__':
-    main()
