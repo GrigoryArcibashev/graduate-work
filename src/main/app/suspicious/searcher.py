@@ -78,16 +78,14 @@ class SuspySearcher:
                 SuspiciousType.GENERAL: {},
                 SuspiciousType.COMMAND: {
                     re.compile(
-                        br'\W([\"\']\s*'
-                        + br'(?:CMD(?:\.EXE)?|(?:CH|MK|RM)?DIR|[CMR]D|DEL|ERASE|FORMAT|MO[VR]E|OPENFILES|'
-                        + br'PATH|PUSHD|REPLACE|ROBOCOPY|SET|TASK(?:LIST|KILL)|TREE|TYPE|IPCONFIG)'
-                        + br'[ \w\'\"!.:/<>|\-\\]*[\"\'])\W',
-                        re.IGNORECASE
-                    ),
-                    re.compile(
-                        br'\W([\"\']\s*'
-                        + br'(awk|cat|cp|grep|head|kill|ln|ls|mv|nc|ps|pwd|rm|tail|touch)'
-                        + br'[ \w\'\"!.:/<>|\-\\]*[\"\'])\W',
+                        br'\W([\"\'] *'
+                        + br'(?:cmd(?:\.exe)?|(?:ch|mk|rm)?dir|[cmr]d|'
+                        + br'del|erase|format|mo[vr]e|openfiles|path|'
+                        + br'pushd|replace|robocopy|set|task(?:list|kill)|'
+                        + br'tree|type|ipconfig|arp|awk|cat|cp|grep|head|'
+                        + br'kill|find|locate|ln|ls|mv|nc|net(?:stat)?|'
+                        + br'ps|pwd|rm|tail|touch)'
+                        + br'[ \w\'\"*!.:/<>|\-\\]*[\"\'])\W',
                         re.IGNORECASE
                     ),
                 },
