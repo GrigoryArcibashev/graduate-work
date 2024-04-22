@@ -76,7 +76,21 @@ class SuspySearcher:
             },
             DangerLevel.SUSPICIOUS: {
                 SuspiciousType.GENERAL: {},
-                SuspiciousType.COMMAND: {},
+                SuspiciousType.COMMAND: {
+                    re.compile(
+                        br'\W([\"\']\s*'
+                        + br'(?:CMD(?:\.EXE)?|(?:CH|MK|RM)?DIR|[CMR]D|DEL|ERASE|FORMAT|MO[VR]E|OPENFILES|'
+                        + br'PATH|PUSHD|REPLACE|ROBOCOPY|SET|TASK(?:LIST|KILL)|TREE|TYPE|IPCONFIG)'
+                        + br'[ \w\'\"!.:/<>|\-\\]*[\"\'])\W',
+                        re.IGNORECASE
+                    ),
+                    re.compile(
+                        br'\W([\"\']\s*'
+                        + br'(awk|cat|cp|grep|head|kill|ln|ls|mv|nc|ps|pwd|rm|tail|touch)'
+                        + br'[ \w\'\"!.:/<>|\-\\]*[\"\'])\W',
+                        re.IGNORECASE
+                    ),
+                },
                 SuspiciousType.ENCRYPT: {},
                 SuspiciousType.EXECUTION: {},
                 SuspiciousType.FILES: {},
@@ -108,11 +122,9 @@ class SuspySearcher:
         pass
 
 
-# TODO команды cmd bash
 PATTERNS = {
     Language.GENERAL: {
         DangerLevel.SUSPICIOUS: (
-            re.compile(br'\W([\"\']cmd(?:\.exe)?[\"\'])\W', re.IGNORECASE),
             re.compile(br'\W([\"\']/bin/sh[\"\'])\W', re.IGNORECASE),
             re.compile(br'((?:web)?shell(?:exec)?)', re.IGNORECASE),
         ),
