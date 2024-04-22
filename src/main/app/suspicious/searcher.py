@@ -1,64 +1,9 @@
 import re
-from enum import Enum
 from typing import Iterator
 
 from src.main.app.file_reader import read_file
-
-
-class DangerLevel(Enum):
-    DANGEROUS = 0
-    SUSPICIOUS = 1
-    PAY_ATTENTION = 2
-
-
-class Language(Enum):
-    GENERAL = 0,
-    PHP = 1,
-    JS = 2
-    PYTHON = 3
-    RUBY = 4
-    C_SHARP = 5
-
-
-class SuspiciousType(Enum):
-    GENERAL = 'Подозрительная лексема'
-    COMMAND = 'Команды bash/cmd'
-    ENCRYPT = '[Де]шифрование'
-    EXECUTION = 'Вычисление переданного выражения'
-    FILES = 'Взаимодействие с файлами'
-    IMPORT = 'Подключение внешних скриптов/библиотек'
-    NET = 'Загрузка/отправка файлов по сети'
-    OS = 'Взаимодействие с функциями ОС'
-
-
-class SuspiciousCode:
-    def __init__(self, code: bytes, danger_lvl: DangerLevel, code_type: SuspiciousType):
-        self.__code = code
-        self.__lvl = danger_lvl
-        self.__type = code_type
-
-    @property
-    def code(self) -> bytes:
-        return self.__code
-
-    @property
-    def type(self) -> SuspiciousType:
-        return self.__type
-
-    @property
-    def danger_lvl(self) -> DangerLevel:
-        return self.__lvl
-
-    def __hash__(self):
-        return hash((self.__code, self.__type, self.__lvl))
-
-    def __eq__(self, other):
-        if not isinstance(other, SuspiciousCode):
-            raise TypeError(f'Operand type: expected {type(self)}, but actual is {type(other)}')
-        return self.code == other.code and self.type == other.type and self.danger_lvl == other.danger_lvl
-
-    def __str__(self):
-        return f'{self.danger_lvl} => {self.type} => {self.code}'
+from src.main.app.suspicious.enums import DangerLevel, SuspiciousType
+from src.main.app.suspicious.suspicious_code import SuspiciousCode
 
 
 class PatternContainer:
@@ -220,8 +165,8 @@ class SuspySearcher:
 
 
 def main():
-    # text = read_file('../../source/x.txt')
-    text = input().encode()
+    text = read_file('../../source/x.txt')
+    # text = input().encode()
     searched = SuspySearcher().search(text)
     for sr in searched:
         print(sr)
