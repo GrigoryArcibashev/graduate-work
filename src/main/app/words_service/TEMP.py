@@ -88,6 +88,3 @@ def read_as_bytes(path):
 if __name__ == '__main__':
     sort_and_stat_words(read_as_text('words.txt'), 'words.txt')
     make_and_write_words_by_len(read_as_bytes('words.txt'), 'words_by_len.bin')
-    with open('words_by_len.bin', 'rb') as f:
-        res = pickle.load(f)
-        print(*res[14])

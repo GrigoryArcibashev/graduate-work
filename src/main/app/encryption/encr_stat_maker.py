@@ -17,9 +17,11 @@ def make_entropy_for_encr():
     ef = EncryptionFilter(WordProvider(SimpleWordLoader('../words_service/words_by_len.bin')))
 
     encr_files, no_encr_files = get_files_for_stat()
+    total_count = len(encr_files) + len(no_encr_files)
+    cur_count = 0
 
     file_stat = open('../../source/encr_stat.txt', 'w')
-    print('НАЧАЛО СКАНИРОВАНИЯ\n')
+    print(f'СКАНИРОВАНИЕ и СОХРАНЕНИЕ РЕЗ-ТОВ: {round(100 * cur_count / total_count)}%', end='')
     for filename in no_encr_files:
         cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
         write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)
@@ -27,6 +29,8 @@ def make_entropy_for_encr():
             fp += 1
         else:
             tn += 1
+        cur_count += 1
+        print(f'\rСКАНИРОВАНИЕ и СОХРАНЕНИЕ РЕЗ-ТОВ: {round(100 * cur_count / total_count)}%', end='')
     for filename in encr_files:
         cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
         write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)
@@ -34,14 +38,21 @@ def make_entropy_for_encr():
             tp += 1
         else:
             fn += 1
+        cur_count += 1
+        print(f'\rСКАНИРОВАНИЕ и СОХРАНЕНИЕ РЕЗ-ТОВ: {round(100 * cur_count / total_count)}%', end='')
+    print()
+
     precision, recall, f_score = calc_metrics(fn, fp, tp)
     write_metrics(f_score, file_stat, fn, fp, precision, recall, tn, tp)
     file_stat.close()
 
-    print(f'TP {tp}\nTN {tn}\nFP {fp}\nFN {fn}')
+    print(f'Вер. срабатывание: {tp}  (TP)')
+    print(f'Вер. пропуск:      {tn} (TN)')
+    print(f'Лож. срабатывание: {fp} (FP)')
+    print(f'Лож. пропуск:      {fn} (FN)')
     print(f'Точность = {round(100 * precision)}%')
-    print(f'Полнота = {round(100 * recall)}%')
-    print(f'F-score = {round(100 * f_score)}%')
+    print(f'Полнота =  {round(100 * recall)}%')
+    print(f'F-score =  {round(100 * f_score)}%')
 
 
 def get_files_for_stat():

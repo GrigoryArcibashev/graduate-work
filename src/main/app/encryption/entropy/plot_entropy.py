@@ -38,8 +38,8 @@ def _get_savgol_filter_params(entropies_len: int):
 
 
 def main():
-    text = read_file(f'../../../source/x.txt')
-    # text = input().encode()
+    # text = read_file(f'../../../source/x.txt')
+    text = input().encode()
     data = list(text)
     len_before = len(data)
 

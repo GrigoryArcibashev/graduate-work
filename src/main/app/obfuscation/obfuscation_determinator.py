@@ -70,26 +70,6 @@ class ObfuscationDeterminator:
         return round(0.35 * len(word))
 
 
-def simple_main():
-    var_searcher = VariableSearcher(TokenExtractor())
-    func_searcher = FunctionSearcher(TokenExtractor())
-    class_searcher = ClassSearcher(TokenExtractor())
-    processor = NameProcessor([var_searcher, func_searcher, class_searcher], WordExtractor())
-    checker = ObfuscationDeterminator(
-        name_processor=processor,
-        searcher_by_levenshtein_metric=SearcherByLevenshteinMetric(
-            WordProvider(
-                SimpleWordLoader('../words_service/words_by_len.bin')
-            )
-        )
-    )
-    str_words = ['aabcxec', 'uuebfuea', 'iioavyanev']
-    words = []
-    for word in str_words:
-        words.append(Word(list(map(ord, list(word)))))
-    print(checker.is_obfuscated(NameInfo(words, 0, 0)))
-
-
 def main():
     var_searcher = VariableSearcher(TokenExtractor())
     func_searcher = FunctionSearcher(TokenExtractor())
@@ -103,8 +83,8 @@ def main():
             )
         )
     )
-    text = read_file('../../source/x.txt')
-    # text = input().encode()
+    # text = read_file('../../source/x.txt')
+    text = input().encode()
     is_obf_text = checker.determinate(text)
     print(f"VERDICT: {'OBF' if is_obf_text else 'NO OBF'}")
 
