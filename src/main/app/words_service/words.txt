@@ -2925,6 +2925,7 @@ getsizeof
 getstream
 graphical
 groupname
+gzinflate
 handshake
 hasheader
 hexdecode
