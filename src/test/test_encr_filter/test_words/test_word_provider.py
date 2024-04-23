@@ -2,7 +2,7 @@ import unittest
 
 from src.main.app.words_service.word_provider import WordProvider
 from src.test.test_encr_filter.test_words.util import *
-from src.main.app.words_service import SimpleWordLoader
+from src.main.app.words_service.word_loader import SimpleWordLoader
 
 
 class Test(unittest.TestCase):

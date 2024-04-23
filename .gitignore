@@ -168,3 +168,4 @@ Notes.docx
 /src/main/app/words_service/_word_update.py
 /src/main/app/words_service/raw_words.txt
 /src/main/app/words_service/words2.txt
+/src/test/test_encr_filter/test_words/words_service.txt
