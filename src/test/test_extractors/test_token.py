@@ -5,14 +5,14 @@ from src.main.app.extractors.token import Token, TokenType
 
 
 class TestToken(unittest.TestCase):
-    def test_equal_same_values_and_types(self):
+    def test_equal_when_same_vals_and_types(self):
         val = [1, 2, 3]
         for type_ in TokenType:
             t1 = Token(val, type_)
             t2 = Token(val, type_)
             self.assertEqual(t1, t2)
 
-    def test_equal_different_values_and_same_type(self):
+    def test_not_equal_when_different_vals_and_same_types(self):
         val1 = [1, 2, 3]
         val2 = [1, 2]
         for type_ in TokenType:
@@ -20,7 +20,7 @@ class TestToken(unittest.TestCase):
             t2 = Token(val2, type_)
             self.assertNotEqual(t1, t2)
 
-    def test_equal_different_type_and_same_values(self):
+    def test_not_equal_when_different_types_and_same_vals(self):
         val = [1, 2, 3]
         types = [t for t in TokenType]
         for type1, type2 in list(combinations(types, 2)):
