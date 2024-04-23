@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Iterable
 
 
 class TokenType(Enum):
@@ -9,7 +10,11 @@ class TokenType(Enum):
 
 
 class Token:
-    def __init__(self, value, token_type: TokenType):
+    """
+    Единица информации о последовательности символов
+    """
+
+    def __init__(self, value: Iterable[int], token_type: TokenType):
         self.__value = tuple(value)
         self.__type = token_type
 
@@ -31,7 +36,7 @@ class Token:
         return f'\'{self.__str__()}\''
 
     @property
-    def value(self) -> tuple:
+    def value(self) -> tuple[int]:
         return self.__value
 
     @property
