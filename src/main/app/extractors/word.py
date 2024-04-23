@@ -1,5 +1,8 @@
+from typing import Iterable
+
+
 class Word:
-    def __init__(self, value):
+    def __init__(self, value: Iterable):
         self.__value = tuple(value)
 
     def __str__(self):

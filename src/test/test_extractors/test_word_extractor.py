@@ -4,7 +4,7 @@ from src.main.app.extractors.word import Word
 from src.main.app.extractors.word_extractor import WordExtractor
 
 
-class Test(unittest.TestCase):
+class TestWordExtractor(unittest.TestCase):
     def setUp(self) -> None:
         self._extractor = WordExtractor()
 
@@ -29,54 +29,54 @@ class Test(unittest.TestCase):
     def test_one_letter1(self):
         string = tuple(b'a')
         expected = Word(string)
-        actual = list(self._extractor.get_word_iter(string))
+        actual = list(self._extractor.get_word_iter(string, to_lower=False))
         self.assertEqual(expected, *actual)
 
     def test_one_letter2(self):
         string = tuple(b'A')
         expected = Word(string)
-        actual = list(self._extractor.get_word_iter(string))
+        actual = list(self._extractor.get_word_iter(string, to_lower=False))
         self.assertEqual(expected, *actual)
 
     def test_camel_case1(self):
         string = tuple(b'first')
         expected = Word(string)
-        actual = list(self._extractor.get_word_iter(string))
+        actual = list(self._extractor.get_word_iter(string, to_lower=False))
         self.assertEqual(expected, *actual)
 
     def test_camel_case2(self):
-        string = b'firstSecond'
-        expected = list(map(self._map_str_to_numbers, ['first', 'Second']))
-        actual = list(self._extractor.get_word_iter(string))
+        string = tuple(b'firstSecond')
+        expected = list(map(self._map_str_to_word, ['first', 'Second']))
+        actual = list(self._extractor.get_word_iter(string, to_lower=False))
         self.assertEqual(expected, actual)
 
     def test_pascal_case1(self):
-        string = b'First'
-        expected = self._map_str_to_numbers('First')
-        actual = list(self._extractor.get_word_iter(string))
+        string = tuple(b'First')
+        expected = self._map_str_to_word('First')
+        actual = list(self._extractor.get_word_iter(string, to_lower=False))
         self.assertEqual(expected, *actual)
 
     def test_pascal_case2(self):
-        string = b'FirstSecond'
-        expected = list(map(self._map_str_to_numbers, ['First', 'Second']))
-        actual = list(self._extractor.get_word_iter(string))
+        string = tuple(b'FirstSecond')
+        expected = list(map(self._map_str_to_word, ['First', 'Second']))
+        actual = list(self._extractor.get_word_iter(string, to_lower=False))
         self.assertEqual(expected, actual)
 
     def test_one_upper_word(self):
-        string = b'FIRST'
-        expected = self._map_str_to_numbers('FIRST')
-        actual = list(self._extractor.get_word_iter(string))
+        string = tuple(b'FIRST')
+        expected = self._map_str_to_word('FIRST')
+        actual = list(self._extractor.get_word_iter(string, to_lower=False))
         self.assertEqual(expected, *actual)
 
     def test_small_and_upper_words(self):
-        string = b'firstSECOND'
-        expected = list(map(self._map_str_to_numbers, ['first', 'SECOND']))
-        actual = list(self._extractor.get_word_iter(string))
+        string = tuple(b'firstSECOND')
+        expected = list(map(self._map_str_to_word, ['first', 'SECOND']))
+        actual = list(self._extractor.get_word_iter(string, to_lower=False))
         self.assertEqual(expected, actual)
 
     @staticmethod
-    def _map_str_to_numbers(string: str) -> list[int]:
-        return list(map(ord, string))
+    def _map_str_to_word(string: str) -> Word:
+        return Word(list(map(ord, string)))
 
 
 if __name__ == '__main__':
