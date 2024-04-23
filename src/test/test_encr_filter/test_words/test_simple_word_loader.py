@@ -4,7 +4,7 @@ from src.main.app.words_service.word_loader import SimpleWordLoader
 from src.test.test_encr_filter.test_words.util import *
 
 
-class SimpleWordLoaderTest(unittest.TestCase):
+class TestSimpleWordLoader(unittest.TestCase):
     def setUp(self) -> None:
         self._path = 'words_service.txt'
 
