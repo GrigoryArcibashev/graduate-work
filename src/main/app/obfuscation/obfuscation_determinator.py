@@ -83,12 +83,11 @@ def main():
             )
         )
     )
-    # text = read_file('../../source/x.txt')
-    text = input().encode()
+    text = read_file('../../source/x.txt')
+    # text = input().encode()
     is_obf_text = checker.determinate(text)
     print(f"VERDICT: {'OBF' if is_obf_text else 'NO OBF'}")
 
 
 if __name__ == '__main__':
-    # simple_main()
     main()

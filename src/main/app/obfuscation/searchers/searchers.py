@@ -5,6 +5,7 @@ from typing import Iterator
 
 from src.main.app.extractors.token import Token, TokenType
 from src.main.app.extractors.token_extractor import TokenExtractor
+from src.main.app.file_reader import read_file
 from src.main.app.obfuscation.searchers.name import Name
 
 
@@ -140,7 +141,7 @@ class ClassSearcher(AbstractSearcher):
             re.compile(rb'(?:class|interface)\s+(\w+)\s*(?:<[.,<>\w\s]*>)?(?:\s*(?:where .*?)?\s*:.*?)?\s*{'),
 
             # PYTHON
-            re.compile(rb'class +(\w+) *(?:\(.*?\))?:'),
+            re.compile(rb'class +(\w+) *(?:\(.*?\))? *:'),
 
             # PHP and JS (уже есть C#; тут то, что не найдет в C#)
             re.compile(rb'(?:class|trait)\s+(\w+)(?:\s+extends .*?)?\s*{')
@@ -155,9 +156,8 @@ class ClassSearcher(AbstractSearcher):
 
 def main():
     variables = set()
-    # text = b"let var1 = var2 = 12;"
-    text = b"}function findSubstringWithAutomat(_0x445b5,_0x5d4735){"
-    var_searcher = FunctionSearcher(TokenExtractor())
+    text = read_file('../../../source/x.txt')
+    var_searcher = ClassSearcher(TokenExtractor())
     for var in var_searcher.get_name_iter(text):
         print('OLD' if var in variables else 'NEW', end=' VARIABLE\n')
         for name in var.value:

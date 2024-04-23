@@ -47,7 +47,7 @@ class NameProcessor:
             if token.type == TokenType.LETTERS:
                 letters_len += len(token)
                 words.extend(list(self._word_extractor.get_word_iter(token.value)))
-            else:
+            elif token.type == TokenType.DIGITS:
                 digit_len += len(token)
         return NameInfo(words, letters_len, digit_len)
 
@@ -55,7 +55,7 @@ class NameProcessor:
 def main():
     variables = set()
     # text = b"let var1 = var2 = 12;"
-    text = b"const var0 = 'string';\nlet var431 , var_var_2 = 12, 22;"
+    text = b"const var0 = 'string';\nlet var431 , vARf_Var_2 = 12, 22;"
     var_searcher = VariableSearcher(TokenExtractor())
     processor = NameProcessor([var_searcher, ], WordExtractor())
     for var in var_searcher.get_name_iter(text):

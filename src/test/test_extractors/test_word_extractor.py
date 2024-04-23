@@ -1,5 +1,6 @@
 import unittest
 
+from src.main.app.extractors.word import Word
 from src.main.app.extractors.word_extractor import WordExtractor
 
 
@@ -19,27 +20,27 @@ class Test(unittest.TestCase):
 
         to_ord = lambda _str: list(map(lambda sym: ord(sym) if sym else sym, _str))
         for string in strings_false:
-            actual = self._extractor.is_new_lexeme(*to_ord(string))
+            actual = self._extractor.is_new_word(*to_ord(string))
             self.assertEqual(actual, False)
         for string in strings_true:
-            actual = self._extractor.is_new_lexeme(*to_ord(string))
+            actual = self._extractor.is_new_word(*to_ord(string))
             self.assertEqual(actual, True)
 
     def test_one_letter1(self):
-        string = b'a'
-        expected = self._map_str_to_numbers('a')
+        string = tuple(b'a')
+        expected = Word(string)
         actual = list(self._extractor.get_word_iter(string))
         self.assertEqual(expected, *actual)
 
     def test_one_letter2(self):
-        string = b'A'
-        expected = self._map_str_to_numbers('A')
+        string = tuple(b'A')
+        expected = Word(string)
         actual = list(self._extractor.get_word_iter(string))
         self.assertEqual(expected, *actual)
 
     def test_camel_case1(self):
-        string = b'first'
-        expected = self._map_str_to_numbers('first')
+        string = tuple(b'first')
+        expected = Word(string)
         actual = list(self._extractor.get_word_iter(string))
         self.assertEqual(expected, *actual)
 

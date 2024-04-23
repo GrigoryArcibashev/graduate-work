@@ -21,7 +21,7 @@ def make_entropy_for_encr():
     cur_count = 0
 
     file_stat = open('../../source/encr_stat.txt', 'w')
-    print(f'СКАНИРОВАНИЕ и СОХРАНЕНИЕ РЕЗ-ТОВ: {round(100 * cur_count / total_count)}%', end='')
+    print(f'СКАНИРОВАНИЕ и ЗАПИСЬ: {round(100 * cur_count / total_count)}%', end='')
     for filename in no_encr_files:
         cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
         write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)
@@ -30,7 +30,7 @@ def make_entropy_for_encr():
         else:
             tn += 1
         cur_count += 1
-        print(f'\rСКАНИРОВАНИЕ и СОХРАНЕНИЕ РЕЗ-ТОВ: {round(100 * cur_count / total_count)}%', end='')
+        print(f'\rСКАНИРОВАНИЕ и ЗАПИСЬ: {round(100 * cur_count / total_count)}%', end='')
     for filename in encr_files:
         cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
         write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)
@@ -39,7 +39,7 @@ def make_entropy_for_encr():
         else:
             fn += 1
         cur_count += 1
-        print(f'\rСКАНИРОВАНИЕ и СОХРАНЕНИЕ РЕЗ-ТОВ: {round(100 * cur_count / total_count)}%', end='')
+        print(f'\rСКАНИРОВАНИЕ и ЗАПИСЬ: {round(100 * cur_count / total_count)}%', end='')
     print()
 
     precision, recall, f_score = calc_metrics(fn, fp, tp)
