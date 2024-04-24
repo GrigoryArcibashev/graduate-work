@@ -3,7 +3,7 @@ import unittest
 from src.main.app.extractors.token_extractor import TokenExtractor, Token, TokenType
 
 
-class Test(unittest.TestCase):
+class TestTokenExtractor(unittest.TestCase):
     def setUp(self) -> None:
         self._extractor = TokenExtractor()
 
