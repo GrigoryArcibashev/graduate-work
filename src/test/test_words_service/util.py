@@ -1,8 +1,32 @@
-def write_test_words(words: list[str], path: str) -> None:
-    with open(path, 'w') as f:
+import pickle
+
+from src.main.app.extractors.word import Word
+
+
+def write_word_dict(word_dict: dict[int, set[Word]], path_to_write: str):
+    with open(path_to_write, 'wb') as f:
+        pickle.dump(word_dict, f)
+
+
+class WordMakerForTests:
+    """Создает словарь слов ( dict[len] = {Words} )"""
+
+    def make(self, words: list[str]) -> dict[int, set[Word]]:
+        return self._make_word_dict(self._make_words(words))
+
+    @staticmethod
+    def _map_to_number(word: str) -> tuple[int]:
+        return tuple(map(ord, word))
+
+    def _make_words(self, words: list[str]) -> list[Word]:
+        return list(map(lambda word: Word(self._map_to_number(word)), words))
+
+    @staticmethod
+    def _make_word_dict(words: list[Word]) -> dict[int, set[Word]]:
+        result = dict()
         for word in words:
-            f.write(f'{word}\n')
-
-
-def map_str_to_numbers(string: str) -> tuple[int]:
-    return tuple(map(ord, string))
+            length = len(word)
+            if length not in result:
+                result[length] = set()
+            result[length].add(word)
+        return result
