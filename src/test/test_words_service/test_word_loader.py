@@ -26,11 +26,11 @@ class TestWordLoader(unittest.TestCase):
 
 class TestSimpleWordLoader(unittest.TestCase):
     def setUp(self) -> None:
-        paths = [
+        _paths = [
             pathlib.Path('source/words_by_len.bin').absolute(),
             pathlib.Path('../source/words_by_len.bin').absolute(),
         ]
-        self._path = str(list(filter(lambda p: p.exists(), paths))[0])
+        self._path = str(list(filter(lambda p: p.exists(), _paths))[0])
 
     def test_load(self):
         writer = WordMakerForTests()

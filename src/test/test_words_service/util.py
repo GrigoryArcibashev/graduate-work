@@ -1,4 +1,3 @@
-import os.path
 import pathlib
 import pickle
 
@@ -14,7 +13,6 @@ class WordMakerForTests:
     """Создает словарь слов ( dict[len] = {Words} )"""
 
     def make(self, words: list[str]) -> dict[int, set[Word]]:
-        self.getcwd = os.getcwd()
         return self._make_word_dict(self._make_words(words))
 
     @staticmethod
