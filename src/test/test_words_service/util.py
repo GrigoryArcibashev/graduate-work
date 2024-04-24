@@ -14,6 +14,7 @@ class WordMakerForTests:
     """Создает словарь слов ( dict[len] = {Words} )"""
 
     def make(self, words: list[str]) -> dict[int, set[Word]]:
+        self.getcwd = os.getcwd()
         return self._make_word_dict(self._make_words(words))
 
     @staticmethod
@@ -34,6 +35,10 @@ class WordMakerForTests:
         return result
 
 
-# if __name__ == '__main__':
-#     path = pathlib.Path('test/source/words_by_len.bin').absolute()
-#     print(os.path.exists(path))
+if __name__ == '__main__':
+    paths = [
+        pathlib.Path('source/words_by_len.bin').absolute(),
+        pathlib.Path('../source/words_by_len.bin').absolute(),
+    ]
+    path = list(filter(lambda p: p.exists(), paths))[0]
+    print(path)

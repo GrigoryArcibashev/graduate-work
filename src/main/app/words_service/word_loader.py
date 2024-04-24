@@ -4,7 +4,7 @@ from src.main.app.extractors.word import Word
 from src.main.app.file_reader import read_file_by_pickle
 
 
-class WordLoader:
+class AbstractWordLoader:
     """Загружает словарь слов в память"""
 
     def __init__(self, path: str = None):
@@ -35,9 +35,9 @@ class WordLoader:
 
         :return: загруженный словарь
         """
-        pass
+        raise NotImplementedError()
 
 
-class SimpleWordLoader(WordLoader):
+class SimpleWordLoader(AbstractWordLoader):
     def load(self) -> dict[int, set[Word]]:
         return read_file_by_pickle(self.path)
