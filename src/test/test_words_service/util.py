@@ -1,3 +1,5 @@
+import os.path
+import pathlib
 import pickle
 
 from src.main.app.extractors.word import Word
@@ -30,3 +32,8 @@ class WordMakerForTests:
                 result[length] = set()
             result[length].add(word)
         return result
+
+
+# if __name__ == '__main__':
+#     path = pathlib.Path('test/source/words_by_len.bin').absolute()
+#     print(os.path.exists(path))
