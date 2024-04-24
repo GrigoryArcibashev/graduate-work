@@ -162,11 +162,6 @@ cython_debug/
 src/main/source/
 Notes.docx
 /~$Notes.docx
-/src/test/words.txt
-/src/test/test_encr_filter/test_words/words.txt
-/src/test/test_encr_filter/words.txt
 /src/main/app/words_service/_word_update.py
 /src/main/app/words_service/raw_words.txt
 /src/main/app/words_service/words2.txt
-/src/test/test_encr_filter/test_words/words_service.txt
-/src/test/words_service.txt
