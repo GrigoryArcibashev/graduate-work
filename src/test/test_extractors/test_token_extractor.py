@@ -9,39 +9,37 @@ class TestTokenExtractor(unittest.TestCase):
 
     def test_simplest_letters(self):
         string = b'first'
-        expected = self._make_tokens_by_mapping_from_str_values([Token('first', TokenType.LETTERS)])
+        expected = self._make_valid_tokens([Token('first', TokenType.LETTERS)])
         actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_simplest_digits(self):
         string = b'1234'
-        expected = self._make_tokens_by_mapping_from_str_values([Token('1234', TokenType.DIGITS)])
+        expected = self._make_valid_tokens([Token('1234', TokenType.DIGITS)])
         actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_simplest_other(self):
         string = b'*!$'
-        expected = self._make_tokens_by_mapping_from_str_values(
+        expected = self._make_valid_tokens(
             [
                 Token('*', TokenType.OTHER),
                 Token('!', TokenType.OTHER),
                 Token('$', TokenType.OTHER)
             ]
         )
-        for i in self._extractor.get_token_iter(string):
-            print(i)
         actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_camel_case(self):
         string = b'firstSecondThird'
-        expected = self._make_tokens_by_mapping_from_str_values([Token('firstSecondThird', TokenType.LETTERS)])
+        expected = self._make_valid_tokens([Token('firstSecondThird', TokenType.LETTERS)])
         actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
     def test_snake_case(self):
         string = b'first_second_Third'
-        expected = self._make_tokens_by_mapping_from_str_values(
+        expected = self._make_valid_tokens(
             [
                 Token('first', TokenType.LETTERS),
                 Token('_', TokenType.UNDERLINING),
@@ -55,7 +53,7 @@ class TestTokenExtractor(unittest.TestCase):
 
     def test_string_with_spaces1(self):
         string = b'first second  3 '
-        expected = self._make_tokens_by_mapping_from_str_values(
+        expected = self._make_valid_tokens(
             [
                 Token('first', TokenType.LETTERS),
                 Token(' ', TokenType.OTHER),
@@ -71,7 +69,7 @@ class TestTokenExtractor(unittest.TestCase):
 
     def test_string_with_spaces2(self):
         string = b'first\nsecond'
-        expected = self._make_tokens_by_mapping_from_str_values(
+        expected = self._make_valid_tokens(
             [
                 Token('first', TokenType.LETTERS),
                 Token('\n', TokenType.OTHER),
@@ -83,7 +81,7 @@ class TestTokenExtractor(unittest.TestCase):
 
     def test_string_with_spaces3(self):
         string = b'\r\nfirst second \n'
-        expected = self._make_tokens_by_mapping_from_str_values(
+        expected = self._make_valid_tokens(
             [
                 Token('\r', TokenType.OTHER),
                 Token('\n', TokenType.OTHER),
@@ -99,7 +97,7 @@ class TestTokenExtractor(unittest.TestCase):
 
     def test_simple1(self):
         string = b'four+5=9'
-        expected = self._make_tokens_by_mapping_from_str_values(
+        expected = self._make_valid_tokens(
             [
                 Token('four', TokenType.LETTERS),
                 Token('+', TokenType.OTHER),
@@ -113,7 +111,7 @@ class TestTokenExtractor(unittest.TestCase):
 
     def test_simple2(self):
         string = b'TwentyOne-6 == 15!'
-        expected = self._make_tokens_by_mapping_from_str_values(
+        expected = self._make_valid_tokens(
             [
                 Token('TwentyOne', TokenType.LETTERS),
                 Token('-', TokenType.OTHER),
@@ -131,7 +129,7 @@ class TestTokenExtractor(unittest.TestCase):
 
     def test_php_variable_assignment(self):
         string = b'$num = 10;'
-        expected = self._make_tokens_by_mapping_from_str_values(
+        expected = self._make_valid_tokens(
             [
                 Token('$', TokenType.OTHER),
                 Token('num', TokenType.LETTERS),
@@ -145,22 +143,12 @@ class TestTokenExtractor(unittest.TestCase):
         actual = list(self._extractor.get_token_iter(string))
         self.assertEqual(actual, expected)
 
-    def _make_tokens_by_mapping_from_str_values(self, tokens: list[Token]) -> list[Token]:
-        return list(map(self._map_str_to_numbers, tokens))
+    def _make_valid_tokens(self, tokens: list[Token]) -> list[Token]:
+        return list(map(self._map_str_tok_val_to_numbers, tokens))
 
     @staticmethod
-    def _map_str_to_numbers(token: Token) -> Token:
-        new_val = list(map(ord, token.value))
-        return Token(new_val, token.type)
-
-    def _print(self, tokens: list[Token]) -> None:
-        print()
-        for token in tokens:
-            print(f'{repr(self._convert_numbers_of_bytes_to_str(token.value))} -> {token.type}')
-
-    @staticmethod
-    def _convert_numbers_of_bytes_to_str(numbers: list[int]) -> str:
-        return ''.join(tuple(map(chr, numbers)))
+    def _map_str_tok_val_to_numbers(token: Token) -> Token:
+        return Token(tuple(map(ord, token.value)), token.type)
 
 
 if __name__ == '__main__':
