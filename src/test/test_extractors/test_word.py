@@ -6,12 +6,16 @@ from src.main.app.extractors.word import Word
 class TestToken(unittest.TestCase):
     def test_equal_same_values(self):
         val = [1, 2, 3]
-        self.assertEqual(Word(val), Word(val))
+        self.assertEqual(True, Word(val) == Word(val))
 
-    def test_equal_different_values(self):
+    def test_not_equal_different_objs(self):
+        with self.assertRaises(TypeError):
+            _raise = Word([]) == list()
+
+    def test_not_equal_different_values(self):
         val1 = [1, 2, 3]
         val2 = [1, 2, 3, 4]
-        self.assertNotEqual(Word(val1), Word(val2))
+        self.assertEqual(False, Word(val1) == Word(val2))
 
     def test_hash(self):
         w1 = Word([1, 2])
@@ -33,6 +37,9 @@ class TestToken(unittest.TestCase):
         ]
         for word in list_:
             self.assertEqual(len(word.value), len(word))
+
+    def test_str(self):
+        str(Word([100, 101, 102]))
 
 
 if __name__ == '__main__':
