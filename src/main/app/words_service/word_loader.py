@@ -1,5 +1,6 @@
 from abc import abstractmethod
 
+from src.main.app.extractors.word import Word
 from src.main.app.file_reader import read_file_by_pickle
 
 
@@ -28,7 +29,7 @@ class WordLoader:
         self._path = new
 
     @abstractmethod
-    def load(self) -> dict[int, set[tuple[int]]]:
+    def load(self) -> dict[int, set[Word]]:
         """
         Загружает словарь слов (по пути path) в память в виде dict[длина слова] = {слова}
 
@@ -38,5 +39,5 @@ class WordLoader:
 
 
 class SimpleWordLoader(WordLoader):
-    def load(self) -> dict[int, set[tuple[int]]]:
+    def load(self) -> dict[int, set[Word]]:
         return read_file_by_pickle(self.path)
