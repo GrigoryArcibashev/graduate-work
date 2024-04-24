@@ -1,4 +1,4 @@
-from src.main.app.words_service.word_provider import WordProvider
+from src.main.app.words_service.word_provider import WordDictService
 from src.main.app.extractors.token import TokenType, Token
 from src.main.app.extractors.token_extractor import TokenExtractor
 from src.main.app.extractors.word_extractor import WordExtractor
@@ -19,8 +19,8 @@ from src.main.app.extractors.word_extractor import WordExtractor
 
 
 class EncryptionFilter:
-    def __init__(self, word_provider: WordProvider):
-        self._word_provider = word_provider
+    def __init__(self, word_dict_service: WordDictService):
+        self._word_dict_service = word_dict_service
         self._token_extractor = TokenExtractor()
         self._word_extractor = WordExtractor()
         self._encryption_boundary = 0.5
@@ -62,7 +62,7 @@ class EncryptionFilter:
     def is_letter_token_encr(self, token):
         good_count = 0
         for word in self._word_extractor.get_word_iter(token.value):
-            if self._word_provider.check_word(word):
+            if self._word_dict_service.check_word(word):
                 good_count += len(word)
         return good_count / len(token) < self._encryption_boundary
 

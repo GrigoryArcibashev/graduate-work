@@ -1,4 +1,4 @@
-from src.main.app.words_service.word_provider import WordProvider
+from src.main.app.words_service.word_provider import WordDictService
 from src.main.app.extractors.word import Word
 
 
@@ -55,18 +55,18 @@ class CalculatorLevenshteinMetric:
 
 
 class SearcherByLevenshteinMetric:
-    def __init__(self, word_provider: WordProvider):
-        self._word_provider = word_provider
+    def __init__(self, word_dict_service: WordDictService):
+        self._word_dict_service = word_dict_service
         self._metric_calculator = CalculatorLevenshteinMetric()
 
     def search(self, word: Word, k: int, first_appropriate: bool = True) -> (Word, int):
-        if self._word_provider.check_word(word):
+        if self._word_dict_service.check_word(word):
             return word, 0
         order = self.get_len_order(len(word), k)
         best_metric = float('+inf')
         best_word = None
         for length in order:
-            dict_words = self._word_provider.get_words_with_len(length)
+            dict_words = self._word_dict_service.get_words_with_len(length)
             for dict_word in dict_words:
                 metric = self._metric_calculator.calculate(word, dict_word)
                 if metric > k:
@@ -82,12 +82,12 @@ class SearcherByLevenshteinMetric:
 
     def get_len_order(self, word_len: int, k: int) -> list[int]:
         if (
-                word_len - k > self._word_provider.get_max_len()
-                or word_len + k < self._word_provider.get_min_len()
+                word_len - k > self._word_dict_service.get_max_len()
+                or word_len + k < self._word_dict_service.get_min_len()
         ):
             return list()
-        left = max(self._word_provider.get_min_len(), word_len - k)
-        right = min(self._word_provider.get_max_len(), word_len + k)
+        left = max(self._word_dict_service.get_min_len(), word_len - k)
+        right = min(self._word_dict_service.get_max_len(), word_len + k)
         return sorted(range(left, right + 1), key=lambda x: abs(word_len - x))
 
 
