@@ -10,7 +10,11 @@ class TestToken(unittest.TestCase):
         for type_ in TokenType:
             t1 = Token(val, type_)
             t2 = Token(val, type_)
-            self.assertEqual(t1, t2)
+            self.assertEqual(True, t1 == t2)
+
+    def test_not_equal_different_objs(self):
+        with self.assertRaises(TypeError):
+            _raise = Token([], TokenType.OTHER) == list()
 
     def test_not_equal_when_different_vals_and_same_types(self):
         val1 = [1, 2, 3]
@@ -18,7 +22,7 @@ class TestToken(unittest.TestCase):
         for type_ in TokenType:
             t1 = Token(val1, type_)
             t2 = Token(val2, type_)
-            self.assertNotEqual(t1, t2)
+            self.assertEqual(False, t1 == t2)
 
     def test_not_equal_when_different_types_and_same_vals(self):
         val = [1, 2, 3]
@@ -26,7 +30,7 @@ class TestToken(unittest.TestCase):
         for type1, type2 in list(combinations(types, 2)):
             t1 = Token(val, type1)
             t2 = Token(val, type2)
-            self.assertNotEqual(t1, t2)
+            self.assertEqual(False, t1 == t2)
 
     def test_hash(self):
         t1 = Token([1, 2], TokenType.DIGITS)
@@ -49,6 +53,12 @@ class TestToken(unittest.TestCase):
         ]
         for token in list_:
             self.assertEqual(len(token.value), len(token))
+
+    def test_str(self):
+        str(Token([100, 101, 102], TokenType.OTHER))
+
+    def test_repr(self):
+        repr(Token([100, 101, 102], TokenType.OTHER))
 
 
 if __name__ == '__main__':
