@@ -1,0 +1,59 @@
+const _ = require('lodash')
+
+Table.removeExpired = function (dataRetention) {
+  return Table.getPartitions()
+    .then((currentPartitions) => Table.repartition(dataRetention, currentPartitions))
+}
+
+Table.getPartitions = function () {
+  return knex('information_schema.partitions')
+    .select(knex.raw('partition_name as name'), knex.raw('partition_description as description')) // description holds the day of partition in mysql days
+    .where('table_schema', dbName)
+    .andWhere('partition_name', 'not in', [ 'start', 'future' ])
+    .then((partitions) => partitions.map((partition) => ({
+      name: partition.name,
+      description: partition.description === 'MAX_VALUE' ? 'MAX_VALUE' : parseInt(partition.description)
+    })))
+}
+
+Table.repartition = function (dataRetention, currentPartitions) {
+  const partitionsThatShouldExist = Table.getPartitionsThatShouldExist(dataRetention, currentPartitions)
+
+  const partitionsToBeCreated = _.differenceWith(partitionsThatShouldExist, currentPartitions, (a, b) => a.description === b.description)
+  const partitionsToBeDropped = _.differenceWith(currentPartitions, partitionsThatShouldExist, (a, b) => a.description === b.description)
+
+  const statement = dedent
+    `${Table.reorganizeFuturePartition(partitionsToBeCreated)}
+    ${Table.dropOldPartitions(partitionsToBeDropped)}`
+
+  return knex.raw(statement)
+}
+Table.getPartitionStrings = function () {
+  const days = _.range(MAX_DATA_RETENTION - 2, -2, -1)
+  const partitions = days.map((day) => {
+    const tomorrow = moment().subtract(day, 'day').format('YYYY-MM-DD')
+    const today = moment().subtract(day + 1, 'day').format(PARTITION_NAME_DATE_FORMAT)
+    return `PARTITION \`from${today}\` VALUES LESS THAN (TO_DAYS('${tomorrow}')),`
+  })
+  return partitions.join('\n')
+}
+Table.getPartitionsThatShouldExist = function (dataRetention, currentPartitions) {
+  const days = _.range(dataRetention - 2, -2, -1)
+  const oldestPartition = Math.min(...currentPartitions.map((partition) => partition.description))
+  return days.map((day) => {
+    const tomorrow = moment().subtract(day, 'day')
+    const today = moment().subtract(day + 1, 'day')
+    if (Table.getMysqlDay(today) < oldestPartition) {
+      return null
+    }
+
+    return {
+      name: `from${today.format(PARTITION_NAME_DATE_FORMAT)}`,
+      description: Table.getMysqlDay(tomorrow)
+    }
+  }).filter((partition) => !!partition)
+}
+
+Table.getMysqlDay = function (momentDate) {
+  return momentDate.diff(moment([ 0, 0, 1 ]), 'days') // mysql dates are counted since 0 Jan 1 00:00:00
+}

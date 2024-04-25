@@ -21,7 +21,6 @@ def make_entropy_for_encr():
     cur_count = 0
 
     file_stat = open('../../source/encr_stat.txt', 'w')
-    print(f'СКАНИРОВАНИЕ и ЗАПИСЬ: {round(100 * cur_count / total_count)}%', end='')
     for filename in no_encr_files:
         cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
         write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)
@@ -30,7 +29,7 @@ def make_entropy_for_encr():
         else:
             tn += 1
         cur_count += 1
-        print(f'\r{filename}: {round(100 * cur_count / total_count)}%', end='')
+        print(f'\r{round(100 * cur_count / total_count)}% : {filename}', end='')
     for filename in encr_files:
         cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
         write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)
@@ -39,7 +38,7 @@ def make_entropy_for_encr():
         else:
             fn += 1
         cur_count += 1
-        print(f'\r{filename}: {round(100 * cur_count / total_count)}%', end='')
+        print(f'\r{round(100 * cur_count / total_count)}% : {filename}', end='')
     print()
 
     precision, recall, f_score = calc_metrics(fn, fp, tp)
@@ -111,10 +110,12 @@ def write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is
     file_stat.write(f'ИМЯ: {filename}\n')
     file_stat.write(f'\tЭнтропия {entropy}% | {entropy_above_border}%\n')
     file_stat.write(f'\tВырезано {cut_out}%\n')
+    file_stat.write(f'{">ЕСТЬ ШИФР" if is_encr or is_hex_encr else ">НЕТ ШИФРА"}\n')
+    if is_encr:
+        file_stat.write(f'\t-Энтропия\n')
     if is_hex_encr:
-        file_stat.write(f'\t!Обнаружен HEX\n')
-    file_stat.write(f'{">ЕСТЬ ШИФР" if is_encr or is_hex_encr else ">НЕТ ШИФРА"}\n\n')
-    file_stat.write('-' * 20 + '\n\n')
+        file_stat.write(f'\tHEX\n')
+    file_stat.write('\n' + '-' * 20 + '\n\n')
 
 
 if __name__ == '__main__':
