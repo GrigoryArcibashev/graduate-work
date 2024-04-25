@@ -1,6 +1,8 @@
+import time
 from os import listdir
 from os.path import isfile, join
 from src.main.app.encryption.encryption_filter import EncryptionFilter
+from src.main.app.encryption.entropy.enums import EncrVerdict
 from src.main.app.words_service.word_loader import SimpleWordLoader
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy, \
@@ -11,10 +13,11 @@ from src.main.app.file_reader import read_file
 
 
 def make_entropy_for_encr():
+    start = time.time()
     tp = tn = fp = fn = 0
 
-    ed_entropy = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()), OperatingMode.OPTIMAL)
-    ed_hex = EncryptionDeterminatorByHEX()
+    ed_entr = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()), OperatingMode.OPTIMAL)
+    ed_hex = EncryptionDeterminatorByHEX(OperatingMode.OPTIMAL)
     ef = EncryptionFilter(WordDictService(SimpleWordLoader('../words_service/words_by_len.bin')))
 
     encr_files, no_encr_files = get_files_for_stat()
@@ -24,22 +27,26 @@ def make_entropy_for_encr():
     file_stat = open('../../source/encr_stat.txt', 'w')
     write_terminator_line(file_stat)
     for filename in no_encr_files:
-        cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
-        write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)
-        if is_encr or is_hex_encr:
+        cut_out, entropy, entropy_above_border, entr_verdict, hex_verdict = determinate(ed_entr, ed_hex, ef, filename)
+        write_result(cut_out, entropy, entropy_above_border, file_stat, filename, entr_verdict, hex_verdict)
+        if entr_verdict.is_encr or hex_verdict.is_encr:
             fp += 1
         else:
             tn += 1
+        # if entr_verdict == EncrVerdict.UNLIKELY and not hex_verdict.is_encr:
+        #     tp += 1
         cur_count += 1
         print(f'\r{round(100 * cur_count / total_count)}% : {filename}', end='')
     write_terminator_line(file_stat)
     for filename in encr_files:
-        cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
-        write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)
-        if is_encr or is_hex_encr:
+        cut_out, entropy, entropy_above_border, entr_verdict, hex_verdict = determinate(ed_entr, ed_hex, ef, filename)
+        write_result(cut_out, entropy, entropy_above_border, file_stat, filename, entr_verdict, hex_verdict)
+        if entr_verdict.is_encr or hex_verdict.is_encr:
             tp += 1
         else:
             fn += 1
+        # if entr_verdict == EncrVerdict.UNLIKELY and not hex_verdict.is_encr:
+        #     fp += 1
         cur_count += 1
         print(f'\r{round(100 * cur_count / total_count)}% : {filename}', end='')
     print()
@@ -55,6 +62,8 @@ def make_entropy_for_encr():
     print(f'Точность = {round(100 * precision, 2)}%')
     print(f'Полнота =  {round(100 * recall, 2)}%')
     print(f'F-score =  {round(100 * f_score, 2)}%')
+
+    print(f'\n{total_count} файлов - {round(time.time() - start, 2)} сек.')
 
 
 def get_files_for_stat():
@@ -116,24 +125,24 @@ def calc_metrics(fn, fp, tp):
 
 def determinate(ed_en, ed_hex, ef, filename):
     text = read_file(filename)
-    is_hex_encr = ed_hex.determinate(text)
+    hex_verdict = ed_hex.determinate(text)
     bytes_text = list(text)
     len_before = len(bytes_text)
     filtered_text = ef.filter(bytes_text)
     cut_out = round(100 - len(filtered_text) / (max(1.0, len_before / 100)), 2)
-    is_encr, entropy, entropy_above_border = ed_en.determinate(filtered_text)
-    return cut_out, entropy, entropy_above_border, is_encr, is_hex_encr
+    entr_verdict, entropy, entropy_above_border = ed_en.determinate(filtered_text)
+    return cut_out, entropy, entropy_above_border, entr_verdict, hex_verdict
 
 
-def write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr):
+def write_result(cut_out, entropy, entropy_above_border, file_stat, filename, entr_verdict, hex_verdict):
     file_stat.write(f'ИМЯ: {filename}\n')
     file_stat.write(f'\tЭнтропия {entropy}% | {entropy_above_border}%\n')
     file_stat.write(f'\tВырезано {cut_out}%\n')
-    file_stat.write(f'{">ЕСТЬ ШИФР" if is_encr or is_hex_encr else ">НЕТ ШИФРА"}\n')
-    if is_encr:
-        file_stat.write(f'\t-Энтропия\n')
-    if is_hex_encr:
-        file_stat.write(f'\tHEX\n')
+    file_stat.write(f'{">ЕСТЬ ШИФР" if entr_verdict.is_encr or hex_verdict.is_encr else ">НЕТ ШИФРА"}\n')
+    if entr_verdict.is_encr:
+        file_stat.write(f'\t-Энтропия ({entr_verdict.to_str()})\n')
+    if hex_verdict.is_encr:
+        file_stat.write(f'\tHEX ({hex_verdict.to_str()})\n')
     file_stat.write('\n' + '-' * 20 + '\n\n')
 
 

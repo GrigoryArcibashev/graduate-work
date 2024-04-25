@@ -1,11 +1,12 @@
 import re
-from enum import Enum
 
 from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
+from src.main.app.encryption.entropy.enums import OperatingMode, EncrVerdict
 
 
 class EncryptionDeterminatorByHEX:
-    def __init__(self):
+    def __init__(self, mode: OperatingMode):
+        self._set_boundaries(mode)
         self._pattern = re.compile(br'(?:\\x|0x|\\u)[0-9abcdef]{2}', re.IGNORECASE)
         self._unicode_markers = [
             (br'\xef', br'\xbb', br'\xbf'),  # UTF8
@@ -32,10 +33,20 @@ class EncryptionDeterminatorByHEX:
             (br'0xdd', br'0x73', br'0x66', br'0x73')
         ]
 
-    def determinate(self, data):
+    def _set_boundaries(self, mode: OperatingMode) -> None:
+        if mode == OperatingMode.OPTIMAL:
+            self._min_count = 10
+        elif mode == OperatingMode.STRICT:
+            self._min_count = 3
+
+    def determinate(self, data) -> EncrVerdict:
         found = re.findall(self._pattern, data)
         count = len(self._filter_unicode(found))
-        return count > 3
+        if count > 2 * self._min_count:
+            return EncrVerdict.EXTREMELY_LIKELY
+        if count > self._min_count:
+            return EncrVerdict.LIKELY
+        return EncrVerdict.UNLIKELY
 
     def _filter_unicode(self, found):
         for marker in self._unicode_markers:
@@ -52,11 +63,6 @@ class EncryptionDeterminatorByHEX:
             if hex1[i].lower() != hex2[i].lower():
                 return False
         return True
-
-
-class OperatingMode(Enum):
-    OPTIMAL = 0
-    STRICT = 1
 
 
 class EncryptionDeterminatorByEntropy:
@@ -78,19 +84,21 @@ class EncryptionDeterminatorByEntropy:
             self._percent_of_entropy_vals_for_window = 70
             self._upper_bound_of_entropy = float('+inf')
 
-    def determinate(self, data):
+    def determinate(self, data) -> (EncrVerdict, float, float):
         entropy = self._entropy_analyzer.analyze(data)
         entropies, window_size, hop = self._entropy_analyzer.window_analyze(data)
         count_above_border = len(list(filter(lambda entr: entr >= self._window_encryption_border, entropies)))
         entropy_above_border = round(100 * count_above_border / len(entropies))
-        return self._is_encr(entropy, entropy_above_border), entropy, entropy_above_border
+        return self._determinate(entropy, entropy_above_border), entropy, entropy_above_border
 
-    def _is_encr(self, entropy, entropy_above_border):
+    def _determinate(self, entropy, entropy_above_border) -> EncrVerdict:
         if entropy >= self._upper_bound_of_entropy:
-            return False
+            return EncrVerdict.UNLIKELY
         if entropy >= self._unconditional_lower_bound_of_entropy:
-            return True
-        return (
+            return EncrVerdict.EXTREMELY_LIKELY
+        if (
                 entropy >= self._conditional_lower_bound_of_entropy
                 and entropy_above_border >= self._percent_of_entropy_vals_for_window
-        )
+        ):
+            return EncrVerdict.LIKELY
+        return EncrVerdict.UNLIKELY
