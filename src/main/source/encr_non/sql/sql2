@@ -1,0 +1,71 @@
+CREATE TABLE Products
+(
+    Id INT IDENTITY PRIMARY KEY,
+    ProductName NVARCHAR(30) NOT NULL,
+    Manufacturer NVARCHAR(20) NOT NULL,
+    ProductCount INT DEFAULT 0,
+    Price MONEY NOT NULL
+);USE productsdb;
+GO
+CREATE PROCEDURE ProductSummary AS
+BEGIN
+    SELECT ProductName AS Product, Manufacturer, Price
+    FROM Products
+END;INSERT INTO Orders (ProductId, CustomerId, CreatedAt, ProductCount, Price)
+VALUES
+(
+    (SELECT Id FROM Products WHERE ProductName='Galaxy S8'),
+    (SELECT Id FROM Customers WHERE FirstName='Tom'),
+    '2017-07-11',
+    2,
+    (SELECT Price FROM Products WHERE ProductName='Galaxy S8')
+)UPDATE Orders
+SET Price = (SELECT Price FROM Products WHERE Id=Orders.ProductId) + 2000
+WHERE Id=1
+DELETE FROM Orders
+WHERE ProductId=(SELECT Id FROM Products WHERE ProductName='Galaxy S8')
+AND CustomerId=(SELECT Id FROM Customers WHERE FirstName='Bob')
+CREATE TABLE Products
+(
+    Id INT IDENTITY PRIMARY KEY,
+    ProductName NVARCHAR(30) NOT NULL,
+    Manufacturer NVARCHAR(20) NOT NULL,
+    ProductCount INT DEFAULT 0,
+    Price MONEY NOT NULL
+);
+CREATE TABLE Customers
+(
+    Id INT IDENTITY PRIMARY KEY,
+    FirstName NVARCHAR(30) NOT NULL
+);
+CREATE TABLE Orders
+(
+    Id INT IDENTITY PRIMARY KEY,
+    ProductId INT NOT NULL REFERENCES Products(Id) ON DELETE CASCADE,
+    CustomerId INT NOT NULL REFERENCES Customers(Id) ON DELETE CASCADE,
+    CreatedAt DATE NOT NULL,
+    ProductCount INT DEFAULT 1,
+    Price MONEY NOT NULL
+);
+DECLARE @maxPrice MONEY,
+    @minPrice MONEY,
+    @dif MONEY,
+    @count INT
+
+SET @count = (SELECT SUM(ProductCount) FROM Orders);
+
+SELECT @minPrice=MIN(Price), @maxPrice = MAX(Price) FROM Products
+
+SET @dif = @maxPrice - @minPrice;
+
+PRINT 'Всего продано: ' + STR(@count, 5) + ' товарa(ов)';
+PRINT 'Разница между максимальной и минимальной ценой: ' + STR(@dif)
+DECLARE @sum MONEY, @id INT, @prodid INT, @name NVARCHAR(20);
+SET @id=2;
+
+SELECT @sum = SUM(Orders.Price*Orders.ProductCount),
+     @name=Products.ProductName, @prodid = Products.Id
+FROM Orders
+INNER JOIN Products ON ProductId = Products.Id
+GROUP BY Products.ProductName, Products.Id
+HAVING Products.Id=@id

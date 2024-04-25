@@ -1,0 +1,785 @@
+USE master
+GO
+
+IF  EXISTS (
+	SELECT name
+		FROM sys.databases
+		WHERE name = N'KN301_ARTSYBASHEV'
+)
+ALTER DATABASE [KN301_ARTSYBASHEV] set single_user with rollback immediate
+GO
+
+IF  EXISTS (
+	SELECT name
+		FROM sys.databases
+		WHERE name = N'KN301_ARTSYBASHEV'
+)
+DROP DATABASE [KN301_ARTSYBASHEV]
+GO
+
+CREATE DATABASE [KN301_ARTSYBASHEV]
+GO
+
+USE [KN301_ARTSYBASHEV]
+GO
+
+IF EXISTS(
+  SELECT *
+    FROM sys.schemas
+   WHERE name = N'ARTSYBASHEV2'
+)
+ DROP SCHEMA ARTSYBASHEV2
+GO
+
+CREATE SCHEMA ARTSYBASHEV2
+GO
+
+-- Êóðñû âàëþò
+CREATE TABLE ARTSYBASHEV2.currency_rate
+(
+	name_of_currency VARCHAR(5) NOT NULL,
+	USD DECIMAL(15,5) NOT NULL,
+	RUB DECIMAL(15,5) NOT NULL,
+	EUR DECIMAL(15,5) NOT NULL,
+	JPY DECIMAL(15,5) NOT NULL,
+	CHF DECIMAL(15,5) NOT NULL,
+	NZD DECIMAL(15,5) NOT NULL,
+	GPB DECIMAL(15,5) NOT NULL,
+	CONSTRAINT PK_name_of_currency_id PRIMARY KEY (name_of_currency)
+)
+GO
+
+CREATE TABLE ARTSYBASHEV2.bank_card
+(
+	name_of_currency VARCHAR(5) NOT NULL,
+	val DECIMAL(10,5) NOT NULL,
+	CONSTRAINT PK_name_of_currency_id_copy PRIMARY KEY (name_of_currency)
+)
+GO
+
+-- Óäàëåíèå íóëåâîãî ñ÷¸òà íà êàðòå
+CREATE TRIGGER bank_card_UPDATE
+ON ARTSYBASHEV2.bank_card
+AFTER UPDATE
+AS
+	DELETE FROM ARTSYBASHEV2.bank_card
+	WHERE val = 0
+GO
+
+INSERT INTO ARTSYBASHEV2.currency_rate
+VALUES
+ ('USD', 1, 61.43, 1.01, 147.12, 0.9974, 1.74, 0.86851),
+ ('RUB', 0.0162, 1, 0.0164, 2.42, 0.0161, 0.028, 0.0141),
+ ('EUR', 0.99, 60.97, 1, 146.35, 0.9878, 1.69, 0.8605),
+ ('JPY', 0.0067, 0.413, 0.068, 1, 0.006677, 0.011755, 0.005842),
+ ('CHF', 1, 61.85, 1.01, 149.77, 1, 1.76, 0.87451),
+ ('NZD', 0.57465, 35.3, 0.59256, 85.07, 0.56674, 1, 0.50152),
+ ('GBP', 1.15, 70.73, 1.16, 171.17, 1.14, 1.99,1)
+GO
+
+INSERT INTO ARTSYBASHEV2.bank_card
+VALUES
+ ('USD', 100),
+ ('RUB', 100),
+ ('EUR', 200),
+ ('JPY', 1000),
+ ('CHF', 400),
+ ('NZD', 1),
+ ('GBP', 1)
+GO
+
+-- 1. Ïîñìîòðåòü áàëàíñ êàðòû â óêàçàííîé âàëþòå
+CREATE PROCEDURE CheckBalance
+(@currency VARCHAR(5) = 'USD')
+AS
+BEGIN
+	SELECT name_of_currency AS currency, val AS 'value'
+	FROM ARTSYBASHEV2.bank_card
+	WHERE name_of_currency = @currency AND val > 0
+END
+GO
+
+-- 1'. Ïîñìîòðåòü áàëàíñ êàðòû â âî âñåõ âàëþòàõ
+CREATE PROCEDURE CheckAllBalance
+AS
+BEGIN
+	SELECT name_of_currency AS currency, val AS 'value'
+	FROM ARTSYBASHEV2.bank_card
+END
+GO
+
+-- 2. Ïîïîëíèòü êàðòó â óêàçàííîé âàëþòå
+CREATE PROCEDURE TopUpCard
+(@currency VARCHAR(5) = 'USD', @amount DECIMAL(10,5))
+AS
+BEGIN
+	IF NOT EXISTS
+	(
+		SELECT *
+		FROM ARTSYBASHEV2.bank_card
+		WHERE name_of_currency = @currency
+	)
+		PRINT 'UNKNOWN CURRENCY: ' + @currency
+	ELSE
+		UPDATE ARTSYBASHEV2.bank_card
+		SET val = val + @amount
+		WHERE name_of_currency = @currency
+END
+GO
+
+-- 3. Ñíÿòü ñðåäñòâà â óêàçàííîé âàëþòå
+CREATE PROCEDURE WithdrawMoneyFromCard
+(@currency VARCHAR(5) = 'USD', @amount DECIMAL(10,5))
+AS
+BEGIN
+	IF @amount <=
+		(
+			SELECT val AS 'money'
+			FROM ARTSYBASHEV2.bank_card
+			WHERE name_of_currency = @currency
+		)
+		UPDATE ARTSYBASHEV2.bank_card
+		SET val = val - @amount
+		WHERE name_of_currency = @currency
+	ELSE
+		PRINT 'INSUFFICIENT FUNDS'
+END
+GO
+
+-- 4. Ïåðåâåñòè äåíüãè èç îäíîé âàëþòû â äðóãóþ
+CREATE PROCEDURE ConvertCurrency
+(
+	@from_currency VARCHAR(5) = 'USD',
+	@to_currency VARCHAR(5) = 'RUB',
+	@amount DECIMAL(10,5)
+)
+AS
+BEGIN
+	IF @amount <=
+		(
+			SELECT val AS 'money'
+			FROM ARTSYBASHEV2.bank_card
+			WHERE name_of_currency = @from_currency
+		)
+	BEGIN
+		-- ïîïîëíèòü âàëþòó @to_currency
+		UPDATE ARTSYBASHEV2.bank_card
+		SET val = CAST(val AS DECIMAL(15,5))
+				+ CAST(@amount AS DECIMAL(15,5))
+				* CASE @to_currency
+					 WHEN 'RUB' THEN (SELECT CAST(RUB AS DECIMAL(15,5)) FROM ARTSYBASHEV2.currency_rate WHERE name_of_currency = @from_currency)
+					 WHEN 'EUR' THEN (SELECT CAST(EUR AS DECIMAL(15,5)) FROM ARTSYBASHEV2.currency_rate WHERE name_of_currency = @from_currency)
+					 WHEN 'JPY' THEN (SELECT CAST(JPY AS DECIMAL(15,5)) FROM ARTSYBASHEV2.currency_rate WHERE name_of_currency = @from_currency)
+					 WHEN 'CHF' THEN (SELECT CAST(CHF AS DECIMAL(15,5)) FROM ARTSYBASHEV2.currency_rate WHERE name_of_currency = @from_currency)
+					 WHEN 'NZD' THEN (SELECT CAST(NZD AS DECIMAL(15,5)) FROM ARTSYBASHEV2.currency_rate WHERE name_of_currency = @from_currency)
+					 WHEN 'GPB' THEN (SELECT CAST(GPB AS DECIMAL(15,5)) FROM ARTSYBASHEV2.currency_rate WHERE name_of_currency = @from_currency)
+					 WHEN 'USD' THEN (SELECT CAST(USD AS DECIMAL(15,5)) FROM ARTSYBASHEV2.currency_rate WHERE name_of_currency = @from_currency)
+				  END
+		WHERE name_of_currency = @to_currency;
+		-- ñíÿòü âàëþòó @from_currency
+		UPDATE ARTSYBASHEV2.bank_card
+		SET val = val - @amount
+		WHERE name_of_currency = @from_currency;
+	END
+	ELSE
+		PRINT 'INSUFFICIENT FUNDS'
+	END
+GO
+
+-- 5. Ïåðåâîä âñåõ äîñòóïíûõ ñðåäñòâ â óêàçàííóþ âàëþòó
+CREATE PROCEDURE ShowOverallBalancee
+(@currency VARCHAR(5) = 'USD')
+AS
+BEGIN
+	DECLARE @cursor CURSOR
+	DECLARE @name VARCHAR(5)
+	DECLARE @value DECIMAL(10,3)
+
+	SET @cursor = CURSOR FOR
+	SELECT name_of_currency, val
+	FROM ARTSYBASHEV2.bank_card
+
+	OPEN @cursor
+	WHILE 1 = 1
+	BEGIN
+		FETCH @cursor INTO @name, @value
+		IF @@FETCH_STATUS <> 0
+			BREAK
+		EXEC ConvertCurrency @name, @currency, @value
+	END
+	CLOSE @cursor ;
+	DEALLOCATE @cursor;
+END
+GO
+
+
+
+-- 1. Äåìîíñòðàöèÿ ðàáîòû CheckBalance
+EXEC CheckBalance 'RUB'
+GO
+
+-- 2. Äåìîíñòðàöèÿ ðàáîòû TopUpCard
+EXEC TopUpCard N'RUB', 333
+EXEC CheckBalance 'RUB'
+GO
+
+-- 3. Äåìîíñòðàöèÿ ðàáîòû WithdrawMoneyFromCard
+EXEC WithdrawMoneyFromCard 'RUB', 100
+EXEC CheckBalance 'RUB'
+GO
+
+-- 4. Äåìîíñòðàöèÿ ðàáîòû ConvertCurrency
+EXEC CheckBalance 'USD'
+EXEC CheckBalance 'RUB'
+EXEC ConvertCurrency 'USD', 'RUB', 50
+EXEC CheckBalance 'USD'
+EXEC CheckBalance 'RUB'
+GO
+
+-- 5. Äåìîíñòðàöèÿ ðàáîòû ShowOverallBalancee
+EXEC CheckAllBalance
+EXEC ShowOverallBalancee 'RUB'
+EXEC CheckAllBalance
+GO
+
+USE master
+GO
+
+IF EXISTS (
+	SELECT name
+	FROM sys.databases
+	WHERE name = N'KN301_ARTSYBASHEV'
+	)
+ALTER DATABASE [KN301_ARTSYBASHEV] set single_user with rollback immediate
+GO
+
+IF  EXISTS (
+	SELECT name
+		FROM sys.databases
+		WHERE name = N'KN301_ARTSYBASHEV'
+)
+DROP DATABASE [KN301_ARTSYBASHEV]
+GO
+
+CREATE DATABASE [KN301_ARTSYBASHEV]
+GO
+
+USE [KN301_ARTSYBASHEV]
+GO
+
+IF EXISTS(
+  SELECT *
+    FROM sys.schemas
+   WHERE name = N'ARTSYBASHEV4'
+)
+DROP SCHEMA ARTSYBASHEV4
+GO
+
+CREATE SCHEMA ARTSYBASHEV4
+GO
+
+CREATE TABLE ARTSYBASHEV4.authors
+(
+	code_author INT UNIQUE NOT NULL,
+	name_author VARCHAR(30),
+	birthday DATE,
+	CONSTRAINT PK_code_author PRIMARY KEY(code_author)
+)
+GO
+
+CREATE TABLE ARTSYBASHEV4.publishing_house
+(
+	code_publish INT UNIQUE NOT NULL,
+	publish VARCHAR(30),
+	city VARCHAR(30),
+	CONSTRAINT PK_code_publish PRIMARY KEY(code_publish)
+)
+GO
+
+CREATE TABLE ARTSYBASHEV4.books
+(
+	code_book INT UNIQUE NOT NULL,
+	title_book VARCHAR(100),
+	code_author INT NOT NULL,
+	pages INT,
+	code_publish INT NOT NULL,
+	CONSTRAINT PK_code_book PRIMARY KEY(code_book),
+	CONSTRAINT FK_code_author FOREIGN KEY(code_author)
+	REFERENCES ARTSYBASHEV4.authors(code_author),
+	CONSTRAINT FK_code_publish FOREIGN KEY(code_publish)
+	REFERENCES ARTSYBASHEV4.publishing_house(code_publish)
+)
+GO
+
+CREATE TABLE ARTSYBASHEV4.deliveries
+(
+	code_delivery INT UNIQUE NOT NULL,
+	name_delivery VARCHAR(50),
+	name_company VARCHAR(50),
+	addres VARCHAR(50),
+	phone NUMERIC(10),
+	INN VARCHAR(12),
+	CONSTRAINT PK_code_delivery PRIMARY KEY(code_delivery)
+)
+GO
+
+CREATE TABLE ARTSYBASHEV4.purchases
+(
+	code_purchase INT UNIQUE NOT NULL,
+	code_book INT NOT NULL,
+	date_order DATE,
+	code_delivery INT NOT NULL,
+	type_purchase BIT,
+	cost NUMERIC(15,2),
+	amount INT,
+	CONSTRAINT FK_code_book FOREIGN KEY(code_book)
+	REFERENCES ARTSYBASHEV4.books(code_book),
+	CONSTRAINT FK_code_delivery FOREIGN KEY(code_delivery)
+	REFERENCES ARTSYBASHEV4.deliveries(code_delivery)
+)
+GO
+
+INSERT INTO ARTSYBASHEV4.authors (code_author, name_author, birthday)
+VALUES
+	(1, N'authorName1', '01/01/1840'),
+	(2, N'authorName2', '01/01/1976'),
+	(3, N'authorName3', '02/06/1857'),
+	(4, N'authorName4', '02/03/1954'),
+	(5, N'Àêóíèí Áîðèñ', '20/05/1956'),
+	(6, N'authorName6', '22/08/1860'),
+	(7, N'Êàññèëü Ëåâ Àáðàìîâè÷', '27/06/1905'),
+	(8, N'Êóïðèí Àëåêñàíäð Èâàíîâè÷', '26/08/1870'),
+	(9, N'Âèøíåâñêèé Âëàäèìèð Ïåòðîâè÷', '20/08/1953'),
+	(10, N'Èâàíîâà Ëèäèÿ Ìèõàéëîâíà', '07/03/1936'),
+	(11, N'Èâàíîâ Àíàòîëèé Ñòåïàíîâè÷', NULL),
+	(12, N'Èâàíîâ Àëåêñåé Âèêòîðîâè÷', '23/11/1969'),
+	(13, N'Àñèìàí Àíäðåé', '02/01/1951'),
+	(14, N'Øèðâèíäò Ìèõàèë', '14/08/1958'),
+	(15, N'Ãîëäåí Àðòóð', '06/12/1956'),
+	(16, N'Òîëñòîé Ë.Í.', '28/08/1828'),
+	(17, N'Äîñòîåâñêèé Ô.Ì.', '30/10/1821'),
+	(18, N'Ïóøêèí À.Ñ.', '26/05/1799')
+GO
+
+INSERT INTO ARTSYBASHEV4.publishing_house (code_publish, publish, city)
+VALUES
+	(1, N'publish1', N'Íîâîñèáèðñê'),
+	(4, N'ÍÃÈ', N'Íèæíèé Íîâãîðîä'),
+	(5, N'publish5', N'Íîâîñèáèðñê'),
+	(6, N'Àëüôà', N'Ìîñêâà'),
+	(7, N'publish7', N'Íîâîñèáèðñê'),
+	(9, N'Íàóêà', N'Ìîñêâà'),
+	(10, N'Ïèòåð Ñîôò', N'Ñàíêò-Ïåòåðáóðã'),
+	(13, N'Ìèð', N'Ìîñêâà'),
+	(14, N'Ïèòåð', N'Ñàíêò-Ïåòåðáóðã'),
+	(15, N'Ïèòåð Ñîôò', N'Ñàíêò-Ïåòåðáóðã')
+GO
+
+INSERT INTO ARTSYBASHEV4.books (code_book, title_book, code_author, pages, code_publish)
+VALUES
+	(2, N'Òðóäû', 11, 107, 1),
+	(3, N'Òðóäû2', 12, 342, 10),
+	(4, N'Ìåìóàðû ãåéøè', 13, 384, 15),
+	(7, N'Èç Åãèïòà. Ìåìóàðû', 3, 250, 13),
+	(8, N'bookname8', 2, 339, 1),
+	(9, N'bookname9', 10, 384, 6),
+	(10, N'bookname10', 5, 324, 6),
+	(11, N'bookname11', 1, 353, 6),
+	(12, N'Ìåìóàðû äâîå÷íèêà', 13, 287, 14),
+	(13, N'Òðóäû Óíèâåðñèòåòà', 11, 389, 7),
+	(15, N'bookname15', 7, 388, 7),
+	(17, N'bookname17', 8, 379, 5),
+	(18, N'bookname18', 15, 238, 4),
+	(23, N'bookname23', 4, 301, 9),
+	(24, N'bookname24', 9, 398, 7),
+	(26, N'bookname26', 14, 303, 1),
+	(31, N'Îòðî÷åñòâî', 16, 80, 4),
+	(32, N'Êàçàêè', 16, 208, 4),
+	(33, N'Èãðîê', 17, 224, 4),
+	(34, N'Ñêàçêè', 18, 144, 4)
+GO
+
+INSERT INTO ARTSYBASHEV4.deliveries (code_delivery, name_delivery, name_company, addres, phone, INN)
+VALUES
+	(1, N'dilvery1', N'company1', N'adress1', 256678, N'19354851'),
+	(2, N'dilvery2', N'company2', N'adress2', 256679, N'13498045'),
+	(3, N'dilvery3', N'ÎÀÎ "Êíèãè"', N'adress3', 256680, N'8601020863'),
+	(4, N'dilvery4', N'ÎÀÎ Ëó÷', N'adress4', 256681, N'7709028658'),
+	(5, N'dilvery5', N'company5', N'adress5', 256682, N'14401362'),
+	(6, N'dilvery6', N'ÎÀÎ «Êàìåíñê-Óðàëüñêàÿ òèïîãðàôèÿ»', N'adress6', 256683, N'6612045778'),
+	(7, N'dilvery7', N'ÎÀÎ Êíèãîòîðã', N'adress7', 256684, N'917024242'),
+	(8, N'dilvery8', N'ÇÀÎ Êâàíòîð', N'adress8', 256685, N'7725704102'),
+	(9, N'dilvery9', N'company9', N'adress9', 256686, N'16251647'),
+	(10, N'dilvery10', N'ÎÀÎ «Ïîëèãðàôè÷åñêîå îáúåäèíåíèå «Ñåâåð»', N'adress10', 256687, N'6680004508'),
+	(11, N'dilvery11', N'Êîìáèíàò Âîëãîãðàäñêèé', N'adress11', 256688, N'3446015546'),
+	(12, N'dilvery12', N'Òîðãîâûé Äîì Âîëæñêèé', N'adress12', 256689, N'6313001606'),
+	(13, N'dilvery13', N'company13', N'adress13', 256690, N'15316511'),
+	(14, N'dilvery14', N'ÇÀÎ Îïòòîðã', N'adress14', 256691, N'6670129307'),
+	(15, N'dilvery15', N'company15', N'adress15', 256692, N'18175323')
+GO
+
+INSERT INTO ARTSYBASHEV4.purchases(code_purchase, code_book, date_order, code_delivery, type_purchase, cost, amount)
+VALUES
+	(2,		24,	'02/01/2018',	4,	0,	 137.00,	13),
+	(4,		12,	'04/01/2003',	8,	1,	 164.00,	2),
+	(8,		15,	'14/05/2003',	5,	1,	 149.00,	0),
+	(10,	11,	'10/06/2003',	4,	1,	 169.00,	19),
+	(12,	8,	'12/01/2018',	8,	0,	 172.00,	10),
+	(13,	3,	'13/01/2018',	5,	0,	187.00,		1),
+	(14,	10,	'14/01/2002',	2,	1,	 128.00,	1),
+	(15,	17,	'15/01/2018',	2,	0,	 139.00,	17),
+	(16,	10,	'16/01/2018',	11,	0,	 176.00,	1),
+	(19,	24,	'19/01/2018',	11,	0,	 132.00,	18),
+	(21,	3,	'21/01/2018',	9,	1,	 146.00,	20),
+	(22,	2,	'22/05/2002',	1,	0,	118.00,		12),
+	(24,	26,	'24/01/2018',	7,	1,	 150.00,	18),
+	(26,	23,	'26/01/2018',	8,	1,	 103.00,	7),
+	(34,	12,	'03/02/2018',	5,	1,	 148.00,	22),
+	(35,	24,	'04/02/2018',	7,	0,	 145.00,	4),
+	(36,	24,	'05/02/2018',	11,	0,	 190.00,	21),
+	(37,	4,	'06/02/2018',	11,	1,	 122.00,	1),
+	(38,	4,	'07/02/2018',	3,	0,	 113.00,	0),
+	(44,	26,	'13/02/2018',	5,	1,	 180.00,	12),
+	(45,	9,	'14/02/2018',	12,	0,	 198.00,	16),
+	(46,	7,	'15/02/2018',	7,	1,	 163.00,	21),
+	(47,	8,	'16/02/2018',	1,	0,	 105.00,	17),
+	(53,	11,	'22/02/2018',	11,	0,	 149.00,	6),
+	(54,	24,	'23/02/2018',	15,	0,	 123.00,	13),
+	(55,	13,	'24/02/2018',	4,	1,	 140.00,	5),
+	(58,	10,	'27/02/2018',	13,	0,	 160.00,	22),
+	(60,	9,	'01/03/2018',	1,	1,	 119.00,	5),
+	(61,	31,	'01/01/2018',	3,	1,	 51.00,		5),
+	(62,	32,	'01/02/2013',	3,	1,	 70.00,		5),
+	(63,	33,	'21/11/2020',	4,	1,	 191.00,	5),
+	(64,	34,	'22/11/2020',	4,	1,	 185.00,	6),
+	(65,	34,	'23/11/2020',	4,	0,	 185.00,	110),
+	(66,	9,	'24/11/2020',	2,	1,	 400.00,	5),
+	(67,	32,	'21/03/2018',	1,	0,	 69.00,		20),
+	(68,	23,	'20/02/2018',	8,	0,	 100.00,	20)
+GO
+
+/*
+1
+Âûáðàòü âñå ñâåäåíèÿ î êíèãàõ èç òàáëèöû Books
+è îòñîðòèðîâàòü ðåçóëüòàò ïî êîäó êíèãè (ïîëå Code_book)
+*/
+SELECT *
+FROM ARTSYBASHEV4.books
+ORDER BY code_book
+GO
+
+/*
+2
+Âûáðàòü èç òàáëèöû Books íàçâàíèÿ êíèã è êîëè÷åñòâî ñòðàíèö
+(ïîëÿ Title_book è Pages), à èç òàáëèöû Authors âûáðàòü
+èìÿ ñîîòâåòñòâóþùåãî àâòîðà êíèãè (ïîëå Name_ author)
+*/
+SELECT title_book, pages, name_author
+FROM
+	ARTSYBASHEV4.books AS b
+	INNER JOIN ARTSYBASHEV4.authors AS a
+	ON b.code_author = a.code_author
+GO
+
+/*
+3
+Âûáðàòü èç òàáëèöû Authors ôàìèëèè, èìåíà, îò÷åñòâà àâòîðîâ
+(ïîëå Name_author), çíà÷åíèÿ êîòîðûõ íà÷èíàþòñÿ ñ ‘Èâàíîâ'
+*/
+SELECT name_author
+FROM ARTSYBASHEV4.authors
+WHERE name_author LIKE N'%Èâàíîâ%'
+GO
+
+/*
+4
+Âûâåñòè ñïèñîê íàçâàíèé êíèã (ïîëå Title_book)
+è êîëè÷åñòâî ñòðàíèö (ïîëå Pages) èç òàáëèöû Books,
+ó êîòîðûõ îáúåì â ñòðàíèöàõ óêëàäûâàåòñÿ â äèàïàçîí 200 - 300 (óñëîâèå ïî ïîëþ Pages)
+*/
+SELECT title_book, pages
+FROM ARTSYBASHEV4.books
+WHERE pages >= 200 AND pages <= 300
+GO
+
+/*
+5
+Âûâåñòè ñïèñîê àâòîðîâ (ïîëå Name_author) èç òàáëèöû Authors,
+êîòîðûå íà÷èíàþòñÿ íà áóêâó 'Ê'
+*/
+SELECT name_author
+FROM ARTSYBASHEV4.authors
+WHERE LEFT(LTRIM(name_author), 1) = N'Ê'
+GO
+
+/*
+6
+Âûâåñòè ñïèñîê èçäàòåëüñòâ (ïîëå Publish) èç òàáëèöû Publishing_house,
+â êîòîðûõ âûïóùåíû êíèãè, íàçâàíèÿ êîòîðûõ (ïîëå Title_book) íà÷èíàþòñÿ
+ñî ñëîâà ‘Òðóäû' è ãîðîä èçäàíèÿ (ïîëå City) - ‘Íîâîñèáèðñê'
+*/
+SELECT publish
+FROM
+	ARTSYBASHEV4.publishing_house AS ph
+	INNER JOIN ARTSYBASHEV4.books AS b
+	ON ph.code_publish = b.code_publish
+WHERE LEFT(b.title_book, 5) = N'Òðóäû' AND ph.city = N'Íîâîñèáèðñê'
+GO
+
+/*
+7
+Âûâåñòè ñóììàðíóþ ñòîèìîñòü ïàðòèè îäíîèìåííûõ êíèã (èñïîëüçîâàòü ïîëÿ
+Amount è Cost) è íàçâàíèå êíèãè (ïîëå Title_book) â êàæäîé ïîñòàâêå.
+*/
+SELECT title_book, cost * amount AS total_cost
+FROM
+	ARTSYBASHEV4.purchases AS p
+	INNER JOIN ARTSYBASHEV4.books AS b
+	ON p.code_book = b.code_book
+GO
+
+/*
+8
+Âûâåñòè ñðåäíþþ ñòîèìîñòü (èñïîëüçîâàòü ïîëå Cost) è ñðåäíåå
+êîëè÷åñòâî ýêçåìïëÿðîâ êíèã (èñïîëüçîâàòü ïîëå Amount) â îäíîé ïîñòàâêå,
+ãäå àâòîðîì êíèãè ÿâëÿåòñÿ ‘Àêóíèí' (óñëîâèå ïî ïîëþ Name_author).
+*/
+SELECT AVG(cost) AS avg_cost, AVG(amount) AS avg_amount
+FROM
+	ARTSYBASHEV4.purchases AS p
+	INNER JOIN ARTSYBASHEV4.books AS b
+	ON p.code_book = b.code_book
+	INNER JOIN ARTSYBASHEV4.authors AS a
+	ON b.code_author = a.code_author
+WHERE a.name_author LIKE N'%Àêóíèí%'
+GO
+
+/*
+9
+Âûâåñòè îáùóþ ñóììó ïîñòàâîê êíèã (èñïîëüçîâàòü ïîëå Cost)
+è ïîìåñòèòü ðåçóëüòàò â ïîëå ñ íàçâàíèåì Sum_cost,
+âûïîëíåííûõ ‘ÎÀÎ Ëó÷' (óñëîâèå ïî ïîëþ Name_company)
+*/
+SELECT SUM(cost) AS Sum_cost
+FROM
+	ARTSYBASHEV4.purchases AS p
+	INNER JOIN ARTSYBASHEV4.deliveries AS d
+	ON p.code_delivery = d.code_delivery
+WHERE name_company = N'ÎÀÎ Ëó÷'
+GO
+
+/*
+10
+Âûâåñòè ñïèñîê àâòîðîâ (ïîëå Name_author),
+êíèãè êîòîðûõ áûëè âûïóùåíû â èçäàòåëüñòâàõ
+‘Ìèð', ‘Ïèòåð Ñîôò', ‘Íàóêà' (óñëîâèå ïî ïîëþ Publish)
+*/
+SELECT name_author
+FROM
+	ARTSYBASHEV4.authors AS a
+	INNER JOIN ARTSYBASHEV4.books AS b
+	ON a.code_author = b.code_author
+	INNER JOIN ARTSYBASHEV4.publishing_house AS ph
+	ON b.code_publish = ph.code_publish
+WHERE publish IN (N'Ìèð', N'Ïèòåð Ñîôò', N'Íàóêà')
+GROUP BY name_author
+GO
+
+/*
+11
+Âûâåñòè ñïèñîê êíèã (ïîëå Title_book), ó êîòîðûõ êîëè÷åñòâî ñòðàíèö
+(ïîëå Pages) áîëüøå ñðåäíåãî êîëè÷åñòâà ñòðàíèö âñåõ êíèã â òàáëèöå.
+*/
+SELECT title_book
+FROM ARTSYBASHEV4.books
+WHERE pages > (SELECT AVG(pages) FROM ARTSYBASHEV4.books)
+GO
+
+/*
+12
+Âûâåñòè ñïèñîê êíèã (ïîëå Title_book), êîòîðûå áûëè ïîñòàâëåíû
+ïîñòàâùèêîì ‘ÇÀÎ Êâàíòîð' (óñëîâèå ïî ïîëþ Name_company).
+*/
+SELECT title_book
+FROM
+	ARTSYBASHEV4.books AS b
+	INNER JOIN ARTSYBASHEV4.purchases AS p
+	ON b.code_book = p.code_book
+	INNER JOIN ARTSYBASHEV4.deliveries AS d
+	ON p.code_delivery = d.code_delivery
+WHERE d.name_company = N'ÇÀÎ Êâàíòîð'
+GROUP BY title_book
+GO
+
+/*
+13
+Äîáàâèòü â òàáëèöó Books íîâóþ çàïèñü, ïðè÷åì âìåñòî êëþ÷åâîãî ïîëÿ
+ïîñòàâèòü êîä (ïîëå Code_book), àâòîìàòè÷åñêè óâåëè÷åííûé íà åäèíèöó
+îò ìàêñèìàëüíîãî êîäà â òàáëèöå, âìåñòî íàçâàíèÿ êíèãè (ïîëå Title_book)
+íàïèñàòü ‘Íàóêà. Òåõíèêà. Èííîâàöèè'.
+*/
+INSERT INTO ARTSYBASHEV4.books (code_book, title_book, code_author, pages, code_publish)
+VALUES
+	(
+		(SELECT MAX(code_book) FROM ARTSYBASHEV4.books) + 1,
+		N'Íàóêà. Òåõíèêà. Èííîâàöèè',
+		1,
+		100,
+		1
+	)
+GO
+
+-- ïðîâåðêà
+SELECT code_book, title_book
+FROM ARTSYBASHEV4.books
+ORDER BY code_book
+GO
+
+/*
+14
+Ñîçäàòü òðèããåð äëÿ êîìàíä INSERT è UPDATE òàáëèöû Purchases,
+çàïðåùàþùèé ïðîèçâîäèòü èçìåíåíèÿ äëÿ ïîñòàâùèêà,
+ó êîòîðîãî íå çàïîëíåíû ïîëÿ àäðåñ è òåëåôîí.
+*/
+CREATE TRIGGER check_purchases_insert
+ON ARTSYBASHEV4.purchases
+INSTEAD OF INSERT
+AS
+	DECLARE @value VARCHAR(20)
+	BEGIN
+		SET @value = (
+			SELECT d.code_delivery
+			FROM inserted
+			INNER JOIN ARTSYBASHEV4.deliveries AS d
+			ON inserted.code_delivery = d.code_delivery
+			WHERE d.phone IS NULL OR d.addres IS NULL
+		)
+		IF (DATALENGTH(@value) > 0)
+			BEGIN
+			ROLLBACK
+			RAISERROR(N'ÎØÈÁÊÀ: Ó ÏÎÑÒÀÂÙÈÊÀ ÍÅ ÇÀÏÎËÍÅÍÛ ÄÀÍÍÛÅ (ÀÄÐÅÑ/ÒÅËÅÔÎÍ)', 1, 1)
+			END
+		ELSE
+			BEGIN
+			INSERT INTO ARTSYBASHEV4.purchases
+			SELECT * FROM inserted
+			END
+	END
+GO
+
+CREATE TRIGGER check_purchases_update
+ON ARTSYBASHEV4.purchases
+INSTEAD OF UPDATE
+AS
+	DECLARE @value VARCHAR(20)
+	BEGIN
+		SET @value = (
+			SELECT d.code_delivery
+			FROM inserted
+			INNER JOIN ARTSYBASHEV4.deliveries AS d
+			ON inserted.code_delivery = d.code_delivery
+			WHERE d.phone IS NULL OR d.addres IS NULL
+		)
+		IF (DATALENGTH(@value) > 0)
+			BEGIN
+			ROLLBACK
+			RAISERROR(N'ÎØÈÁÊÀ: Ó ÏÎÑÒÀÂÙÈÊÀ ÍÅ ÇÀÏÎËÍÅÍÛ ÄÀÍÍÛÅ (ÀÄÐÅÑ/ÒÅËÅÔÎÍ)', 1, 1)
+			END
+		ELSE
+			BEGIN
+			INSERT INTO ARTSYBASHEV4.purchases
+			SELECT * FROM inserted
+			END
+	END
+GO
+
+-- ïðîâåðêà òðèããåðà íà âñòàâêó
+/*
+INSERT INTO ARTSYBASHEV4.deliveries
+(code_delivery, name_delivery, name_company, addres, phone, INN)
+VALUES
+	(1000, N'bad_dilvery1', N'bad_company1', N'bad_adress', NULL, N'')
+GO
+INSERT INTO ARTSYBASHEV4.purchases
+(code_purchase, code_book, date_order, code_delivery, type_purchase, cost, amount)
+VALUES
+	(1000, 24, '02/01/2018', 1000, 0, 1000.00, 1000)
+GO
+SELECT *
+FROM ARTSYBASHEV4.deliveries
+ORDER BY code_delivery
+GO
+*/
+SELECT *
+FROM ARTSYBASHEV4.purchases
+ORDER BY code_purchase
+GO
+
+/*
+15
+Ñîçäàòü ïðîöåäóðó, êîòîðàÿ äëÿ óêàçàííîãî ÈÍÍ ïîñòàâùèêà âûâîäèò èíôîðìàöèþ î ïðîäàæàõ:
+Äàòà, Êíèãà, Èçäàòåëüñòâî, Îáùàÿ ñòîèìîñòü, îòñîðòèðîâàííóþ ïî äàòå, ïî êàæäîìó ìåñÿöó
+ïîêàçàòü èòîã, ïîêàçàòü îáùèé èòîã.
+*/
+CREATE PROCEDURE PurchasesInfoByINN
+(@INN VARCHAR(12))
+AS
+BEGIN
+	SELECT
+		date_order AS 'Äàòà',
+		title_book AS 'Íàçâàíèå êíèãè',
+		b.code_book AS 'Êîä êíèãè',
+		publish AS 'Èçäàòåëüñòâî',
+		b.code_publish AS 'Êîä èçäàòåëüñòâà',
+		cost * amount AS 'Îáùàÿ ñòîèìîñòü'
+	FROM
+		ARTSYBASHEV4.deliveries AS d
+		INNER JOIN ARTSYBASHEV4.purchases AS p
+		ON d.code_delivery = p.code_delivery
+		INNER JOIN ARTSYBASHEV4.books AS b
+		ON p.code_book = b.code_book
+		INNER JOIN ARTSYBASHEV4.publishing_house AS ph
+		ON b.code_publish = ph.code_publish
+	WHERE INN = @INN
+	ORDER BY date_order
+
+	SELECT
+		YEAR(date_order) AS 'Ãîä',
+		MONTH(date_order) AS 'Íîìåð ìåñÿöà',
+		DATENAME(MONTH, date_order) AS 'Ìåñÿö',
+		SUM(amount) AS 'Ïðîäàíî êíèã',
+		SUM(cost * amount) AS 'Âûðó÷êà çà ìåñÿö'
+	FROM
+		ARTSYBASHEV4.deliveries AS d
+		INNER JOIN ARTSYBASHEV4.purchases AS p
+		ON d.code_delivery = p.code_delivery
+		INNER JOIN ARTSYBASHEV4.books AS b
+		ON p.code_book = b.code_book
+		INNER JOIN ARTSYBASHEV4.publishing_house AS ph
+		ON b.code_publish = ph.code_publish
+	WHERE INN = @INN
+	GROUP BY
+		YEAR(date_order),
+		MONTH(date_order),
+		DATENAME(MONTH, date_order)
+	ORDER BY
+		YEAR(date_order),
+		MONTH(date_order)
+
+	SELECT
+		SUM(amount) AS ' Âñ¸ êîëè÷åñòâî ïðîäàííûõ êíèã',
+		SUM(cost * amount) AS 'Âñÿ âûðó÷êà'
+	FROM
+		ARTSYBASHEV4.deliveries AS d
+		INNER JOIN ARTSYBASHEV4.purchases AS p
+		ON d.code_delivery = p.code_delivery
+		INNER JOIN ARTSYBASHEV4.books AS b
+		ON p.code_book = b.code_book
+		INNER JOIN ARTSYBASHEV4.publishing_house AS ph
+		ON b.code_publish = ph.code_publish
+	WHERE INN = @INN
+END
+GO
+
+EXEC PurchasesInfoByINN N'19354851'
+GO
