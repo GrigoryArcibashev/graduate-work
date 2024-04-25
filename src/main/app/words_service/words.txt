@@ -252,6 +252,7 @@ argv
 arpa
 arps
 atob
+attr
 auth
 auto
 axis
@@ -360,6 +361,7 @@ four
 fput
 fqdn
 free
+freq
 from
 full
 func
@@ -530,6 +532,7 @@ refs
 repl
 repr
 rest
+roll
 root
 rows
 rror
@@ -820,6 +823,7 @@ forms
 found
 fputs
 fread
+front
 fseek
 fstat
 fsync
@@ -837,6 +841,7 @@ hints
 holds
 hooks
 hosts
+hover
 https
 icmpv
 idate
@@ -1135,6 +1140,7 @@ cancel
 cannot
 canvas
 causes
+center
 change
 charat
 checks
@@ -1367,6 +1373,7 @@ locate
 locked
 lookup
 making
+manual
 mapped
 margin
 marker
@@ -1492,6 +1499,7 @@ resume
 retain
 return
 reused
+reveal
 revoke
 rewind
 rights
@@ -1630,6 +1638,7 @@ versus
 volume
 wakeup
 wanted
+weekly
 weight
 widows
 window
@@ -1699,6 +1708,7 @@ capture
 caveats
 certain
 changed
+changes
 channel
 charmap
 charset
@@ -1907,6 +1917,7 @@ keydata
 keytype
 keyword
 lacking
+lastmod
 latency
 layouts
 lcfirst
@@ -2230,6 +2241,7 @@ winsock
 without
 working
 wrapkey
+wrapped
 wrapper
 writing
 written
@@ -2558,6 +2570,7 @@ orphaned
 outgoing
 overflow
 override
+overview
 packages
 padstart
 parseint
@@ -2745,6 +2758,7 @@ variants
 vertical
 vfprintf
 viewable
+viewport
 volatile
 vsprintf
 webshell
@@ -3447,7 +3461,6 @@ superclass
 supporting
 technology
 threadpool
-toreversed
 transition
 transports
 typedarray
@@ -3455,13 +3468,10 @@ uintersect
 underlying
 undirected
 unhashable
-unlinksync
 unregister
 unreliable
 unwrapping
 urlencoded
-usecookies
-utimessync
 validation
 valueerror
 vertically
@@ -3470,8 +3480,6 @@ websockets
 whitespace
 windowsize
 wrappedkey
-writeasync
-writevsync
 wsaediscon
 abortsignal
 absoluteuri
