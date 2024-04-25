@@ -1,4 +1,4 @@
-from src.main.app.words_service.word_provider import WordDictService
+from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.extractors.token import TokenType, Token
 from src.main.app.extractors.token_extractor import TokenExtractor
 from src.main.app.extractors.word_extractor import WordExtractor

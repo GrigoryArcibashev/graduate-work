@@ -1,4 +1,4 @@
-from src.main.app.words_service.word_provider import WordDictService
+from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.extractors.word import Word
 
 

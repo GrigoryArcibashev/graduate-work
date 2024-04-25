@@ -13,11 +13,9 @@ class TestWordLoader(unittest.TestCase):
         loader = AbstractWordLoader(self._path)
         self.assertEqual(loader.path, self._path)
 
-    def test_when_path_to_words_is_set_after_init(self):
+    def test_when_path_to_words_is_not_set_during_init(self):
         loader = AbstractWordLoader()
         self.assertEqual(loader.path, None)
-        loader.path = self._path
-        self.assertEqual(loader.path, self._path)
 
     def test_load(self):
         with self.assertRaises(NotImplementedError):
@@ -33,9 +31,8 @@ class TestSimpleWordLoader(unittest.TestCase):
         self._path = str(list(filter(lambda p: p.exists(), _paths))[0])
 
     def test_load(self):
-        writer = WordMakerForTests()
         words = 'these are the words for the test'.split()
-        word_dict = writer.make(words)
+        word_dict = WordMakerForTests().make_dict(words)
         write_word_dict(word_dict, self._path)
 
         loaded = SimpleWordLoader(self._path).load()

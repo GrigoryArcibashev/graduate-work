@@ -17,17 +17,6 @@ class AbstractWordLoader:
         """
         return self._path
 
-    @path.setter
-    def path(self, new: str) -> None:
-        """
-        Устанавливает путь до словаря слов
-
-        :param new: новый путь до словаря слов
-
-        :return: None
-        """
-        self._path = new
-
     @abstractmethod
     def load(self) -> dict[int, set[Word]]:
         """

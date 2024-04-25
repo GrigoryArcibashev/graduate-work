@@ -1,5 +1,5 @@
 from src.main.app.words_service.word_loader import SimpleWordLoader
-from src.main.app.words_service.word_provider import WordDictService
+from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.extractors.token_extractor import TokenExtractor
 from src.main.app.extractors.word import Word
 from src.main.app.extractors.word_extractor import WordExtractor

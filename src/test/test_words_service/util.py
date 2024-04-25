@@ -12,15 +12,15 @@ def write_word_dict(word_dict: dict[int, set[Word]], path_to_write: str):
 class WordMakerForTests:
     """Создает словарь слов ( dict[len] = {Words} )"""
 
-    def make(self, words: list[str]) -> dict[int, set[Word]]:
-        return self._make_word_dict(self._make_words(words))
+    def make_dict(self, words: list[str]) -> dict[int, set[Word]]:
+        return self._make_word_dict(self.make_words(words))
+
+    def make_words(self, words: list[str]) -> list[Word]:
+        return list(map(lambda word: Word(self._map_to_number(word)), words))
 
     @staticmethod
     def _map_to_number(word: str) -> tuple[int]:
         return tuple(map(ord, word))
-
-    def _make_words(self, words: list[str]) -> list[Word]:
-        return list(map(lambda word: Word(self._map_to_number(word)), words))
 
     @staticmethod
     def _make_word_dict(words: list[Word]) -> dict[int, set[Word]]:

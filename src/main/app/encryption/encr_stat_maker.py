@@ -2,7 +2,7 @@ from os import listdir
 from os.path import isfile, join
 from src.main.app.encryption.encryption_filter import EncryptionFilter
 from src.main.app.words_service.word_loader import SimpleWordLoader
-from src.main.app.words_service.word_provider import WordDictService
+from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy, EncryptionDeterminatorByHEX
 from src.main.app.encryption.entropy.entropy import Entropy
 from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
