@@ -69,8 +69,8 @@ def get_files_for_stat():
         '../../source/encr_non/css',
         '../../source/encr_non/xml',
         '../../source/encr_non/sql',
-        '../../source/encr_non/other/arch',
-        '../../source/encr_non/other/img',
+        # '../../source/encr_non/other/arch',
+        # '../../source/encr_non/other/img',
     ]
     encr_files = get_filenames_by_path(path_to_encr)
     no_encr_files = get_filenames_by_path(path_to_non_encr)
