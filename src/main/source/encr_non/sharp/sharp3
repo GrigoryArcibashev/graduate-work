@@ -1,0 +1,296 @@
+!GameModel/GameMap.cs
+!
+!
+
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using Model.Creatures;
+using Model.Creatures.CreatureInterfaces;
+
+namespace Model
+{
+    public class GameMap
+    {
+        private ICreature[,] map;
+        private Dictionary<ICreature, Point> creaturesLocations;
+        private Dictionary<IAttackingCreature, int> enemiesAttacks;
+        private int Width => map.GetLength(0);
+        private int Height => map.GetLength(1);
+        private int ScoreOnCurrentMap { get; set; }
+
+        public int TotalScore { get; private set; }
+        public List<ICreature> ListOfCreatures { get; private set; }
+        public Player Player { get; private set; }
+        public Finish Finish { get; private set; }
+        public ICreature this[int x, int y] => map[x, y];
+
+        public GameMap()
+        {
+            LoadNextMap(0);
+        }
+
+        public void LoadNextMap(int currentScore)
+        {
+            var mapInfo = MapCreator.GetNextMap();
+            map = mapInfo.Map;
+            ListOfCreatures = mapInfo.ListOfCreatures;
+
+            enemiesAttacks = new Dictionary<IAttackingCreature, int>();
+            foreach (var creature in ListOfCreatures.OfType<IAttackingCreature>())
+                enemiesAttacks.Add(creature, 0);
+
+            Player = mapInfo.Player;
+            Finish = mapInfo.Finish;
+            creaturesLocations = GetCreaturesLocations();
+            TotalScore = currentScore;
+            ScoreOnCurrentMap = 0;
+        }
+
+        public void ResetScoresForCurrentGame()
+        {
+            TotalScore -= ScoreOnCurrentMap;
+            ScoreOnCurrentMap = 0;
+        }
+
+        public Point GetCreatureLocation(ICreature creature)
+        {
+            return creaturesLocations[creature];
+        }
+
+        public bool MoveCreature(IMovingCreature creature, Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Right => MoveCreatureToSide(creature, direction),
+                Direction.Left => MoveCreatureToSide(creature, direction),
+                Direction.Up => MoveCreatureUp((IJumpingCreature) creature),
+                Direction.Down => MoveCreatureDown((IJumpingCreature) creature),
+                Direction.NoMovement => true,
+                _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+            };
+        }
+
+        public bool Attack(IAttackingCreature attackingCreature)
+        {
+            var creatureCoordinates = GetCreatureLocation(attackingCreature);
+            var enemiesCoordinates = new[]
+            {
+                creatureCoordinates + new Size(0, 1),
+                creatureCoordinates + new Size(0, -1),
+                creatureCoordinates + new Size(attackingCreature.Direction is Direction.Right ? 1 : -1, 0)
+            };
+
+            return Attack(attackingCreature, enemiesCoordinates);
+        }
+
+        public void CheckCreaturesForFalling()
+        {
+            foreach (var creature in ListOfCreatures.OfType<IJumpingCreature>())
+            {
+                if (creature.IsFalling() || creature.IsJumping() || !IsThereNothingUnderCreature(creature))
+                    continue;
+                creature.ResetVelocityToZero();
+                creature.ChangeMovementConditionAndDirectionTo(MovementCondition.Falling, Direction.NoMovement);
+            }
+        }
+
+        public void MakeEnemiesAttackingOrRunning()
+        {
+            var playerLocation = GetCreatureLocation(Player);
+            foreach (var enemy in ListOfCreatures
+                .OfType<IEnemy>()
+                .OfType<IMovingCreature>())
+            {
+                if (Player.IsDead())
+                {
+                    enemy.ChangeMovementConditionAndDirectionTo(MovementCondition.Standing, enemy.Direction);
+                    return;
+                }
+
+                var enemyLocation = GetCreatureLocation(enemy);
+                var dx = enemyLocation.X - playerLocation.X;
+                var dy = enemyLocation.Y - playerLocation.Y;
+                if (Math.Abs(dx) > 3 || Math.Abs(dy) > 1)
+                {
+                    if (enemy.MovementCondition != MovementCondition.Standing)
+                        enemy.ChangeMovementConditionAndDirectionTo(MovementCondition.Standing, enemy.Direction);
+                    continue;
+                }
+
+                enemy.ChangeMovementConditionAndDirectionTo(
+                    Math.Abs(dx) <= 1 && dy * dx == 0 ? MovementCondition.Attacking : MovementCondition.Running,
+                    dx > 0 ? Direction.Left : Direction.Right);
+            }
+        }
+
+        public void RemoveCreaturesFromMapIfTheyAreDead()
+        {
+            var deadEnemies = ListOfCreatures
+                .OfType<ICreatureWithHealth>()
+                .Where(enemy => enemy.MovementCondition is MovementCondition.Dying && !(enemy is Player))
+                .ToList();
+
+            while (deadEnemies.Count > 0)
+            {
+                var enemy = deadEnemies[0];
+                var enemyLocation = GetCreatureLocation(enemy);
+                map[enemyLocation.X, enemyLocation.Y] = null;
+                ListOfCreatures.Remove(enemy);
+                creaturesLocations.Remove(enemy);
+                deadEnemies.Remove(enemy);
+            }
+        }
+
+        private bool Attack(IAttackingCreature attackingCreature, IEnumerable<Point> enemiesCoordinates)
+        {
+            enemiesAttacks[attackingCreature] = (enemiesAttacks[attackingCreature] + 1) % 5;
+
+            if (enemiesAttacks[attackingCreature] > 0)
+                return false;
+            var isEnemyAttacked = false;
+            foreach (var enemyCoordinates in enemiesCoordinates)
+            {
+                if (!IsAttackPossible(enemyCoordinates))
+                    continue;
+                var enemy = (ICreatureWithHealth) map[enemyCoordinates.X, enemyCoordinates.Y];
+                enemy.ChangeHealthBy(attackingCreature.DamageValue);
+                switch (enemy)
+                {
+                    case Chest chest:
+                        TotalScore += chest.Score;
+                        ScoreOnCurrentMap += chest.Score;
+                        break;
+
+                    case Enemy enemyWithScore:
+                        TotalScore += enemyWithScore.ScoreForKilling;
+                        ScoreOnCurrentMap += enemyWithScore.ScoreForKilling;
+                        break;
+                }
+
+                isEnemyAttacked = true;
+            }
+
+            return isEnemyAttacked;
+        }
+
+        private bool IsAttackPossible(Point enemyCoordinates)
+        {
+            return IsPointInBounds(enemyCoordinates)
+                   && map[enemyCoordinates.X, enemyCoordinates.Y] is ICreatureWithHealth
+                   && !(map[enemyCoordinates.X, enemyCoordinates.Y].MovementCondition is MovementCondition.Dying);
+        }
+
+        private bool IsThereNothingUnderCreature(IJumpingCreature creature)
+        {
+            return IsMovementPossible(creature, creaturesLocations[creature] + new Size(0, 1));
+        }
+
+        private bool MoveCreatureToSide(IMovingCreature creature, Direction direction)
+        {
+            var shift = direction switch
+            {
+                Direction.Right => new Size(1, 0),
+                Direction.Left => new Size(-1, 0),
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(direction),
+                    "The direction of movement is specified incorrectly")
+            };
+
+            return MoveCreatureOn(creature, creaturesLocations[creature] + shift);
+        }
+
+        private bool MoveCreatureUp(IJumpingCreature creature)
+        {
+            if (!MoveCreatureOn(creature, creaturesLocations[creature] + new Size(0, -creature.Velocity))
+                || creature.Velocity <= 0)
+            {
+                creature.ChangeMovementConditionAndDirectionTo(MovementCondition.Falling, creature.Direction);
+                creature.ResetVelocityToZero();
+                return false;
+            }
+
+            creature.ReduceVelocity();
+            return true;
+        }
+
+        private bool MoveCreatureDown(IJumpingCreature creature)
+        {
+            if (MoveCreatureOn(creature, creaturesLocations[creature] + new Size(0, creature.Velocity)))
+            {
+                creature.IncreaseVelocity();
+                return true;
+            }
+
+            while (MoveCreatureOn(creature, creaturesLocations[creature] + new Size(0, 1)))
+            {
+            }
+
+            if (creature.Direction is Direction.NoMovement)
+                creature.ChangeMovementConditionAndDirectionTo(MovementCondition.Standing, Direction.Right);
+            creature.ChangeMovementConditionAndDirectionTo(MovementCondition.Standing, creature.Direction);
+            creature.RecoverVelocity();
+            return false;
+        }
+
+        private bool MoveCreatureOn(IMovingCreature creature, Point targetLocation)
+        {
+            if (!IsMovementPossible(creature, targetLocation))
+                return false;
+            map[creaturesLocations[creature].X, creaturesLocations[creature].Y] = null;
+            map[targetLocation.X, targetLocation.Y] = creature;
+            creaturesLocations[creature] = targetLocation;
+            return true;
+        }
+
+        private bool IsMovementPossible(IMovingCreature creature, Point target)
+        {
+            var topLeftCorner = new Point(
+                Math.Min(target.X, creaturesLocations[creature].X),
+                Math.Min(target.Y, creaturesLocations[creature].Y));
+            var bottomRightCorner = new Point(
+                Math.Max(target.X, creaturesLocations[creature].X),
+                Math.Max(target.Y, creaturesLocations[creature].Y));
+            return IsPointInBounds(target)
+                   && IsMapPieceEmpty(creature, topLeftCorner, bottomRightCorner)
+                   && !CanCreatureMoveIfItIsNotIJumpingCreature(creature, target);
+        }
+
+        private bool CanCreatureMoveIfItIsNotIJumpingCreature(IMovingCreature creature, Point target)
+        {
+            return !(creature is IJumpingCreature)
+                   && IsPointInBounds(target + new Size(0, 1))
+                   && (map[target.X, target.Y + 1] is null
+                       || map[target.X, target.Y + 1] is Player);
+        }
+
+        private bool IsMapPieceEmpty(IMovingCreature creature, Point topLeftCorner, Point bottomRightCorner)
+        {
+            for (var x = topLeftCorner.X; x <= bottomRightCorner.X; x++)
+            for (var y = topLeftCorner.Y; y <= bottomRightCorner.Y; y++)
+                if (map[x, y] != creature && map[x, y] != null)
+                    return false;
+            return true;
+        }
+
+        private bool IsPointInBounds(Point point)
+        {
+            return point.X >= 0
+                   && point.X < Width
+                   && point.Y >= 0
+                   && point.Y < Height;
+        }
+
+        private Dictionary<ICreature, Point> GetCreaturesLocations()
+        {
+            var locations = new Dictionary<ICreature, Point>();
+            foreach (var creature in ListOfCreatures)
+                for (var x = 0; x < Width; x++)
+                for (var y = 0; y < Height; y++)
+                    if (map[x, y] == creature)
+                        locations.Add(creature, new Point(x, y));
+            return locations;
+        }
+    }
+}

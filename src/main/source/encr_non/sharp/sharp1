@@ -1,0 +1,188 @@
+﻿!Mediator/TaskPlannerWithoutMediator/Buttons/SaveButton.cs
+!Mediator/TaskPlannerWithoutMediator/Buttons/DeleteButton.cs
+!Mediator/TaskPlannerWithoutMediator/Buttons/AddButton.cs
+!Mediator/TaskPlannerWithoutMediator/TextBoxes/Title.cs
+!Mediator/TaskPlannerWithoutMediator/TextBoxes/Text.cs
+!Mediator/TaskPlannerWithoutMediator/TaskList.cs
+
+﻿using System.Windows.Forms;
+
+namespace TaskPlannerWithoutMediator
+{
+    public class TaskList : ListBox
+    {
+        public TaskList()
+        {
+            HorizontalScrollbar = true;
+        }
+
+        public void Add(Note note)
+        {
+            Items.Add(note);
+        }
+
+        public void Delete()
+        {
+            if (SelectedIndex < 0) return;
+            Items.RemoveAt(SelectedIndex);
+        }
+
+        public Note GetCurrentNote()
+        {
+            if (SelectedIndex < 0)
+                return null;
+            return (Note)Items[SelectedIndex];
+        }
+
+        public void UpdateSelected(Note note)
+        {
+            if (SelectedIndex < 0) return;
+            ((Note)SelectedItem).Text = note.Text;
+            ((Note)SelectedItem).Title = note.Title;
+            Items[SelectedIndex] = SelectedItem;
+        }
+
+        public bool IsEmpty()
+        {
+            return Items.Count == 0;
+        }
+    }
+}
+
+﻿using System.Windows.Forms;
+
+namespace TaskPlannerWithoutMediator.Buttons
+{
+    public sealed class AddButton : Button
+    {
+        public AddButton(TaskList taskList)
+        {
+            Text = "Add";
+            // Сопряжение
+            Click += (_, _) => taskList.Add(new Note());
+        }
+    }
+}
+﻿using System;
+using System.Windows.Forms;
+using TaskPlannerWithoutMediator.TextBoxes;
+
+namespace TaskPlannerWithoutMediator.Buttons
+{
+    public sealed class DeleteButton : Button
+    {
+        // Сильное сопряжение 💩
+        private TaskList _taskList;
+        private Title _title;
+        private Text _text;
+        private SaveButton _saveButton;
+
+        public DeleteButton(TaskList taskList, Title title, Text text, SaveButton saveButton)
+        {
+            _taskList = taskList;
+            // сопряжение
+            _taskList.SelectedIndexChanged += (_, _) => SelectNote();
+            _title = title;
+            _text = text;
+            _saveButton = saveButton;
+            Text = "Delete";
+        }
+
+        // сопряжение
+        protected override void OnClick(EventArgs e)
+        {
+            base.OnClick(e);
+            _taskList.Delete();
+            _title.Clear();
+            _text.Clear();
+            _saveButton.Hide();
+            Hide();
+        }
+
+        private void SelectNote()
+        {
+            var note = _taskList.GetCurrentNote();
+            if (note != null)
+            {
+                _title.Text = note.Title;
+                _text.Text = note.Text;
+                Show();
+            }
+            else
+                Hide();
+        }
+    }
+}
+﻿using System;
+using System.Windows.Forms;
+using TaskPlannerWithoutMediator.TextBoxes;
+
+namespace TaskPlannerWithoutMediator.Buttons
+{
+    public sealed class SaveButton : Button
+    {
+        // Сильное сопряжение 💩
+        private TaskList _taskList;
+        private Title _title;
+        private Text _text;
+
+        public SaveButton(TaskList taskList, Title title, Text text)
+        {
+            _taskList = taskList;
+            _title = title;
+            // сопряжение
+            _title.TextChanged += (_, _) => UpdateDisplayOfSaveButton();
+            _text = text;
+            // сопряжение
+            _text.TextChanged += (_, _) => UpdateDisplayOfSaveButton();
+            Text = "Save";
+        }
+
+        // сопряжение
+        protected override void OnClick(EventArgs e)
+        {
+            base.OnClick(e);
+            _taskList.UpdateSelected(new Note(_title.Text, _text.Text));
+        }
+
+        private void UpdateDisplayOfSaveButton()
+        {
+            if (_title.IsEmpty() || _taskList.IsEmpty())
+                Hide();
+            else
+                Show();
+        }
+    }
+}
+﻿using System.Windows.Forms;
+
+namespace TaskPlannerWithoutMediator.TextBoxes
+{
+    public sealed class Text : TextBox
+    {
+        public Text()
+        {
+            Multiline = true;
+            WordWrap = true;
+            ScrollBars = ScrollBars.Vertical;
+        }
+    }
+}
+﻿using System.Windows.Forms;
+
+namespace TaskPlannerWithoutMediator.TextBoxes
+{
+    public sealed class Title : TextBox
+    {
+        public Title()
+        {
+            Multiline = true;
+            ScrollBars = ScrollBars.None;
+        }
+
+        public bool IsEmpty()
+        {
+            return Text == string.Empty;
+        }
+    }
+}
