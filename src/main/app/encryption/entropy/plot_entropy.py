@@ -1,3 +1,4 @@
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import savgol_filter
@@ -15,16 +16,18 @@ def plot_entropy(title, entropies, hop, window_size, limit):
     x = np.linspace(window_size, limit, len(entropies))
     params = _get_savgol_filter_params(len(entropies))
     y_smooth = savgol_filter(entropies, params[0], params[1]) if params else entropies
-    plt.grid()
-    plt.title(title)
-    plt.xlabel(f'байты', fontsize=12)
-    plt.ylabel('энтропия %', fontsize=12)
     description = f'скользящее окно [{window_size}+{hop}] * {len(entropies)}'
     if params:
         description += f'\nws/order = {params[0]}/{params[1]}'
-    plt.plot(x, y_smooth, label=description)
-    plt.legend()
-    plt.show()
+
+    figure = plt.figure()
+    figure.set(xlabel=f'байты', ylabel='энтропия %', title=title, fontsize=12)
+    # figure.plot(x, y_smooth, label=description)
+    figure.legend()
+    ax = figure.gca()
+    ax.grid()
+    ax.plot(x, y_smooth, label=description)
+    ax.show()
 
 
 def _get_savgol_filter_params(entropies_len: int):
@@ -38,8 +41,9 @@ def _get_savgol_filter_params(entropies_len: int):
 
 
 def main():
-    # text = read_file(f'../../../source/x.txt')
-    text = input().encode()
+    matplotlib.use('TkAgg')
+    text = read_file(f'../../../source/x.txt')
+    # text = input().encode()
     data = list(text)
     len_before = len(data)
 
@@ -56,12 +60,12 @@ def main():
     if is_hex:
         print('!Обнаружен HEX!')
 
-    entropy_analyzer = EntropyAnalyzer(Entropy())
-    entropies, window_size, hop = entropy_analyzer.window_analyze(data)
-
-    title = f'{f"ЕСТЬ ШИФР (entr={is_encr}) (hex={is_hex})" if is_encr or is_hex else "НЕТ ШИФРА"}, вырезано {cut_out}%'
-    title += f'\nЭнтропия {entropy}% | {entropy_above_border}%{",  => HEX!" if is_hex else ""}'
-    plot_entropy(title, entropies, hop, window_size, len(data))
+    # entropy_analyzer = EntropyAnalyzer(Entropy())
+    # entropies, window_size, hop = entropy_analyzer.window_analyze(data)
+    #
+    # title = f'{f"ЕСТЬ ШИФР (entr={is_encr}) (hex={is_hex})" if is_encr or is_hex else "НЕТ ШИФРА"}, вырезано {cut_out}%'
+    # title += f'\nЭнтропия {entropy}% | {entropy_above_border}%{",  => HEX!" if is_hex else ""}'
+    # plot_entropy(title, entropies, hop, window_size, len(data))
 
 
 if __name__ == '__main__':
