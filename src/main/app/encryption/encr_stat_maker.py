@@ -61,6 +61,7 @@ def get_files_for_stat():
         '../../source/encr_non/py',
         '../../source/encr_non/sharp',
         '../../source/encr_non/bash',
+        '../../source/encr_non/php',
     ]
     encr_files = get_filenames_by_path(path_to_encr)
     no_encr_files = get_filenames_by_path(path_to_non_encr)
