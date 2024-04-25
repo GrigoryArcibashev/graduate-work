@@ -30,7 +30,7 @@ def make_entropy_for_encr():
         else:
             tn += 1
         cur_count += 1
-        print(f'\rСКАНИРОВАНИЕ и ЗАПИСЬ: {round(100 * cur_count / total_count)}%', end='')
+        print(f'\r{filename}: {round(100 * cur_count / total_count)}%', end='')
     for filename in encr_files:
         cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
         write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)
@@ -39,7 +39,7 @@ def make_entropy_for_encr():
         else:
             fn += 1
         cur_count += 1
-        print(f'\rСКАНИРОВАНИЕ и ЗАПИСЬ: {round(100 * cur_count / total_count)}%', end='')
+        print(f'\r{filename}: {round(100 * cur_count / total_count)}%', end='')
     print()
 
     precision, recall, f_score = calc_metrics(fn, fp, tp)
@@ -58,10 +58,17 @@ def make_entropy_for_encr():
 def get_files_for_stat():
     path_to_encr = ['../../source/encr/']
     path_to_non_encr = [
+        '../../source/encr_non/php',
+        '../../source/encr_non/js',
         '../../source/encr_non/py',
+        '../../source/encr_non/ruby',
         '../../source/encr_non/sharp',
         '../../source/encr_non/bash',
-        '../../source/encr_non/php',
+        '../../source/encr_non/html',
+        '../../source/encr_non/css',
+        '../../source/encr_non/xml',
+        '../../source/encr_non/sql',
+        '../../source/encr_non/other',
     ]
     encr_files = get_filenames_by_path(path_to_encr)
     no_encr_files = get_filenames_by_path(path_to_non_encr)
@@ -95,7 +102,7 @@ def determinate(ed_en, ed_hex, ef, filename):
     bytes_text = list(text)
     len_before = len(bytes_text)
     filtered_text = ef.filter(bytes_text)
-    cut_out = round(100 - len(filtered_text) / (len_before / 100), 2)
+    cut_out = round(100 - len(filtered_text) / (max(1.0, len_before / 100)), 2)
     is_encr, entropy, entropy_above_border = ed_en.determinate(filtered_text)
     return cut_out, entropy, entropy_above_border, is_encr, is_hex_encr
 

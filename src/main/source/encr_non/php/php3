@@ -1,5 +1,3 @@
-!phpdotnet/phd/Format/Abstract/PDF.php
-
 <?php
 namespace phpdotnet\phd;
 

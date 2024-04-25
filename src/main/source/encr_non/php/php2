@@ -1,7 +1,3 @@
-!phpdotnet/phd/Autoloader.php
-!phpdotnet/phd/Package/PHP/BigXHTML.php
-!phpdotnet/phd/Package/IDE/Funclist.php
-
 <?php
 namespace phpdotnet\phd;
 

@@ -1,8 +1,3 @@
-!my_code/five_semestr/auxiliary_things/approximate_solutions.py
-!my_code/five_semestr/auxiliary_things/roots_of_char_eq.py
-!my_code/five_semestr/auxiliary_things/first_approx_system.py
-
-
 from collections import namedtuple
 from math import cos, log, pi, sin, sqrt
 

@@ -1,5 +1,3 @@
-!phpdotnet/phd/Index.php
-
 <?php
 namespace phpdotnet\phd;
 

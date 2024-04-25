@@ -1,0 +1,1003 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<!-- www.check-domains.com sitemap generator -->
+
+<url>
+   <loc>http://gtk.php.net/</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>1.0000</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/index.php?language=en-US</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/download.php?language=en-US</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/documentation.php?language=en-US</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/index.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/null.php?language=en-US</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/index.php?language=pt-BR</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/download.php?language=pt-BR</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/documentation.php?language=pt-BR</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/manual.txt</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/manual.pdf</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/bigmanualhtml.zip</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/manualhtml.zip</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/preface.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/appendix.doccredits.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/copyright.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/reference.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/appendix.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/null.php?language=pt-BR</loc>
+   <lastmod>2015-12-15T14:59:26+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/appendix.credits.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/appendix.license.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.installation.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.helloworld.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.helloadvanced.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.helloglade.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.changes.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.gtkpangoco.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.packing.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.objectorientation.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.signals.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.treeview.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.doccing.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.doccing.standards.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/classtree.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gobjectclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atkclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdkclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtkclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/pangoclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gladeclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/extraclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/htmlclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/sextclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/mozembedclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/scintillaclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/sourceviewclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/spellclasses.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atkenums.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdkenums.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtkenums.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gobjectenums.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/pangoenums.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/pango/pango.enum.wrap.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/appendix.keysyms.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/appendix.glossary.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/classindex.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/methodindex.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/fieldindex.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/signalindex.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/enumindex.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.5120</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.installation.windows.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.installation.linux.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.installation.macosx.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.installation.macosx-stepbystep.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkwindow.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkobject.signal.destroy.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.method.main_quit.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtklabel.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkwidget.method.show.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkwidget.method.show_all.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkbutton.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtktable.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkhbuttonbox.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkbin.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkvbox.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkentry.method.get_text.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkentry.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkmessagedialog.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.helloglade.preparation.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.helloglade.loading.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.helloglade.partial.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.changes.loadmodule.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.changes.references.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.changes.constants.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.changes.connect.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.changes.deprecated.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtktextview.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/pango/pango.pangolayout.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.packing.basics.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.packing.box.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.packing.table.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.packing.fixed.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.objectorientation.basics.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.objectorientation.advanced.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.objectorientation.summary.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.signals.signals.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.signals.callbacks.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.signals.connecting.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.signals.events.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.signals.summary.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkadjustment.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkadjustment.signal.value-changed.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkprogressbar.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.treeview.model.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.treeview.view.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkclist.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkctree.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtktreeview.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtktreemodel.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.doccing.checkout.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.doccing.translating.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/tutorials/tutorials.doccing.writing.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gobject.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atk/atk.atkhyperlink.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atk/atk.atkobject.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atk/atk.atknoopobject.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkaccessible.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atk/atk.atkobjectfactory.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atk/atk.atknoopobjectfactory.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atk/atk.atkregistry.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atk/atk.atkrelation.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atk/atk.atkrelationset.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atk/atk.atkstateset.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/atk/atk.atkutil.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkcolormap.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkdevice.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkdisplay.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkdisplaymanager.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkdragcontext.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkdrawable.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkpixmap.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkwindow.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkgc.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkimage.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkkeymap.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkpixbuf.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkpixbufanimation.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkpixbufanimationiter.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkpixbufloader.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkscreen.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gdk/gdk.gdkvisual.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkaccelgroup.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkaction.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtktoggleaction.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkradioaction.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkactiongroup.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkclipboard.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkentrycompletion.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkiconfactory.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkicontheme.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkliststore.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkobject.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkcellrenderer.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkcellrendererpixbuf.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkcellrendererprogress.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkcellrenderertext.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkcellrenderercombo.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkcellrenderertoggle.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkfilefilter.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkimcontext.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkimcontextsimple.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkimmulticontext.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtkitemfactory.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtktooltips.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>
+<url>
+   <loc>http://gtk.php.net/manual/en/html/gtk/gtk.gtktreeviewcolumn.html</loc>
+   <lastmod>2015-12-13T11:00:09+00:00</lastmod>
+   <changefreq>weekly</changefreq>
+   <priority>0.4096</priority>
+</url>

@@ -1,11 +1,4 @@
-﻿!Mediator/TaskPlannerWithoutMediator/Buttons/SaveButton.cs
-!Mediator/TaskPlannerWithoutMediator/Buttons/DeleteButton.cs
-!Mediator/TaskPlannerWithoutMediator/Buttons/AddButton.cs
-!Mediator/TaskPlannerWithoutMediator/TextBoxes/Title.cs
-!Mediator/TaskPlannerWithoutMediator/TextBoxes/Text.cs
-!Mediator/TaskPlannerWithoutMediator/TaskList.cs
-
-﻿using System.Windows.Forms;
+﻿﻿using System.Windows.Forms;
 
 namespace TaskPlannerWithoutMediator
 {

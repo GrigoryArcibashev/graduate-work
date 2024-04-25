@@ -1,7 +1,3 @@
-!my_code/five_semestr/bifurcation_diagram.py
-!my_code/five_semestr/cycle_stability__lambda.py
-
-
 import numpy as np
 from auxiliary_things.graph_board import GraphBoard
 from auxiliary_things.point import Point

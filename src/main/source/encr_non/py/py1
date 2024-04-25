@@ -1,7 +1,3 @@
-!dns_server/server.py
-!dns_server/dns_message_parser.py
-
-
 import socket
 from argparse import ArgumentParser
 from typing import Optional

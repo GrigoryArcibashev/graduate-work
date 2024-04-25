@@ -1,6 +1,3 @@
-!Tests/AttackAndDeathOfCreaturesTests.cs
-!Tests/CreatureMovementTests.cs
-
 ﻿using System.Linq;
 using Model;
 using Model.Creatures.CreatureInterfaces;
