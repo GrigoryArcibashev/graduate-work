@@ -21,6 +21,7 @@ def make_entropy_for_encr():
     cur_count = 0
 
     file_stat = open('../../source/encr_stat.txt', 'w')
+    write_terminator_line(file_stat)
     for filename in no_encr_files:
         cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
         write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)
@@ -30,6 +31,7 @@ def make_entropy_for_encr():
             tn += 1
         cur_count += 1
         print(f'\r{round(100 * cur_count / total_count)}% : {filename}', end='')
+    write_terminator_line(file_stat)
     for filename in encr_files:
         cut_out, entropy, entropy_above_border, is_encr, is_hex_encr = determinate(ed_entropy, ed_hex, ef, filename)
         write_result(cut_out, entropy, entropy_above_border, file_stat, filename, is_encr, is_hex_encr)
@@ -67,7 +69,8 @@ def get_files_for_stat():
         '../../source/encr_non/css',
         '../../source/encr_non/xml',
         '../../source/encr_non/sql',
-        '../../source/encr_non/other',
+        '../../source/encr_non/other/arch',
+        '../../source/encr_non/other/img',
     ]
     encr_files = get_filenames_by_path(path_to_encr)
     no_encr_files = get_filenames_by_path(path_to_non_encr)
@@ -79,6 +82,10 @@ def get_filenames_by_path(paths):
     for path in paths:
         filenames.extend(filter(isfile, (map(lambda f: join(path, f), listdir(path)))))
     return filenames
+
+
+def write_terminator_line(file):
+    file.write(f'{"=" * 52}\n{"=" * 52}\n\t\t\t\t\tНОВЫЙ РАЗДЕЛ\n{"=" * 52}\n{"=" * 52}\n\n')
 
 
 def write_metrics(f_score, file_stat, fn, fp, precision, recall, tn, tp):
