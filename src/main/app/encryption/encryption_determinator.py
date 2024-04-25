@@ -1,4 +1,7 @@
 import re
+from enum import Enum
+
+from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
 
 
 class EncryptionDeterminatorByHEX:
@@ -51,13 +54,29 @@ class EncryptionDeterminatorByHEX:
         return True
 
 
+class OperatingMode(Enum):
+    OPTIMAL = 0
+    STRICT = 1
+
+
 class EncryptionDeterminatorByEntropy:
-    def __init__(self, entropy_analyzer):
+    def __init__(self, entropy_analyzer: EntropyAnalyzer, mode: OperatingMode):
         self._entropy_analyzer = entropy_analyzer
-        self._window_encryption_border = 60
-        self._unconditional_lower_bound_of_entropy = 70
-        self._conditional_lower_bound_of_entropy = 60
-        self._percent_of_entropy_vals_for_window = 60
+        self._set_boundaries(mode)
+
+    def _set_boundaries(self, mode: OperatingMode) -> None:
+        if mode == OperatingMode.OPTIMAL:
+            self._window_encryption_border = 60
+            self._unconditional_lower_bound_of_entropy = 70
+            self._conditional_lower_bound_of_entropy = 60
+            self._percent_of_entropy_vals_for_window = 60
+            self._upper_bound_of_entropy = 95
+        elif mode == OperatingMode.STRICT:
+            self._window_encryption_border = 55
+            self._unconditional_lower_bound_of_entropy = 65
+            self._conditional_lower_bound_of_entropy = 55
+            self._percent_of_entropy_vals_for_window = 70
+            self._upper_bound_of_entropy = float('+inf')
 
     def determinate(self, data):
         entropy = self._entropy_analyzer.analyze(data)
@@ -67,8 +86,11 @@ class EncryptionDeterminatorByEntropy:
         return self._is_encr(entropy, entropy_above_border), entropy, entropy_above_border
 
     def _is_encr(self, entropy, entropy_above_border):
+        if entropy >= self._upper_bound_of_entropy:
+            return False
+        if entropy >= self._unconditional_lower_bound_of_entropy:
+            return True
         return (
-                entropy >= self._unconditional_lower_bound_of_entropy
-                or entropy >= self._conditional_lower_bound_of_entropy
+                entropy >= self._conditional_lower_bound_of_entropy
                 and entropy_above_border >= self._percent_of_entropy_vals_for_window
         )

@@ -6,7 +6,8 @@ from scipy.signal import savgol_filter
 from src.main.app.encryption.encryption_filter import EncryptionFilter
 from src.main.app.words_service.word_loader import SimpleWordLoader
 from src.main.app.words_service.word_dict_service import WordDictService
-from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy, EncryptionDeterminatorByHEX
+from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy, \
+    EncryptionDeterminatorByHEX, OperatingMode
 from src.main.app.encryption.entropy.entropy import Entropy
 from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
 from src.main.app.file_reader import read_file
@@ -41,13 +42,12 @@ def _get_savgol_filter_params(entropies_len: int):
 
 
 def main():
-    matplotlib.use('TkAgg')
     text = read_file(f'../../../source/x.txt')
     # text = input().encode()
     data = list(text)
     len_before = len(data)
 
-    ed = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()))
+    ed = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()), OperatingMode.STRICT)
     ed_hex = EncryptionDeterminatorByHEX()
     ef = EncryptionFilter(WordDictService(SimpleWordLoader('../../words_service/words_by_len.bin')))
     data = ef.filter(data)

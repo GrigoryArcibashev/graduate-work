@@ -27,7 +27,7 @@ class EncryptionFilter:
 
     def filter(self, data: list[int]) -> list[int]:
         result = list()
-        prev_let_token_is_encr = False
+        prev_let_token_is_encr = True
         current_non_letter_tokens = list()
         for token in self._token_extractor.get_token_iter(data):
             if token.type == TokenType.LETTERS:
@@ -40,6 +40,7 @@ class EncryptionFilter:
                 current_non_letter_tokens.clear()
             else:
                 current_non_letter_tokens.append(token)
+        result.extend(current_non_letter_tokens)
         return self.map_tokens_to_bytes(result)
 
     def process_letter_token(self, token, current_non_letter_tokens, prev_let_token_is_encr) -> (list[Token], bool):

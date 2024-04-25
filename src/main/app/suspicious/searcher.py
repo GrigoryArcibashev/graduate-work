@@ -35,6 +35,13 @@ class SuspySearcher:
                 },
             },
             DangerLevel.SUSPICIOUS: {
+                SuspiciousType.GENERAL: {
+                    re.compile(br'[_\W](rot_?(?:5|13|18|47))', re.IGNORECASE),
+                    re.compile(
+                        br'[_\W]((?:ascii|base|radix)_?(?:16|32|36|45|56|58|62|64|85|91|94|122|xml)_?(?:hex|url)?)',
+                        re.IGNORECASE
+                    ),
+                },
                 SuspiciousType.COMMAND: {
                     re.compile(
                         br'\W([\"\'] *'
@@ -125,8 +132,6 @@ class SuspySearcher:
                 SuspiciousType.GENERAL: {
                     re.compile(br'\W([\"\']/bin/sh[\"\'])\W', re.IGNORECASE),
                     re.compile(br'((?:web)?shell(?:exec)?)', re.IGNORECASE),
-                    re.compile(br'[_\W](base_?(?:16|32|64|85))', re.IGNORECASE),
-                    re.compile(br'[_\W](rot_?13)', re.IGNORECASE),
                 },
                 SuspiciousType.EXECUTION: {
                     re.compile(br'\W(\$_GET\s*\[.+?])'),
@@ -165,8 +170,8 @@ class SuspySearcher:
 
 
 def main():
-    text = read_file('../../source/x.txt')
-    # text = input().encode()
+    # text = read_file('../../source/x.txt')
+    text = input().encode()
     searched = SuspySearcher().search(text)
     for sr in searched:
         print(sr)

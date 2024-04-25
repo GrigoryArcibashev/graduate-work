@@ -3,7 +3,8 @@ from os.path import isfile, join
 from src.main.app.encryption.encryption_filter import EncryptionFilter
 from src.main.app.words_service.word_loader import SimpleWordLoader
 from src.main.app.words_service.word_dict_service import WordDictService
-from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy, EncryptionDeterminatorByHEX
+from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy, \
+    EncryptionDeterminatorByHEX, OperatingMode
 from src.main.app.encryption.entropy.entropy import Entropy
 from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
 from src.main.app.file_reader import read_file
@@ -12,7 +13,7 @@ from src.main.app.file_reader import read_file
 def make_entropy_for_encr():
     tp = tn = fp = fn = 0
 
-    ed_entropy = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()))
+    ed_entropy = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()), OperatingMode.OPTIMAL)
     ed_hex = EncryptionDeterminatorByHEX()
     ef = EncryptionFilter(WordDictService(SimpleWordLoader('../words_service/words_by_len.bin')))
 
@@ -57,11 +58,19 @@ def make_entropy_for_encr():
 
 
 def get_files_for_stat():
-    path_to_encr = ['../../source/encr/']
+    path_to_encr = [
+        '../../source/encr/base32',
+        '../../source/encr/base64',
+        '../../source/encr/base85',
+        '../../source/encr/rot13',
+        '../../source/encr/hex',
+        '../../source/encr/AES',
+        '../../source/encr/DES_triple',
+    ]
     path_to_non_encr = [
         '../../source/encr_non/php',
         '../../source/encr_non/js',
-        '../../source/encr_non/py',
+        '../../source/encr_non/python',
         '../../source/encr_non/ruby',
         '../../source/encr_non/sharp',
         '../../source/encr_non/bash',
@@ -69,8 +78,8 @@ def get_files_for_stat():
         '../../source/encr_non/css',
         '../../source/encr_non/xml',
         '../../source/encr_non/sql',
-        # '../../source/encr_non/other/arch',
-        # '../../source/encr_non/other/img',
+        '../../source/encr_non/other/arch',
+        '../../source/encr_non/other/img',
     ]
     encr_files = get_filenames_by_path(path_to_encr)
     no_encr_files = get_filenames_by_path(path_to_non_encr)
