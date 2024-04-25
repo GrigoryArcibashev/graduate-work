@@ -1,0 +1,257 @@
+!my_code/five_semestr/bifurcation_diagram.py
+!my_code/five_semestr/cycle_stability__lambda.py
+
+
+import numpy as np
+from auxiliary_things.graph_board import GraphBoard
+from auxiliary_things.point import Point
+from auxiliary_things.utils import calculate_equilibrium_point
+from limit_cycle_builder import (
+    Input, build_trajectory_of_cycle,
+    find_start_point_of_cycle)
+
+
+def find_min_and_max_points_by_x(points: list[Point]) -> tuple[Point, Point]:
+    min_point = Point(float('+inf'), float('+inf'))
+    max_point = Point(float('-inf'), float('-inf'))
+    for point in points:
+        if point.x > max_point.x:
+            max_point = point
+        if point.x < min_point.x:
+            min_point = point
+    return min_point, max_point
+
+
+def find_min_and_max_points_by_y(points: list[Point]) -> tuple[Point, Point]:
+    min_point = Point(float('+inf'), float('+inf'))
+    max_point = Point(float('-inf'), float('-inf'))
+    for point in points:
+        if point.y > max_point.y:
+            max_point = point
+        if point.y < min_point.y:
+            min_point = point
+    return min_point, max_point
+
+
+def get_points_for_steady_graph(start: float, end: float, num: int):
+    points_for_function_x = []
+    points_for_function_y = []
+    for b in np.linspace(start=start, stop=end, num=num):
+        equilibrium = calculate_equilibrium_point(b)
+        points_for_function_x.append(Point(b, equilibrium.x))
+        points_for_function_y.append(Point(b, equilibrium.y))
+    return points_for_function_x, points_for_function_y
+
+
+def get_points_for_unsteady_graph(
+        points_for_function_x: list,
+        points_for_function_y: list,
+        start: float,
+        end: float,
+        num: int,
+        h: float):
+    points_for_function_x_unstable = []
+    points_for_function_x_min = []
+    points_for_function_x_max = []
+    last_point_x = points_for_function_x[-1]
+    offset_x_min = None
+    offset_x_max = None
+
+    points_for_function_y_unstable = []
+    points_for_function_y_min = []
+    points_for_function_y_max = []
+    last_point_y = points_for_function_y[-1]
+    offset_y_min = None
+    offset_y_max = None
+
+    start_point = None
+    points_xy = None
+    accuracy = 10 ** -7
+    for b in np.linspace(start=start, stop=end, num=num):
+        inp = Input(b, h, accuracy)
+        # start_point = find_start_point_of_cycle(inp, None)
+        if start_point is None:
+            start_point = find_start_point_of_cycle(inp, None)
+        else:
+            start_point = points_xy[-1]
+        points_xy = build_trajectory_of_cycle(start_point, inp)
+        min_x, max_x = find_min_and_max_points_by_x(points_xy)
+        min_y, max_y = find_min_and_max_points_by_y(points_xy)
+        if offset_x_min is None:
+            offset_x_min = abs(last_point_x.x - min_x.x)
+            offset_x_max = abs(last_point_x.x - max_x.x)
+            offset_y_min = abs(last_point_y.y - min_y.y)
+            offset_y_max = abs(last_point_y.y - max_y.y)
+        points_for_function_x_min.append(Point(b, min_x.x + offset_x_min))
+        points_for_function_x_max.append(Point(b, max_x.x - offset_x_max))
+        points_for_function_y_min.append(Point(b, min_y.y + offset_y_min))
+        points_for_function_y_max.append(Point(b, max_y.y - offset_y_max))
+
+        equilibrium = calculate_equilibrium_point(b)
+        points_for_function_x_unstable.append(Point(b, equilibrium.x))
+        points_for_function_y_unstable.append(Point(b, equilibrium.y))
+
+    points_for_function_x = [points_for_function_x_unstable[-1]]
+    points_for_function_x += points_for_function_x_max[::-1]
+    points_for_function_x += points_for_function_x_min
+    points_for_function_x += [points_for_function_x_unstable[-1]]
+
+    points_for_function_y = [points_for_function_y_unstable[-1]]
+    points_for_function_y += points_for_function_y_max[::-1]
+    points_for_function_y += points_for_function_y_min
+    points_for_function_y += [points_for_function_y_unstable[-1]]
+
+    return points_for_function_x, \
+           points_for_function_y, \
+           points_for_function_x_unstable, \
+           points_for_function_y_unstable
+
+
+def draw_bif_chart(start_b, stop_b, h, define_boundaries_of_instability=False):
+    begin_of_unstable_focus = 0.42
+    end_of_unstable_focus = 0.79
+    graph_board_x = GraphBoard('β', 'x')
+    graph_board_y = GraphBoard('β', 'y')
+
+    if define_boundaries_of_instability:
+        kwargs1 = {
+            'x': begin_of_unstable_focus,
+            'linestyle': '--',
+            'linewidth': 0.4,
+            'color': 'red'
+            }
+        kwargs2 = {
+            'x': end_of_unstable_focus,
+            'linestyle': '--',
+            'linewidth': 0.4,
+            'color': 'red'
+            }
+        graph_board_x.add_vertical_line(**kwargs1)
+        graph_board_x.add_vertical_line(**kwargs2)
+        graph_board_y.add_vertical_line(**kwargs1)
+        graph_board_y.add_vertical_line(**kwargs2)
+
+    points_for_function_x, points_for_function_y = get_points_for_steady_graph(
+            start_b,
+            begin_of_unstable_focus,
+            int((begin_of_unstable_focus - start_b) / h)
+            )
+    graph_board_x.add_graph(points_for_function_x, color='black')
+    graph_board_y.add_graph(points_for_function_y, color='black')
+    points_for_function_x, \
+    points_for_function_y, \
+    points_for_function_x_unstable, \
+    points_for_function_y_unstable = get_points_for_unsteady_graph(
+            points_for_function_x,
+            points_for_function_y,
+            begin_of_unstable_focus,
+            end_of_unstable_focus,
+            int((end_of_unstable_focus - begin_of_unstable_focus) / h),
+            h
+            )
+    graph_board_x.add_graph(points_for_function_x, color='black')
+    graph_board_y.add_graph(points_for_function_y, color='black')
+    graph_board_x.add_graph(
+            points_for_function_x_unstable, linestyle='--', color='black')
+    graph_board_y.add_graph(
+            points_for_function_y_unstable, linestyle='--', color='black')
+    points_for_function_x, \
+    points_for_function_y = get_points_for_steady_graph(
+            end_of_unstable_focus,
+            stop_b,
+            int((stop_b - end_of_unstable_focus) / h))
+    graph_board_x.add_graph(points_for_function_x, color='black')
+    graph_board_y.add_graph(points_for_function_y, color='black')
+    graph_board_x.show()
+    graph_board_y.show()
+
+
+def main():
+    start_b = 0
+    stop_b = 3
+    h = 0.01
+    draw_bif_chart(start_b, stop_b, h, define_boundaries_of_instability=True)
+
+
+from my_code.five_semestr.auxiliary_things.graph_board import GraphBoard
+import numpy as np
+
+from my_code.five_semestr.auxiliary_things.point import Point
+from my_code.five_semestr.auxiliary_things.roots_of_char_eq import get_first_root_of_char_eq, \
+    get_second_root_of_char_eq
+from my_code.five_semestr.cycle_stability__multiplier import gen_points_with_lambda
+
+
+def gen_points_for_solutions() -> tuple[list[Point], list[Point]]:
+    points_first = []
+    points_second = []
+    for b in np.linspace(0, 3, 600):
+        points_first.append(Point(b, get_first_root_of_char_eq(b)))
+        points_second.append(Point(b, get_second_root_of_char_eq(b)))
+    return points_first, points_second
+
+
+def gen_points_for_stability():
+    h = 0.01  # float(input('Input step of the numerical scheme: '))
+    accuracy = 10 ** -7  # float(input('Input the accuracy of finding the cycle: '))
+    return gen_points_with_lambda(h, accuracy, Point(0.15, 0.1))
+
+
+def main() -> None:
+    gb = GraphBoard('β', 'Reλ')
+    points_first, points_second = gen_points_for_solutions()
+    gb.add_graph(points_first)
+    gb.add_graph(points_second)
+    gb.add_graph(gen_points_for_stability(), color='red')
+    gb.add_vertical_line(0.419992, color="black", linestyle="--")
+    gb.add_vertical_line(0.7789688, color="black", linestyle="--")
+    gb.show()
+
+
+if __name__ == '__main__':
+    main()
+
+from typing import Optional
+from my_code.five_semestr.auxiliary_things.funcs import f, g
+from my_code.five_semestr.auxiliary_things.point import Point
+
+
+def generate_points_by_Euler(
+        param_b: float,
+        start_point: Optional[Point],
+        h: float) -> Point:
+    prev_point = start_point
+    while True:
+        yield prev_point
+        next_x = prev_point.x + h * f(prev_point.x, prev_point.y)
+        next_y = prev_point.y + h * g(prev_point.x, prev_point.y, param_b)
+        prev_point = Point(next_x, next_y)
+
+
+def calc_numerical_scheme_RungeKutt(
+        param_b: float,
+        point: Optional[Point],
+        h: float) -> tuple[float, float]:
+    K1 = h * f(point.x, point.y)
+    L1 = h * g(point.x, point.y, param_b)
+    K2 = h * f(point.x + K1 / 2, point.y + L1 / 2)
+    L2 = h * g(point.x + K1 / 2, point.y + L1 / 2, param_b)
+    K3 = h * f(point.x + K2 / 2, point.y + L2 / 2)
+    L3 = h * g(point.x + K2 / 2, point.y + L2 / 2, param_b)
+    K4 = h * f(point.x + K3, point.y + L3)
+    L4 = h * g(point.x + K3, point.y + L3, param_b)
+    return (K1 + 2 * K2 + 2 * K3 + K4) / 6, \
+           (L1 + 2 * L2 + 2 * L3 + L4) / 6
+
+
+def generate_points_by_RungeKutt(
+        param_b: float,
+        start_point: Optional[Point],
+        h: float) -> Point:
+    prev_point = start_point
+    while True:
+        yield prev_point
+        x_add, y_add = calc_numerical_scheme_RungeKutt(param_b, prev_point, h)
+        next_x = prev_point.x + x_add
+        next_y = prev_point.y + y_add
+        prev_point = Point(next_x, next_y)
