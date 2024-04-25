@@ -45,13 +45,13 @@ def make_entropy_for_encr():
     write_metrics(f_score, file_stat, fn, fp, precision, recall, tn, tp)
     file_stat.close()
 
-    print(f'Вер. срабатывание: {tp}  (TP)')
-    print(f'Вер. пропуск:      {tn} (TN)')
+    print(f'Вер. срабатывание: {tp} (TP)')
     print(f'Лож. срабатывание: {fp} (FP)')
+    print(f'Вер. пропуск:      {tn} (TN)')
     print(f'Лож. пропуск:      {fn} (FN)')
-    print(f'Точность = {round(100 * precision)}%')
-    print(f'Полнота =  {round(100 * recall)}%')
-    print(f'F-score =  {round(100 * f_score)}%')
+    print(f'Точность = {round(100 * precision, 2)}%')
+    print(f'Полнота =  {round(100 * recall, 2)}%')
+    print(f'F-score =  {round(100 * f_score, 2)}%')
 
 
 def get_files_for_stat():
@@ -82,7 +82,10 @@ def get_filenames_by_path(paths):
 
 
 def write_metrics(f_score, file_stat, fn, fp, precision, recall, tn, tp):
-    file_stat.write(f'TP {tp}\nTN {tn}\nFP {fp}\nFN {fn}\n')
+    file_stat.write(f'Вер. срабатывание: {tp} (TP)\n')
+    file_stat.write(f'Лож. срабатывание: {fp} (FP)\n')
+    file_stat.write(f'Вер. пропуск:      {tn} (TN)\n')
+    file_stat.write(f'Лож. пропуск:      {fn} (FN))\n')
     file_stat.write(f'Точность = {round(100 * precision)}%\n')
     file_stat.write(f'Полнота = {round(100 * recall)}%\n')
     file_stat.write(f'F-score = {round(100 * f_score)}%\n')
