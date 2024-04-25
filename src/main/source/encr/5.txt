@@ -1,0 +1,42 @@
+﻿<html>
+
+<head>
+	<title>hemmeing code</title>
+	<script>
+		function code() {
+			let message = getValueOfElementById('enteredMessage');
+			let controlBits = getControlBits(message);
+			document.getElementById('codedMessage').value = message.join('') + controlBits.join('');
+			document.getElementById('decodedMessage').value = "";
+			document.getElementById('informationOfError').textContent = "";
+		}
+
+		function decode() {
+			let codedMessage = getValueOfElementById('codedMessage');
+			let syndrome = getSyndrome(codedMessage);
+			codedMessage = getCorrectedCodedMessage(codedMessage, getNumberIncorrectBit(syndrome));
+			document.getElementById('decodedMessage').value = codedMessage.slice(0, 4).join('');
+		}
+DQoJCWZ1bmN0aW9uIGdldENvbnRyb2xCaXRzKG1lc3NhZ2UpIHsNCgkJCWxldCBjb250cm9sQml0cyA9IG5ldyBBcnJheSgpOw0KCQkJY29udHJvbEJpdHMucHVzaCgobWVzc2FnZVswXSArIG1lc3NhZ2VbMV0gKyBtZXNzYWdlWzJdKSAlIDIpOw0KCQkJY29udHJvbEJpdHMucHVzaCgobWVzc2FnZVsxXSArIG1lc3NhZ2VbMl0gKyBtZXNzYWdlWzNdKSAlIDIpOw0KCQkJY29udHJvbEJpdHMucHVzaCgobWVzc2FnZVswXSArIG1lc3NhZ2VbMV0gKyBtZXNzYWdlWzNdKSAlIDIpOw0KDQoJCQlyZXR1cm4gY29udHJvbEJpdHM7DQoJCX0NCg0KCQlmdW5jdGlvbiBnZXRTeW5kcm9tZShjb2RlZE1lc3NhZ2UpIHsNCgkJCWxldCBzeW5kcm9tZSA9IG5ldyBBcnJheSgpOw0KCQkJc3luZHJvbWUucHVzaCgoY29kZWRNZXNzYWdlWzRdICsgY29kZWRNZXNzYWdlWzBdICsgY29kZWRNZXNzYWdlWzFdICsgY29kZWRNZXNzYW
+dlWzNdKSAlIDIpOw0KDQoJCQlyZXR1cm4gc3luZHJvbWU7DQoJCX0NCg0KCQlmdW5jdGlvbiBnZXROdW1iZXJJbmNvcnJlY3RCaXQoc3luZHJvbWUpIHsNCgkJCWlmIChzeW5kcm9tZVswXSA9PSAwICYmIHN5bmRyb21lWzFdID09IDAgJiYgc3luZHJvbWVbMl0gPT0gMSkNCgkJCQlyZXR1cm4gNjsNCgkJCWlmIChzeW5kcm9tZVswXSA9PSAwICYmIHN5bmRyb21lWzFdID09IDEgJiYgc3luZHJvbWVbMl0gPT0gMCkNCgkJCQlyZXR1cm4gNTsNCgkJCWlmIChzeW5kcm9tZVswXSA9PSAwICYmIHN5bmRyb21lWzFdID09IDEgJiYgc3luZHJvbWVbMl0gPT0gMSkNCgkJCQlyZXR1cm4gMzsNCgkJCWlmIChzeW5kcm9tZVswXSA9PSAxICYmIHN5bmRyb21lWzFdID09IDAgJiYgc3luZHJvbWVbMl0gPT0gMCkNCgkJCQlyZXR1cm4gNDsNCgkJCWlmIChzeW5kcm9tZVswXSA9PSAxICYmIHN5bmRyb21lWzFdID09IDAgJiYgc3luZHJvbWVbMl0gPT0gMSkNCgkJCQlyZXR1cm4gMDsNCgkJCWlmIChzeW5kcm9tZVswXSA9PSAxICYmIHN5bmRyb21lWzFdID09IDEgJiYgc3luZHJvbWVbMl0gPT0gMCkNCgkJCQlyZXR1cm4gMjsNCgkJCWlmIChzeW5kcm9tZVswXSA9PSAxICYmIHN5bmRyb21lWzFdID09IDEgJiYgc3luZHJvbWVbMl0gPT0gMSkNCgkJCQlyZXR1cm4gMTsNCgkJCXJldHVybiAtMTsNCgkJfQ0KDQoJCWZ1bmN0aW9uIGdldENvcnJlY3RlZENvZGVkTWVzc2FnZShjb2RlZE1lc3NhZ2UsIG51bWJlckluY29ycmVjdEJpdCkgew0KCQkJaWYgKG51bWJlckluY29ycmVjdEJpdCAhPSAtMSkgew0KCQkJCWRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdpbmZvcm1hdGlvbk9mRXJyb3InKS50ZXh0Q29udGVudCA9ICJOdW1iZXIgaW5jb3JyZWN0IGJpdCAoZnJvbSAwKTogIiArIG51bWJlckluY29ycmVjdEJpdDsNCgkJCQljb2RlZE1lc3NhZ2VbbnVtYmVySW5jb3JyZWN0Qml0XSA9IChjb2RlZE1lc3NhZ2VbbnVtYmVySW5jb3JyZWN0Qml0XSArIDEpICUgMjsNCgkJCQlyZXR1cm4gY29kZWRNZXNzYWdlOw0KCQkJfQ0KCQkJZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2luZm9ybWF0aW9uT2ZFcnJvcicpLnRleHRDb250ZW50ID0gIkFsbCBiaXRzIGFyZSByZWNlaXZlZCBjb3JyZWN0bHkiOw0KCQkJcmV0dXJuIGNvZGVkTWVzc2FnZTsNCgkJfQ0KCTwvc2NyaXB0Pg0KPC9oZWFkPg0K
+		function getValueOfElementById(id) {
+			let value = document.getElementById(id).value;
+			value = value.split('');
+			for (let i = 0; i < value.length; i++)
+				value[i] *= 1;
+
+			return value;
+		}
+
+<body>
+	<h1>Hemmeing code</h1>
+	<p> <input type='text' id='enteredMessage'> Type the message </p>
+	<p> <input type='button' value='code' onClick='code()'> </p>
+	<p> <input type='text' id='codedMessage'> Coded message </p>
+	<p>DQoJCWZ1bmN0aW9uIGdldENvbnRyb2xCaXRzKG1lc3NhZ2UpIHsNCgkJCWxldCBjb250cm9sQml0cyA9IG5ldyBBcnJheSgpOw0KCQkJY29udHJvbEJpdHMucHVzaCgobWVzc2FnZVswXSArIG1lc3NhZ2VbMV0gKyBtZXNzYWdlWzJdKSAlIDIpOw0KCQkJY29udHJvbEJpdHMucHVzaCgobWVzc2FnZVsxXSArIG1lc3NhZ2VbMl0gKyBtZXNzYWdlWzNdKSAlIDIpOw0KCQkJY29udHJvbEJpdHMucHVzaCgobWVzc2FnZVswXSArIG1lc3NhZ2VbMV0gKyBtZXNzYWdlWzNdKSAlIDIpOw0KDQoJCQlyZXR1cm4gY29udHJvbEJpdHM7DQoJCX0NCg0KCQlmdW5jdGlvbiBnZXRTeW5kcm9tZShjb2RlZE1lc3NhZ2UpIHsNCgkJCWxldCBzeW5kcm9tZSA9IG5ldyBBcnJheSgpOw0KCQkJc3luZHJvbWUucHVzaCgoY29kZWRNZXNzYWdlWzRdICsgY29kZWRNZXNzYWdlWzBdICsgY29kZWRNZXNzYWdlWzFdICsgY29kZWRN
+ <input type='button' value='decode' onClick='decode()'> </p>
+	<p> <input type='text' id='decodedMessage'> Decoded message </p>
+	<p> <span id='informationOfError'> </span> </p>
+</body>
+
+</html>

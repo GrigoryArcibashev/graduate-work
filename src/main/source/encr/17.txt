@@ -1,0 +1,207 @@
+from PyQt5.QtCore import QRect, QSize, pyqtSlot
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (
+    QComboBox, QFileDialog, QInputDialog, QLabel,
+    QLineEdit, QMainWindow, QMenu, QMenuBar,
+    QMessageBox, QPushButton, QTextEdit)
+
+from app.model.searchers.abstract_substring_searcher import \
+    AbstractSubstringSearcher
+from app.model.searchers.aho_korasik_searcher import AhoKorasikSearcher
+from app.model.searchers.boyer_moore_searcher import BoyerMooreSearcher
+from app.model.searchers.brute_force_searcher import BruteForceSearcher
+from app.model.searchers.kmp_searcher import KMPSearcher
+from app.model.searchers.rabin_karp_searcher \
+    .polynomial_hash import RabinKarpWithPolynomialHashSearcher
+from app.model.searchers.rabin_karp_searcher.square_hash import \
+    RabinKarpWithSquareHashSearcher
+from app.model.utils.file_reader import read_file
+from app.model.utils.memory_profiler import MemoryProfiler
+from app.model.utils.only_russian import get_russian_text_by_url
+from app.model.utils.stopwatch import Stopwatch
+from app.ui.high_lighter import HighLighter
+
+
+class MainWindow(QMainWindow):
+    """Класс главного окна GUI"""
+
+    def __init__(self):
+        super().__init__()
+        self._standard_font = QFont('Arial', 12)
+        self._init_searchers_by_name()
+        self._init_window()
+        self._init_menu_bar()
+        self._init_text_viewer()
+        self._init_labels()
+        self._init_combo_of_searchers()
+        self._init_substring_input()
+        self._init_find_button()
+        self._init_high_lighter()
+        self._init_input_dialog()
+
+    @property
+    def _current_searcher(self) -> AbstractSubstringSearcher:
+        """Вабранный сейчас алгоритм поиска"""
+        searcher_name = self._combo_of_searchers.itemText(
+            self._combo_of_searchers.currentIndex()
+        )
+        searcher = self._searchers_by_name[searcher_name]
+        return searcher
+
+    def _init_high_lighter(self) -> None:
+        """Инициализирует подсветчика текста"""
+        self._high_lighter = HighLighter(self._text_viewer.document())
+
+    def _init_searchers_by_name(self) -> None:
+        """Инициализирует словарь поисковиков по имени"""
+        searchers = dict()
+        searchers['Brute Force'] = BruteForceSearcher()
+        searchers['Knut Morris Pratt'] = KMPSearcher()
+        searchers[
+            'Rabin Karp (Polynomial Hash)'
+        ] = RabinKarpWithPolynomialHashSearcher()
+        searchers[
+            'Rabin Karp (Square Hash)'] = RabinKarpWithSquareHashSearcher()
+        searchers['Boyer Moore'] = BoyerMooreSearcher()
+        searchers['Aho Korasik'] = AhoKorasikSearcher()
+        self._searchers_by_name: dict[
+            str, AbstractSubstringSearcher] = searchers
+
+    def _init_window(self) -> None:
+        """Инициализирует главное окно"""
+        self.setWindowTitle('Substring searcher')
+        self._size = QSize(800, 600)
+        self.setGeometry(200, 200, self._size.width(), self._size.height())
+        self.setFixedSize(self._size)
+
+    def _init_text_viewer(self) -> None:
+        """Инициализирует виджет для просмотра содержимого файла"""
+        text_viewer = QTextEdit(self)
+        text_viewer.setFont(self._standard_font)
+        text_viewer.setReadOnly(True)
+        size = QRect(
+            10, 30, self._size.width() - 20, self._size.height() // 1.5)
+        text_viewer.setGeometry(size)
+        self._text_viewer = text_viewer
+
+    def _init_menu_bar(self) -> None:
+        """Инициализирует меню бар"""
+        menu_bar = QMenuBar(self)
+        menu_bar.setFont(self._standard_font)
+        self.setMenuBar(menu_bar)
+        file_menu = QMenu('&Open', self)
+        file_menu.setFont(self._standard_font)
+        file_menu.addAction('&File', self._action_open_file)
+        file_menu.addAction('&URL', self._action_open_url)
+        menu_bar.addMenu(file_menu)
+
+    def _init_combo_of_searchers(self) -> None:
+        """Инициализирует интерфейс выбора алгоритма поиска"""
+        searchers = QComboBox(self)
+        size = QRect(150, self._size.height() // 1.5 + 50, 235, 30)
+        searchers.setGeometry(size)
+        searchers.setFont(self._standard_font)
+        for name_of_searcher in self._searchers_by_name.keys():
+            searchers.addItem(name_of_searcher)
+        self._combo_of_searchers: QComboBox = searchers
+
+    def _init_substring_input(self) -> None:
+        """Инициализирует окно для ввода искомой строки"""
+        sub_inp = QLineEdit(self)
+        sub_inp.setFont(self._standard_font)
+        size = QRect(150, self._size.height() // 1.5 + 90, 235, 30)
+        sub_inp.setGeometry(size)
+        self._substring_input = sub_inp
+
+    def _init_labels(self) -> None:
+        """Инициализирует все метки"""
+        self._init_memory_label()
+        self._init_time_label()
+        self._init_selected_searcher_label()
+        self._init_substring_label()
+
+    def _init_time_label(self) -> None:
+        """
+        Инициализирует метку, отображающую скорость работы алгоритма поиска
+        """
+        label = QLabel(self)
+        label.setFont(self._standard_font)
+        size = QRect(
+            self._size.width() // 2,
+            self._size.height() // 1.5 + 50,
+            self._size.width() // 2,
+            30,
+        )
+        label.setGeometry(size)
+        self._time_label = label
+
+    def _init_memory_label(self) -> None:
+        """
+ICAgICAgICDQmNC90LjRhtC40LDQu9C40LfQuNGA0YPQtdGCINC80LXRgtC60YMsCiAgICAgICAg0L7RgtC+0LHRgNCw0LbQsNGO0YnRg9GOINC60L7Qu9C40YfQtdGB0YLQstC+INC/0L7RgtGA0LXQsdC70Y/QtdC80L7QuSDQv9Cw0LzRj9GC0Lgg0L/RgNC4INC/0L7QuNGB0LrQtQogICAgICAgICIiIgogICAgICAgIGxhYmVsID0gUUxhYmVsKHNlbGYpCiAgICAgICAgbGFiZWwuc2V0Rm9udChzZWxmLl9zdGFuZGFyZF9mb250KQogICAgICAgIHNpemUgPSBRUmVjdCgKICAgICAgICAgICAgc2VsZi5fc2l6ZS53aWR0aCgpIC8vIDIsCiAgICAgICAgICAgIHNlbGYuX3NpemUuaGVpZ2h0KCkgLy8gMS41ICsgOTAsCiAgICAgICAgICAgIHNlbGYuX3NpemUud2lkdGgoKSAvLyAyLAogICAgICAgICAgICAzMCwKICAgICAgICApCiAgICAgICAgbGFiZWwuc2V0R2VvbWV0cnkoc2l6ZSkKICAgICAgICBzZWxmLl9tZW1vcnlfbGFiZWwgPSBsYWJlbAoKICAgIGRlZiBfaW5pdF9zZWxlY3RlZF9zZWFyY2hlcl9sYWJlbChzZWxmKSAtPiBOb25lOgogICAgICAgICIiItCY0L3QuNGG0LjQsNC70LjQt9C40YDRg9C10YIg0L/QvtGP0YHQvdC40YLQtdC70YzQvdGD0Y4g0LzQtdGC0LrRgyDQtNC70Y8g0LLRi9Cx0L7RgNCwINCw0LvQs9C+0YDQuNGC0LzQsCDQv9C+0LjRgdC60LAiIiIKICAgICAgICBsYWJlbCA9IFFMYWJlbChzZWxmKQogICAgICAgIHRleHQgPSAnU2VhcmNoIGFsZ29yaXRobScKICAgICAgICBsYWJlbC5zZXRGb250KHNlbGYuX3N0YW5kYXJkX2ZvbnQpCiAgICAgICAgbGFiZWwuc2V0VGV4dCh0ZXh0KQogICAgICAgIHNpemUgPSBRUmVjdCgxMCwgc2VsZi5fc2l6ZS5oZWlnaHQoKSAvLyAxLjUgKyA1MCwgMTMwLCAzMCkKICAgICAgICBsYWJlbC5zZXRHZW9tZXRyeShzaXplKQoKICAgIGRlZiBfaW5pdF9zdWJzdHJpbmdfbGFiZWwoc2VsZikgLT4gTm9uZToKICAgICAgICAiIiLQmNC90LjRhtC40LDQu9C40LfQuNGA0YPQtdGCINC/0L7Rj9GB0L3QuNGC0LXQu9GM0L3Rg9GOINC80LXRgtC60YMg0LTQu9GPINCy0LLQvtC00LAg0LjRgdC60L7QvNC+0Lkg0YHRgtGA0L7QutC4IiIiCiAgICAgICAgbGFiZWwgPSBRTGFiZWwoc2VsZikKICAgICAgICB0ZXh0ID0gJ1N1YnN0cmluZycKICAgICAgICBsYWJlbC5zZXRGb250KHNlbGYuX3N0YW5kYXJkX2ZvbnQpCiAgICAgICAgbGFiZWwuc2V0VGV4dCh0ZXh0KQogICAgICAgIHNpemUgPSBRUmVjdCgxMCwgc2VsZi5fc2l6ZS5oZWlnaHQoKSAvLyAxLjUgKyA5MCwgMTMwLCAzMCkKICAgICAgICBsYWJlbC5zZXRHZW9tZXRyeShzaXplKQoKICAgIGRlZiBfaW5pdF9maW5kX2J1dHRvbihzZWxmKSA=-> None:
+        """Инициализирует кнопку 'Find'"""
+        btn = QPushButton(self)
+        btn.setFont(self._standard_font)
+        btn.setText('Find')
+        size = QRect(
+            self._size.width() // 2 - 40, self._size.height() // 1.5 + 140,
+            80, 40
+        )
+        btn.setGeometry(size)
+        btn.clicked.connect(self._action_push_find_button)
+
+    def _init_input_dialog(self) -> None:
+        """Инициализирует всплывающее окно для ввода url"""
+        self._input_dialog = QInputDialog(None)
+        self._input_dialog.setInputMode(QInputDialog.TextInput)
+        self._input_dialog.setWindowTitle('Input URL')
+        self._input_dialog.setLabelText('Enter URL:')
+        self._input_dialog.setFixedSize(QSize(350, 100))
+        self._input_dialog.setFont(self._standard_font)
+
+    def _notify_about_open_text_resource_error(self):
+        QMessageBox.about(
+            self,
+            'Ошибка',
+            'Не удалось скопировать текст'
+        )
+
+    @pyqtSlot()
+    def _action_open_file(self) -> None:
+        """
+        Помещает содержимое выбранного файла в соответствующий
+        виджет для просмотра этого содержимого
+        """
+        file_name = QFileDialog.getOpenFileName(self)[0]
+        try:
+            self._text_viewer.setText(read_file(file_name))
+        except FileNotFoundError:
+            pass
+
+    @pyqtSlot()
+    def _action_open_url(self) -> None:
+        """Помещает текст из указанного url в виджет для просмотра текста"""
+        if self._input_dialog.exec_():
+            text = get_russian_text_by_url(self._input_dialog.textValue())
+            if text is None:
+                self._notify_about_open_text_resource_error()
+            else:
+                self._text_viewer.setText(text)
+CiAgICBkZWYgX2FjdGlvbl9wdXNoX2ZpbmRfYnV0dG9uKHNlbGYpIC0+IE5vbmU6CiAgICAgICAgIiIiCiAgICAgICAg0JfQsNC/0YPRgdC60LDQtdGCINC/0L7QuNGB0Log0YPQutCw0LfQsNC90L3QvtC5INGB0YLRgNC+0LrQuCDQsiDRgtC10LrRgdGC0LUsCiAgICAgICAg0L/QvtC00YHQstC10YfQuNCy0LDRjyDQvdCw0LnQtNC10L3QvdGL0LUg0LLRhdC+0LbQtNC10L3QuNGPCiAgICAgICAgIiIiCiAgICAgICAgc3RyaW5nID0gc2VsZi5fdGV4dF92aWV3ZXIudG9QbGFpblRleHQoKQogICAgICAgIGlmIGxlbihzdHJpbmcpID09IDA6CiAgICAgICAgICAgIHJldHVybgogICAgICAgIHN1YnN0cmluZyA9IHNlbGYuX3N1YnN0cmluZ19pbnB1dC50ZXh0KCkKICAgICAgICBzZWFyY2hfcmVzdWx0ID0gc2VsZi5fcnVuX3NlYXJjaGVyKAogICAgICAgICAgICBzZWxmLl9jdXJyZW50X3NlYXJjaGVyLCBzdHJpbmcsIHN1YnN0cmluZykKICAgICAgICBzZWxmLl9oaWdoX2xpZ2h0ZXIuaGlnaGxpZ2h0X2ZvdW5kX29jY3VycmVuY2VzKAogICAgICAgICAgICBzZWFyY2hfcmVzdWx0LCBsZW4oc3Vic3RyaW5nKSkKCiAgICBkZWYgX3J1bl9zZWFyY2hlcigKICAgICAgICAgICAgc2VsZiwKICAgICAgICAgICAgc2VhcmNoZXI6IEFic3RyYWN0U3Vic3RyaW5nU2VhcmNoZXIsCiAgICAgICAgICAgIHN0cmluZzogc3RyLAogICAgICAgICAgICBzdWJzdHJpbmc6IHN0cikgLT4gbGlzdFtpbnRdOgogICAgICAgICIiIgogICAgICAgINCX0LDQv9GD0YHQutCw0LXRgiDQv9C+0LjRgdC60L7QstC40Log0L/QvtC00YHRgtGA0L7QutC4INCyINGB0YLRgNC+0LrQtSwKICAgICAgICDQvtGC0L7QsdGA0LDQttCw0Y8g0LjQvdGE0L7RgNC80LDRhtC40Y4g0L4g0LfQsNGC0YDQsNGC0LDRhSDQstGA0LXQvNC10L3QuCDQuCDQv9Cw0LzRj9GC0LgKCiAgICAgICAgOnJldHVybjog0YHQv9C40YHQvtC6INC40L3QtNC10LrRgdC+0LIg0LIg0YHRgtGA0L7QutC1IHN0cmluZywKICAgICAgICDQs9C00LUg0L3QsNGH0LjQvdCw0LXRgtGB0Y8g0L/QvtC00YHRgtGA0L7QutCwIHN1YnN0cmluZwogICAgICAgICIiIgogICAgICAgIHN0b3B3YXRjaCA9IFN0b3B3YXRjaCgpCiAgICAgICAgbWVtb3J5X3Byb2ZpbGVyID0gTWVtb3J5UHJvZmlsZXIoKQogICAgICAgIHN0b3B3YXRjaC5zdGFydCgp
+        with memory_profiler.profile():
+            indexes = searcher.search(string, substring)
+        stopwatch.stop()
+        self._display_performance_information(stopwatch, memory_profiler)
+        return indexes
+
+    def _display_performance_information(
+        self,
+        stopwatch: Stopwatch,
+        memory_profiler: MemoryProfiler
+    ) -> None:
+        """Отображает информацию о затратах времени и памяти"""
+        time = round(stopwatch.get_time_in_seconds(), 3)
+        memory = round(
+            memory_profiler.get_peak_expended_memory_in_bytes() / 1024, 3)
+        self._time_label.setText(f'Время работы: {time} секунд')
+        self._memory_label.setText(
+            f'Максимальное потребление памяти: {memory} KB')

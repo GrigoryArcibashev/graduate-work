@@ -1,0 +1,185 @@
+\x5e\x71\x7c\xA4\x33\x00\xEF
+0x4Aff0x310xBF 0xcd 0x00
+
+
+_\xAF 0x34
+class EncryptionFilter:
+    def __init__(self, word_provider: WordProvider):
+        self._word_provider = word_provider
+        self._token_extractor = TokenExtractor()
+        self._word_extractor = WordExtractor()
+        self._encryption_boundary = 0.5
+
+    def filter(self, data: list[int]) -> list[int]:
+        result = list()
+        prev_let_token_is_encr = False
+        current_non_letter_tokens = list()
+        for token in self._token_extractor.get_token_iter(data):
+            if token.type == TokenType.LETTERS:
+                extend, prev_let_token_is_encr = self.process_letter_token(
+                    token,
+                    current_non_letter_tokens,
+                    prev_let_token_is_encr
+                )
+                result.extend(extend)
+                current_non_letter_tokens.clear()
+            else:
+                current_non_letter_tokens.append(token)
+        return self.map_tokens_to_bytes(result)
+
+    def process_letter_token(self, token, current_non_letter_tokens, prev_let_token_is_encr) -> (list[Token], bool):
+        res = list()
+        if self.is_letter_token_encr(token):
+            if prev_let_token_is_encr:  # encr _ encr
+                res.extend(current_non_letter_tokens)
+            elif len(current_non_letter_tokens) > 1:  # non _ encr
+                half = current_non_letter_tokens[len(current_non_letter_tokens) // 2:]
+                res.extend(half)
+            res.append(token)
+            is_encr = True
+        else:
+            if prev_let_token_is_encr and len(current_non_letter_tokens) > 1:  # encr _ non
+                half = current_non_letter_tokens[:len(current_non_letter_tokens) // 2]
+                res.extend(half)
+            is_encr = False
+        return res, is_encr
+
+    def is_letter_token_encr(self, token):
+        good_count = 0
+        for word in self._word_extractor.get_word_iter(token.value):
+            if self._word_provider.check_word(tuple(word)):
+                good_count += len(word)
+        return good_count / len(token.value) < self._encryption_boundary
+
+    @staticmethod
+    def map_tokens_to_bytes(tokens: list[Token[list[int], TokenType]]) -> list[int]:
+        result = list()
+        for token in tokens:
+            result.extend(token.value)
+        return result
+
+class EntropyAnalyzer:
+    def __init__(self, entropy_calculator):
+        self._entr22opy_calculator = entropy_calculator
+        self._min_window_size = 100
+        self._min_hope = 1
+        self._divider_for_window = 120
+        self._divider_for_hop = 5
+
+    def analyze(self, data):
+        return self._entropy_calculator.calc_entropy_in_percent(data)
+
+    def window_analyze(self, data):
+        window_size = self._calc_window_size(data)
+        hop = self._calc_hop_size(window_size)
+        shift = 0
+        limit = len(data)
+        entropies = []
+        while shift + window_size <= limit:
+            window = data[shift: shift + window_size]
+            entropies.append(self.analyze(window))
+            shift += hop
+        return entropies, window_size, hop
+
+    def _calc_hop_size(self, window_size):
+        hop = window_size // self._divider_for_hop
+        return max(hop, self._min_hope)
+
+    def _calc_window_size(self, data):
+        window_size = len(data) // self._divider_for_window
+        return min(max(window_size, self._min_window_size), len(data))
+      from typing import Iterator
+
+
+class WordExtractor:
+    def get_word_iter(self, string) -> Iterator:
+        current_lexeme = list()
+        prev_symbol = None
+        for i in range(len(string)):
+            symbol = string[i]
+            if self.is_new_lexeme(prev_symbol, symbol):
+                yield current_lexeme
+                current_lexeme = []
+            current_lexeme.append(symbol)
+            prev_symbol = symbol
+        if current_lexeme:
+            yield current_lexeme
+
+    def is_new_lexeme(self, prev_symbol, symbol) -> bool:
+        """
+        TRUE: aA
+        FALSE: a A aa Aa AA
+        """
+        if not prev_symbol:
+            return False
+        return not self._is_upper_letter(prev_symbol) and self._is_upper_letter(symbol)
+
+    @staticmethod
+    def _is_upper_letter(symbol) -> bool:
+        return ord(b'A') <= symbol <= ord(b'Z')
+
+import sys
+
+from src.main.app.encryption.encr_filter.words.word_loader import WordLoader
+
+
+class WordProvider:
+    def __init__(self, word_loader: WordLoader):
+        self._words = set(word_loader.load())
+        dict_size = round(sys.getsizeof(self._words) / 1024, 2)
+        print(f'\n----\nРазмер словаря: {dict_size} KB\n----\n')
+
+    def check_word(self, word) -> bool:
+        return word in self._words
+from collections import namedtuple
+from enum import Enum
+from typing import Iterator
+
+Token = namedtuple('Token', ['value', 'type'])
+
+
+class TokenType(Enum):
+    LETTERS = 0
+    DIGITS = 1
+    OTHER = 2
+
+
+class TokenExtractor:
+    def get_token_iter(self, string) -> Iterator[Token]:
+        current_lexeme = list()
+        symbol_type = None
+        prev_symbol_type = None
+        for i in range(len(string)):
+            symbol = string[i]
+            symbol_type = self._determinate_type(symbol)
+            if self._is_new_lexeme(prev_symbol_type, symbol, symbol_type):
+                yield Token(current_lexeme, prev_symbol_type)
+                current_lexeme = []
+            current_lexeme.append(symbol)
+            prev_symbol_type = symbol_type
+        if current_lexeme:
+            yield Token(current_lexeme, symbol_type)
+
+    def _is_new_lexeme(self, prev_symbol_type, symbol, symbol_type) -> bool:
+        return prev_symbol_type and (symbol_type != prev_symbol_type or self._is_non_alphanum(symbol))
+
+    def _determinate_type(self, symbol) -> TokenType:
+        if self._is_letter(symbol):
+            return TokenType.LETTERS
+        if self._is_digit(symbol):
+            return TokenType.DIGITS
+        return TokenType.OTHER
+
+    def _is_non_alphanum(self, symbol) -> bool:
+        return not (self._is_letter(symbol) or self._is_digit(symbol))
+
+    @staticmethod
+    def _is_letter(symbol) -> bool:
+        return (
+                ord(b'a') <= symbol <= ord(b'z')
+                or ord(b'A') <= symbol <= ord(b'Z')
+        )
+
+    @staticmethod
+    def _is_digit(symbol) -> bool:
+        return ord(b'0') <= symbol <= ord(b'9')

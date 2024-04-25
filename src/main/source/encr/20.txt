@@ -1,0 +1,1 @@
+ super().__init__IHN1cGVyKCkuX19pbml0X18ocGFyZW50KSBzZWxmLl9yZXNldCgpIHNlbGYuX2Zvcm1hdCA9IFFUZXh0Q2hhckZvcm1hdCgpQTextCharFormat()

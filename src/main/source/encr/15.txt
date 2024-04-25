@@ -1,0 +1,28 @@
+package online
+
+case class LibraryOperation[+R](run: LibraryDatabase => (LibraryDatabase, Either[Throwable, R])) {
+
+ICBkZWYgbWFwW1IyXShmOiBSID0+IFIyKTogTGlicmFyeU9wZXJhdGlvbltSMl0gPSBMaWJyYXJ5T3BlcmF0aW9uIHsgZGIgPT4KICAgIHZhbCAobmV3RGIsIHJlcykgPSBydW4oZGIpCgogICAgcmVzIG1hdGNoIHsKICAgICAgY2FzZSBMZWZ0KGVycm9yKSA9PiBuZXdEYiAtPiBMZWZ0KGVycm9yKQogICAgICBjYXNlIFJpZ2h0KHZhbHVlKSA9PiBuZXdEYiAtPiBSaWdodChmKHZhbHVlKSk=
+    }
+
+  }
+
+  def flatMap[R2](f: R => LibraryOperation[R2]): LibraryOperation[R2] = LibraryOperation { db =>
+    val (newDb, res: Either[Throwable, R]) = run(db)
+
+    res match {
+      case Left(error) => newDb -> Left(error)
+      case Right(value) =>
+
+        dmFsIHIxOiBMaWJyYXJ5T3BlcmF0aW9uW1IyXSA9IGYodmFsdWUpCiAgICAgICAgdmFsIHIyOiAoTGlicmFyeURhdGFiYXNlLCBFaXRoZXJbVGhyb3dhYmxlLCBSMl0pID0gcjEucnVuKG5ld0RiKQogICAgICAgIHZhbCByMzogaXRoZXJbVGhyb3dhYmxlLCBSMl0gPSByMi5fCiAgICAgICAgcjIuXzEgLT5yMi5fMg==
+    }
+  }
+}
+
+object LibraryOperation{
+
+  def failure(e: Throwable) = LibraryOperation(db => db -> Left(e))
+
+  def pure[R](value: R): LibraryOperation[R] = LibraryOperation(db => db -> Right(value))
+
+}

@@ -1,0 +1,4 @@
+package online
+case class Book(name: String, author: String)
+cGFja2FnZScjogU32UgY2xhc3MgQm9vayc2UgY2xhc3MgQbmxpbmUKCmNhIGF1dGhvcjogU32UgY2xhc3MgQm9vayc2UgY2xhc3MgQm9vayhuYW1lOiBTdm9vayhuYW1lOiBTdHJpbmcsIGF1dGhvcjoBTdHJpbmcs
+case class Client(name: String)

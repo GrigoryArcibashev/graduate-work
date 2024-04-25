@@ -1,0 +1,20 @@
+import zio.{Scope, ZIO, ZIOAppArgs, ZIOAppDefault}
+
+import java.time.LocalDateTime
+
+object ZIOMain extends ZIOAppDefault {
+
+
+ICBkZWYgZm9vKHN0YXJ0OiBJbnQpID0gZm9yIHsKICAgIC8vXyA8LSBaSU8uc3VjY2VlZChwcmludGxuKHMiZm9vIHN0YXJ0ZWQgYXQgJHtMb2NhbERhdGVUaW1lLm5vdygpfSIpKQogICAgXyA8LSBaSU8uc3VjY2VlZCB7CiAgICAgIHZhciBpOiBMb25nID0gMAogICAgICB2YXIgczogQmlnSW50ID0gc3RhcnQKCiAgICAgIHdoaWxlIChpIDwgMTAwMDAwMCkgewogICAgICAgIHMgPSBzICsgQmlnSW50KGkpLnBvdygyKQogICAgICAgIGkgPSBpICsgMQogICAgICB9CiAgICAgIHM=
+    }
+    //_ <- ZIO.succeed(println(s"foo ended at ${LocalDateTime.now()}"))
+  } yield ()
+
+  override def run: ZIO[Any with ZIOAppArgs with Scope, Any, Any] = for {
+    _ <- ZIO.succeed(println(LocalDateTime.now()))
+
+    qq <- (1 to 10000).map(n => foo(n)).reduce((z1, z2) => z1.zipPar(z2))
+
+    _ <- ZIO.succeed(println(LocalDateTime.now()))
+  } yield ()
+}

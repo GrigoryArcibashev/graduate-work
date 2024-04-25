@@ -162,7 +162,7 @@ cython_debug/
 Notes.docx
 /~$Notes.docx
 
-/src/main/source/
+/src/main/source/x.txt
 
 /src/main/app/words_service/_word_update.py
 /src/main/app/words_service/raw_words.txt
