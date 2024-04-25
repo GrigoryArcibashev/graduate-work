@@ -57,7 +57,11 @@ def make_entropy_for_encr():
 
 def get_files_for_stat():
     path_to_encr = ['../../source/encr/']
-    path_to_non_encr = ['../../source/encr_non/']
+    path_to_non_encr = [
+        '../../source/encr_non/py',
+        '../../source/encr_non/sharp',
+        '../../source/encr_non/bash',
+    ]
     encr_files = get_filenames_by_path(path_to_encr)
     no_encr_files = get_filenames_by_path(path_to_non_encr)
     return encr_files, no_encr_files
