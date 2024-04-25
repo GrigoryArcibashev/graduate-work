@@ -1,84 +1,783 @@
-# frozen_string_literal: true
-
-require_relative '../http'
-
-if $0 == __FILE__
-  require 'open-uri'
-  File.foreach(__FILE__) do |line|
-    puts line
-    break if line.start_with?('end')
+require 'net/protocol'
+require 'uri'
+require 'resolv'
+autoload :OpenSSL, 'openssl'
+module Net   #:nodoc:
+  class HTTPBadResponse < StandardError; end
+  class HTTPHeaderSyntaxError < StandardError; end
+  class HTTP < Protocol
+    VERSION = "0.4.1"
+    HTTPVersion = '1.1'
+    begin
+      require 'zlib'
+      HAVE_ZLIB=true
+    rescue LoadError
+      HAVE_ZLIB=false
+    end
+    def HTTP.version_1_2
+      true
+    end
+    def HTTP.version_1_2?
+      true
+    end
+    def HTTP.version_1_1?  #:nodoc:
+      false
+    end
+    class << HTTP
+      alias is_version_1_1? version_1_1?   #:nodoc:
+      alias is_version_1_2? version_1_2?   #:nodoc:
+    end
+    def HTTP.get_print(uri_or_host, path_or_headers = nil, port = nil)
+      get_response(uri_or_host, path_or_headers, port) {|res|
+        res.read_body do |chunk|
+          $stdout.print chunk
+        end
+      }
+      nil
+    end
+    def HTTP.get(uri_or_host, path_or_headers = nil, port = nil)
+      get_response(uri_or_host, path_or_headers, port).body
+    end
+    def HTTP.get_response(uri_or_host, path_or_headers = nil, port = nil, &block)
+      if path_or_headers && !path_or_headers.is_a?(Hash)
+        host = uri_or_host
+        path = path_or_headers
+        new(host, port || HTTP.default_port).start {|http|
+          return http.request_get(path, &block)
+        }
+      else
+        uri = uri_or_host
+        headers = path_or_headers
+        start(uri.hostname, uri.port,
+              :use_ssl => uri.scheme == 'https') {|http|
+          return http.request_get(uri, headers, &block)
+        }
+      end
+    end
+    def HTTP.post(url, data, header = nil)
+      start(url.hostname, url.port,
+            :use_ssl => url.scheme == 'https' ) {|http|
+        http.post(url, data, header)
+      }
+    end
+    def HTTP.post_form(url, params)
+      req = Post.new(url)
+      req.form_data = params
+      req.basic_auth url.user, url.password if url.user
+      start(url.hostname, url.port,
+            :use_ssl => url.scheme == 'https' ) {|http|
+        http.request(req)
+      }
+    end
+    def HTTP.default_port
+      http_default_port()
+    end
+    def HTTP.http_default_port
+      80
+    end
+    def HTTP.https_default_port
+      443
+    end
+    def HTTP.socket_type   #:nodoc: obsolete
+      BufferedIO
+    end
+    def HTTP.start(address, *arg, &block) # :yield: +http+
+      arg.pop if opt = Hash.try_convert(arg[-1])
+      port, p_addr, p_port, p_user, p_pass = *arg
+      p_addr = :ENV if arg.size < 2
+      port = https_default_port if !port && opt && opt[:use_ssl]
+      http = new(address, port, p_addr, p_port, p_user, p_pass)
+      http.ipaddr = opt[:ipaddr] if opt && opt[:ipaddr]
+      if opt
+        if opt[:use_ssl]
+          opt = {verify_mode: OpenSSL::SSL::VERIFY_PEER}.update(opt)
+        end
+        http.methods.grep(/\A(\w+)=\z/) do |meth|
+          key = $1.to_sym
+          opt.key?(key) or next
+          http.__send__(meth, opt[key])
+        end
+      end
+      http.start(&block)
+    end
+    class << HTTP
+      alias newobj new # :nodoc:
+    end
+    def HTTP.new(address, port = nil, p_addr = :ENV, p_port = nil, p_user = nil, p_pass = nil, p_no_proxy = nil)
+      http = super address, port
+      if proxy_class? then # from Net::HTTP::Proxy()
+        http.proxy_from_env = @proxy_from_env
+        http.proxy_address  = @proxy_address
+        http.proxy_port     = @proxy_port
+        http.proxy_user     = @proxy_user
+        http.proxy_pass     = @proxy_pass
+      elsif p_addr == :ENV then
+        http.proxy_from_env = true
+      else
+        if p_addr && p_no_proxy && !URI::Generic.use_proxy?(address, address, port, p_no_proxy)
+          p_addr = nil
+          p_port = nil
+        end
+        http.proxy_address = p_addr
+        http.proxy_port    = p_port || default_port
+        http.proxy_user    = p_user
+        http.proxy_pass    = p_pass
+      end
+      http
+    end
+    def initialize(address, port = nil) # :nodoc:
+      @address = address
+      @port    = (port || HTTP.default_port)
+      @ipaddr = nil
+      @local_host = nil
+      @local_port = nil
+      @curr_http_version = HTTPVersion
+      @keep_alive_timeout = 2
+      @last_communicated = nil
+      @close_on_empty_response = false
+      @socket  = nil
+      @started = false
+      @open_timeout = 60
+      @read_timeout = 60
+      @write_timeout = 60
+      @continue_timeout = nil
+      @max_retries = 1
+      @debug_output = nil
+      @response_body_encoding = false
+      @ignore_eof = true
+      @proxy_from_env = false
+      @proxy_uri      = nil
+      @proxy_address  = nil
+      @proxy_port     = nil
+      @proxy_user     = nil
+      @proxy_pass     = nil
+      @use_ssl = false
+      @ssl_context = nil
+      @ssl_session = nil
+      @sspi_enabled = false
+      SSL_IVNAMES.each do |ivname|
+        instance_variable_set ivname, nil
+      end
+    end
+    def inspect
+      "#<#{self.class} #{@address}:#{@port} open=#{started?}>"
+    end
+    def set_debug_output(output)
+      warn 'Net::HTTP#set_debug_output called after HTTP started', uplevel: 1 if started?
+      @debug_output = output
+    end
+    attr_reader :address
+    attr_reader :port
+    attr_accessor :local_host
+    attr_accessor :local_port
+    attr_reader :response_body_encoding
+    def response_body_encoding=(value)
+      value = Encoding.find(value) if value.is_a?(String)
+      @response_body_encoding = value
+    end
+    attr_writer :proxy_from_env
+    attr_writer :proxy_address
+    attr_writer :proxy_port
+    attr_writer :proxy_user
+    attr_writer :proxy_pass
+    def ipaddr
+      started? ?  @socket.io.peeraddr[3] : @ipaddr
+    end
+    def ipaddr=(addr)
+      raise IOError, "ipaddr value changed, but session already started" if started?
+      @ipaddr = addr
+    end
+    attr_accessor :open_timeout
+    attr_reader :read_timeout
+    attr_reader :write_timeout
+    def max_retries=(retries)
+      retries = retries.to_int
+      if retries < 0
+        raise ArgumentError, 'max_retries should be non-negative integer number'
+      end
+      @max_retries = retries
+    end
+    attr_reader :max_retries
+    def read_timeout=(sec)
+      @socket.read_timeout = sec if @socket
+      @read_timeout = sec
+    end
+    def write_timeout=(sec)
+      @socket.write_timeout = sec if @socket
+      @write_timeout = sec
+    end
+    attr_reader :continue_timeout
+    def continue_timeout=(sec)
+      @socket.continue_timeout = sec if @socket
+      @continue_timeout = sec
+    end
+    attr_accessor :keep_alive_timeout
+    attr_accessor :ignore_eof
+    def started?
+      @started
+    end
+    alias active? started?   #:nodoc: obsolete
+    attr_accessor :close_on_empty_response
+    def use_ssl?
+      @use_ssl
+    end
+    def use_ssl=(flag)
+      flag = flag ? true : false
+      if started? and @use_ssl != flag
+        raise IOError, "use_ssl value changed, but session already started"
+      end
+      @use_ssl = flag
+    end
+    SSL_IVNAMES = [
+      :@ca_file,
+      :@ca_path,
+      :@cert,
+      :@cert_store,
+      :@ciphers,
+      :@extra_chain_cert,
+      :@key,
+      :@ssl_timeout,
+      :@ssl_version,
+      :@min_version,
+      :@max_version,
+      :@verify_callback,
+      :@verify_depth,
+      :@verify_mode,
+      :@verify_hostname,
+    ] # :nodoc:
+    SSL_ATTRIBUTES = [
+      :ca_file,
+      :ca_path,
+      :cert,
+      :cert_store,
+      :ciphers,
+      :extra_chain_cert,
+      :key,
+      :ssl_timeout,
+      :ssl_version,
+      :min_version,
+      :max_version,
+      :verify_callback,
+      :verify_depth,
+      :verify_mode,
+      :verify_hostname,
+    ] # :nodoc:
+    attr_accessor :ca_file
+    attr_accessor :ca_path
+    attr_accessor :cert
+    attr_accessor :cert_store
+    attr_accessor :ciphers
+    attr_accessor :extra_chain_cert
+    attr_accessor :key
+    attr_accessor :ssl_timeout
+    attr_accessor :ssl_version
+    attr_accessor :min_version
+    attr_accessor :max_version
+    attr_accessor :verify_callback
+    attr_accessor :verify_depth
+    attr_accessor :verify_mode
+    attr_accessor :verify_hostname
+    def peer_cert
+      if not use_ssl? or not @socket
+        return nil
+      end
+      @socket.io.peer_cert
+    end
+    def start  # :yield: http
+      raise IOError, 'HTTP session already opened' if @started
+      if block_given?
+        begin
+          do_start
+          return yield(self)
+        ensure
+          do_finish
+        end
+      end
+      do_start
+      self
+    end
+    def do_start
+      connect
+      @started = true
+    end
+    private :do_start
+    def connect
+      if use_ssl?
+        @ssl_context = OpenSSL::SSL::SSLContext.new
+      end
+      if proxy? then
+        conn_addr = proxy_address
+        conn_port = proxy_port
+      else
+        conn_addr = conn_address
+        conn_port = port
+      end
+      debug "opening connection to #{conn_addr}:#{conn_port}..."
+      s = Timeout.timeout(@open_timeout, Net::OpenTimeout) {
+        begin
+          TCPSocket.open(conn_addr, conn_port, @local_host, @local_port)
+        rescue => e
+          raise e, "Failed to open TCP connection to " +
+            "#{conn_addr}:#{conn_port} (#{e.message})"
+        end
+      }
+      s.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
+      debug "opened"
+      if use_ssl?
+        if proxy?
+          plain_sock = BufferedIO.new(s, read_timeout: @read_timeout,
+                                      write_timeout: @write_timeout,
+                                      continue_timeout: @continue_timeout,
+                                      debug_output: @debug_output)
+          buf = +"CONNECT #{conn_address}:#{@port} HTTP/#{HTTPVersion}\r\n" \
+            "Host: #{@address}:#{@port}\r\n"
+          if proxy_user
+            credential = ["#{proxy_user}:#{proxy_pass}"].pack('m0')
+            buf << "Proxy-Authorization: Basic #{credential}\r\n"
+          end
+          buf << "\r\n"
+          plain_sock.write(buf)
+          HTTPResponse.read_new(plain_sock).value
+        end
+        ssl_parameters = Hash.new
+        iv_list = instance_variables
+        SSL_IVNAMES.each_with_index do |ivname, i|
+          if iv_list.include?(ivname)
+            value = instance_variable_get(ivname)
+            unless value.nil?
+              ssl_parameters[SSL_ATTRIBUTES[i]] = value
+            end
+          end
+        end
+        @ssl_context.set_params(ssl_parameters)
+        unless @ssl_context.session_cache_mode.nil? # a dummy method on JRuby
+          @ssl_context.session_cache_mode =
+              OpenSSL::SSL::SSLContext::SESSION_CACHE_CLIENT |
+                  OpenSSL::SSL::SSLContext::SESSION_CACHE_NO_INTERNAL_STORE
+        end
+        if @ssl_context.respond_to?(:session_new_cb) # not implemented under JRuby
+          @ssl_context.session_new_cb = proc {|sock, sess| @ssl_session = sess }
+        end
+        verify_hostname = @ssl_context.verify_hostname
+        case @address
+        when Resolv::IPv4::Regex, Resolv::IPv6::Regex
+          @ssl_context.verify_hostname = false
+        else
+          ssl_host_address = @address
+        end
+        debug "starting SSL for #{conn_addr}:#{conn_port}..."
+        s = OpenSSL::SSL::SSLSocket.new(s, @ssl_context)
+        s.sync_close = true
+        s.hostname = ssl_host_address if s.respond_to?(:hostname=) && ssl_host_address
+        if @ssl_session and
+           Process.clock_gettime(Process::CLOCK_REALTIME) < @ssl_session.time.to_f + @ssl_session.timeout
+          s.session = @ssl_session
+        end
+        ssl_socket_connect(s, @open_timeout)
+        if (@ssl_context.verify_mode != OpenSSL::SSL::VERIFY_NONE) && verify_hostname
+          s.post_connection_check(@address)
+        end
+        debug "SSL established, protocol: #{s.ssl_version}, cipher: #{s.cipher[0]}"
+      end
+      @socket = BufferedIO.new(s, read_timeout: @read_timeout,
+                               write_timeout: @write_timeout,
+                               continue_timeout: @continue_timeout,
+                               debug_output: @debug_output)
+      @last_communicated = nil
+      on_connect
+    rescue => exception
+      if s
+        debug "Conn close because of connect error #{exception}"
+        s.close
+      end
+      raise
+    end
+    private :connect
+    def on_connect
+    end
+    private :on_connect
+    def finish
+      raise IOError, 'HTTP session not yet started' unless started?
+      do_finish
+    end
+    def do_finish
+      @started = false
+      @socket.close if @socket
+      @socket = nil
+    end
+    private :do_finish
+    public
+    @is_proxy_class = false
+    @proxy_from_env = false
+    @proxy_addr = nil
+    @proxy_port = nil
+    @proxy_user = nil
+    @proxy_pass = nil
+    def HTTP.Proxy(p_addr = :ENV, p_port = nil, p_user = nil, p_pass = nil) #:nodoc:
+      return self unless p_addr
+      Class.new(self) {
+        @is_proxy_class = true
+        if p_addr == :ENV then
+          @proxy_from_env = true
+          @proxy_address = nil
+          @proxy_port    = nil
+        else
+          @proxy_from_env = false
+          @proxy_address = p_addr
+          @proxy_port    = p_port || default_port
+        end
+        @proxy_user = p_user
+        @proxy_pass = p_pass
+      }
+    end
+    class << HTTP
+      def proxy_class?
+        defined?(@is_proxy_class) ? @is_proxy_class : false
+      end
+      attr_reader :proxy_address
+      attr_reader :proxy_port
+      attr_reader :proxy_user
+      attr_reader :proxy_pass
+    end
+    def proxy?
+      !!(@proxy_from_env ? proxy_uri : @proxy_address)
+    end
+    def proxy_from_env?
+      @proxy_from_env
+    end
+    def proxy_uri # :nodoc:
+      return if @proxy_uri == false
+      @proxy_uri ||= URI::HTTP.new(
+        "http", nil, address, port, nil, nil, nil, nil, nil
+      ).find_proxy || false
+      @proxy_uri || nil
+    end
+    def proxy_address
+      if @proxy_from_env then
+        proxy_uri&.hostname
+      else
+        @proxy_address
+      end
+    end
+    def proxy_port
+      if @proxy_from_env then
+        proxy_uri&.port
+      else
+        @proxy_port
+      end
+    end
+    def proxy_user
+      if @proxy_from_env
+        user = proxy_uri&.user
+        unescape(user) if user
+      else
+        @proxy_user
+      end
+    end
+    def proxy_pass
+      if @proxy_from_env
+        pass = proxy_uri&.password
+        unescape(pass) if pass
+      else
+        @proxy_pass
+      end
+    end
+    alias proxyaddr proxy_address   #:nodoc: obsolete
+    alias proxyport proxy_port      #:nodoc: obsolete
+    private
+    def unescape(value)
+      require 'cgi/util'
+      CGI.unescape(value)
+    end
+    def conn_address # :nodoc:
+      @ipaddr || address()
+    end
+    def conn_port # :nodoc:
+      port()
+    end
+    def edit_path(path)
+      if proxy?
+        if path.start_with?("ftp://") || use_ssl?
+          path
+        else
+          "http://#{addr_port}#{path}"
+        end
+      else
+        path
+      end
+    end
+    public
+    def get(path, initheader = nil, dest = nil, &block) # :yield: +body_segment+
+      res = nil
+      request(Get.new(path, initheader)) {|r|
+        r.read_body dest, &block
+        res = r
+      }
+      res
+    end
+    def head(path, initheader = nil)
+      request(Head.new(path, initheader))
+    end
+    def post(path, data, initheader = nil, dest = nil, &block) # :yield: +body_segment+
+      send_entity(path, data, initheader, dest, Post, &block)
+    end
+    def patch(path, data, initheader = nil, dest = nil, &block) # :yield: +body_segment+
+      send_entity(path, data, initheader, dest, Patch, &block)
+    end
+    def put(path, data, initheader = nil)
+      request(Put.new(path, initheader), data)
+    end
+    def proppatch(path, body, initheader = nil)
+      request(Proppatch.new(path, initheader), body)
+    end
+    def lock(path, body, initheader = nil)
+      request(Lock.new(path, initheader), body)
+    end
+    def unlock(path, body, initheader = nil)
+      request(Unlock.new(path, initheader), body)
+    end
+    def options(path, initheader = nil)
+      request(Options.new(path, initheader))
+    end
+    def propfind(path, body = nil, initheader = {'Depth' => '0'})
+      request(Propfind.new(path, initheader), body)
+    end
+    def delete(path, initheader = {'Depth' => 'Infinity'})
+      request(Delete.new(path, initheader))
+    end
+    def move(path, initheader = nil)
+      request(Move.new(path, initheader))
+    end
+    def copy(path, initheader = nil)
+      request(Copy.new(path, initheader))
+    end
+    def mkcol(path, body = nil, initheader = nil)
+      request(Mkcol.new(path, initheader), body)
+    end
+    def trace(path, initheader = nil)
+      request(Trace.new(path, initheader))
+    end
+    def request_get(path, initheader = nil, &block) # :yield: +response+
+      request(Get.new(path, initheader), &block)
+    end
+    def request_head(path, initheader = nil, &block)
+      request(Head.new(path, initheader), &block)
+    end
+    def request_post(path, data, initheader = nil, &block) # :yield: +response+
+      request Post.new(path, initheader), data, &block
+    end
+    def request_put(path, data, initheader = nil, &block)   #:nodoc:
+      request Put.new(path, initheader), data, &block
+    end
+    alias get2   request_get    #:nodoc: obsolete
+    alias head2  request_head   #:nodoc: obsolete
+    alias post2  request_post   #:nodoc: obsolete
+    alias put2   request_put    #:nodoc: obsolete
+    def send_request(name, path, data = nil, header = nil)
+      has_response_body = name != 'HEAD'
+      r = HTTPGenericRequest.new(name,(data ? true : false),has_response_body,path,header)
+      request r, data
+    end
+    def request(req, body = nil, &block)  # :yield: +response+
+      unless started?
+        start {
+          req['connection'] ||= 'close'
+          return request(req, body, &block)
+        }
+      end
+      if proxy_user()
+        req.proxy_basic_auth proxy_user(), proxy_pass() unless use_ssl?
+      end
+      req.set_body_internal body
+      res = transport_request(req, &block)
+      if sspi_auth?(res)
+        sspi_auth(req)
+        res = transport_request(req, &block)
+      end
+      res
+    end
+    private
+    def send_entity(path, data, initheader, dest, type, &block)
+      res = nil
+      request(type.new(path, initheader), data) {|r|
+        r.read_body dest, &block
+        res = r
+      }
+      res
+    end
+    IDEMPOTENT_METHODS_ = %w/GET HEAD PUT DELETE OPTIONS TRACE/ # :nodoc:
+    def transport_request(req)
+      count = 0
+      begin
+        begin_transport req
+        res = catch(:response) {
+          begin
+            req.exec @socket, @curr_http_version, edit_path(req.path)
+          rescue Errno::EPIPE
+          end
+          begin
+            res = HTTPResponse.read_new(@socket)
+            res.decode_content = req.decode_content
+            res.body_encoding = @response_body_encoding
+            res.ignore_eof = @ignore_eof
+          end while res.kind_of?(HTTPInformation)
+          res.uri = req.uri
+          res
+        }
+        res.reading_body(@socket, req.response_body_permitted?) {
+          if block_given?
+            count = max_retries # Don't restart in the middle of a download
+            yield res
+          end
+        }
+      rescue Net::OpenTimeout
+        raise
+      rescue Net::ReadTimeout, IOError, EOFError,
+             Errno::ECONNRESET, Errno::ECONNABORTED, Errno::EPIPE, Errno::ETIMEDOUT,
+             defined?(OpenSSL::SSL) ? OpenSSL::SSL::SSLError : IOError,
+             Timeout::Error => exception
+        if count < max_retries && IDEMPOTENT_METHODS_.include?(req.method)
+          count += 1
+          @socket.close if @socket
+          debug "Conn close because of error #{exception}, and retry"
+          retry
+        end
+        debug "Conn close because of error #{exception}"
+        @socket.close if @socket
+        raise
+      end
+      end_transport req, res
+      res
+    rescue => exception
+      debug "Conn close because of error #{exception}"
+      @socket.close if @socket
+      raise exception
+    end
+    def begin_transport(req)
+      if @socket.closed?
+        connect
+      elsif @last_communicated
+        if @last_communicated + @keep_alive_timeout < Process.clock_gettime(Process::CLOCK_MONOTONIC)
+          debug 'Conn close because of keep_alive_timeout'
+          @socket.close
+          connect
+        elsif @socket.io.to_io.wait_readable(0) && @socket.eof?
+          debug "Conn close because of EOF"
+          @socket.close
+          connect
+        end
+      end
+      if not req.response_body_permitted? and @close_on_empty_response
+        req['connection'] ||= 'close'
+      end
+      req.update_uri address, port, use_ssl?
+      req['host'] ||= addr_port()
+    end
+    def end_transport(req, res)
+      @curr_http_version = res.http_version
+      @last_communicated = nil
+      if @socket.closed?
+        debug 'Conn socket closed'
+      elsif not res.body and @close_on_empty_response
+        debug 'Conn close'
+        @socket.close
+      elsif keep_alive?(req, res)
+        debug 'Conn keep-alive'
+        @last_communicated = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      else
+        debug 'Conn close'
+        @socket.close
+      end
+    end
+    def keep_alive?(req, res)
+      return false if req.connection_close?
+      if @curr_http_version <= '1.0'
+        res.connection_keep_alive?
+      else   # HTTP/1.1 or later
+        not res.connection_close?
+      end
+    end
+    def sspi_auth?(res)
+      return false unless @sspi_enabled
+      if res.kind_of?(HTTPProxyAuthenticationRequired) and
+          proxy? and res["Proxy-Authenticate"].include?("Negotiate")
+        begin
+          require 'win32/sspi'
+          true
+        rescue LoadError
+          false
+        end
+      else
+        false
+      end
+    end
+    def sspi_auth(req)
+      n = Win32::SSPI::NegotiateAuth.new
+      req["Proxy-Authorization"] = "Negotiate #{n.get_initial_token}"
+      req["Connection"] = "Keep-Alive"
+      req["Proxy-Connection"] = "Keep-Alive"
+      res = transport_request(req)
+      authphrase = res["Proxy-Authenticate"]  or return res
+      req["Proxy-Authorization"] = "Negotiate #{n.complete_authentication(authphrase)}"
+    rescue => err
+      raise HTTPAuthenticationError.new('HTTP authentication failed', err)
+    end
+    private
+    def addr_port
+      addr = address
+      addr = "[#{addr}]" if addr.include?(":")
+      default_port = use_ssl? ? HTTP.https_default_port : HTTP.http_default_port
+      default_port == port ? addr : "#{addr}:#{port}"
+    end
+    def debug(msg)
+      return unless @debug_output
+      @debug_output << msg
+      @debug_output << "\n"
+    end
+    alias_method :D, :debug
   end
-  puts
-  puts "Net::HTTP::STATUS_CODES = {"
-  url = "https://www.iana.org/assignments/http-status-codes/http-status-codes-1.csv"
-  URI(url).read.each_line do |line|
-    code, mes, = line.split(',')
-    next if ['(Unused)', 'Unassigned', 'Description'].include?(mes)
-    puts "  #{code} => '#{mes}',"
-  end
-  puts "} # :nodoc:"
 end
-
-Net::HTTP::STATUS_CODES = {
-  100 => 'Continue',
-  101 => 'Switching Protocols',
-  102 => 'Processing',
-  103 => 'Early Hints',
-  200 => 'OK',
-  201 => 'Created',
-  202 => 'Accepted',
-  203 => 'Non-Authoritative Information',
-  204 => 'No Content',
-  205 => 'Reset Content',
-  206 => 'Partial Content',
-  207 => 'Multi-Status',
-  208 => 'Already Reported',
-  226 => 'IM Used',
-  300 => 'Multiple Choices',
-  301 => 'Moved Permanently',
-  302 => 'Found',
-  303 => 'See Other',
-  304 => 'Not Modified',
-  305 => 'Use Proxy',
-  307 => 'Temporary Redirect',
-  308 => 'Permanent Redirect',
-  400 => 'Bad Request',
-  401 => 'Unauthorized',
-  402 => 'Payment Required',
-  403 => 'Forbidden',
-  404 => 'Not Found',
-  405 => 'Method Not Allowed',
-  406 => 'Not Acceptable',
-  407 => 'Proxy Authentication Required',
-  408 => 'Request Timeout',
-  409 => 'Conflict',
-  410 => 'Gone',
-  411 => 'Length Required',
-  412 => 'Precondition Failed',
-  413 => 'Content Too Large',
-  414 => 'URI Too Long',
-  415 => 'Unsupported Media Type',
-  416 => 'Range Not Satisfiable',
-  417 => 'Expectation Failed',
-  421 => 'Misdirected Request',
-  422 => 'Unprocessable Content',
-  423 => 'Locked',
-  424 => 'Failed Dependency',
-  425 => 'Too Early',
-  426 => 'Upgrade Required',
-  428 => 'Precondition Required',
-  429 => 'Too Many Requests',
-  431 => 'Request Header Fields Too Large',
-  451 => 'Unavailable For Legal Reasons',
-  500 => 'Internal Server Error',
-  501 => 'Not Implemented',
-  502 => 'Bad Gateway',
-  503 => 'Service Unavailable',
-  504 => 'Gateway Timeout',
-  505 => 'HTTP Version Not Supported',
-  506 => 'Variant Also Negotiates',
-  507 => 'Insufficient Storage',
-  508 => 'Loop Detected',
-  510 => 'Not Extended (OBSOLETED)',
-  511 => 'Network Authentication Required',
-} # :nodoc:
+require_relative 'http/exceptions'
+require_relative 'http/header'
+require_relative 'http/generic_request'
+require_relative 'http/request'
+require_relative 'http/requests'
+require_relative 'http/response'
+require_relative 'http/responses'
+require_relative 'http/proxy_delta'
+require_relative 'http/backward'
+module RubyVM::RJIT
+  def self.enabled?
+    Primitive.cexpr! 'RBOOL(rb_rjit_enabled)'
+  end
+  def self.enable
+    Primitive.cstmt! %{
+      rb_rjit_call_p = true;
+      return Qnil;
+    }
+  end
+  if Primitive.rjit_stats_enabled_p
+    at_exit do
+      Primitive.rjit_stop_stats
+      print_stats
+    end
+  end
+  if Primitive.rjit_trace_exits_enabled_p
+    at_exit do
+      Primitive.rjit_stop_stats
+      dump_trace_exits
+    end
+  end
+end
+if RubyVM::RJIT.enabled?
+  begin
+    require 'fiddle'
+    require 'fiddle/import'
+  rescue LoadError
+    return # miniruby doesn't support RJIT
+  end
+  require 'ruby_vm/rjit/c_type'
+  require 'ruby_vm/rjit/compiler'
+  require 'ruby_vm/rjit/hooks'
+  require 'ruby_vm/rjit/stats'
+end

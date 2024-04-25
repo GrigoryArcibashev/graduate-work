@@ -1,0 +1,556 @@
+require "open-uri"
+require "uri"
+require "json"
+require "time"
+SLACK_WEBHOOK_URL = ENV["RUBYCI_ALERTS_SLACK_WEBHOOK_URL"]
+RUBYCI_SERVERS_URL = "https://rubyci.org/servers.json"
+RUBYCI_REPORTS_URL = "https://rubyci.org/reports.json"
+SIMPLER_ALERTS_URL = ENV["RUBYCI_ALERTS_SIMPLER_ALERTS_URL"]
+TIMESTAMPS_JSON = File.join(__dir__, "timestamps.json")
+NOTIFY_CHANNELS = [
+  "C5FCXFXDZ", # alerts
+  "CR2QGFCAE", # alerts-emoji
+]
+FailureReport = Struct.new(
+  :name,
+  :commit,
+  :fail_uri,
+  :shortsummary,
+  keyword_init: true
+) do
+  def msg
+    commit_link = " (<https://github.com/ruby/ruby/commit/#{ commit }|#{ commit }>)" if commit
+    "#{ name }#{ commit_link }: <#{ fail_uri }|#{ shortsummary }>"
+  end
+end
+def shortsummary(summary)
+  summary[/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*(\S.*?) \(/, 1]
+end
+def escape(s)
+  s.gsub(/[&<>]/, "&" => "&amp;", "<" => "&lt;", ">" => "&gt;")
+end
+def notify_slack(msg, channel:)
+  params = { text: msg, channel: channel }
+  if SLACK_WEBHOOK_URL
+    Net::HTTP.post(
+      URI.parse(SLACK_WEBHOOK_URL),
+      JSON.generate(params),
+      "Content-Type" => "application/json"
+    )
+  else
+    pp params
+  end
+end
+def notify_simpler_alerts(report)
+  params = {
+    ci: "rubyci-alerts",
+    env: report.name,
+    url: report.fail_uri,
+    commit: report.commit,
+    message: report.shortsummary,
+  }
+  if SIMPLER_ALERTS_URL
+    Net::HTTP.post(
+      URI.parse(SIMPLER_ALERTS_URL),
+      JSON.generate(params),
+      "Content-Type" => "application/json"
+    )
+  else
+    pp params
+  end
+end
+def fetch_json(url)
+  count = 0
+  begin
+    URI.open(url) do |f|
+      JSON.parse(f.read)
+    end
+  rescue Exception
+    count += 1
+    if count < 3
+      sleep 3
+      retry
+    end
+    raise
+  end
+end
+def get_servers
+  servers = {}
+  fetch_json(RUBYCI_SERVERS_URL).each do |server|
+    servers[server["id"]] = server #if server["name"] != "crossruby"
+  end
+  servers
+end
+def get_failure_reports(servers)
+  failure_reports = []
+  fetch_json(RUBYCI_REPORTS_URL).each do |report|
+    next if report["branch"] != "master"
+    server_id = report["server_id"]
+    server = servers[server_id]
+    next if !server
+    name = server["name"]
+    uri = URI.parse(server["uri"])
+    ordinal = server["ordinal"]
+    datetime = Time.iso8601(report["datetime"]).to_i
+    summary = report["summary"]
+    shortsummary = shortsummary(summary)
+    commit = summary[/^(\h{10,}) /, 1]
+    raw = report["ltsv"].split("\t").map {|s| s.split(":", 2) }.to_h
+    depsuffixed_name = raw["depsuffixed_name"]
+    fail_path = raw["compressed_failhtml_relpath"]
+    fail_uri = uri.to_s
+    fail_uri = File.join(fail_uri, depsuffixed_name, fail_path)
+    unless shortsummary.include?("success")
+      report = FailureReport.new(
+        name: name,
+        commit: commit,
+        fail_uri: fail_uri,
+        shortsummary: escape(shortsummary),
+      )
+      failure_reports << [[ordinal, datetime, server_id.to_s], report]
+    end
+  end
+  failure_reports.sort_by {|key, _report| key }
+end
+def filter_failure_reports(failure_reports, timestamps)
+  failure_reports.reject! do |(_ordinal, datetime, server_id), _report|
+    timestamps[server_id] && datetime <= timestamps[server_id]
+  end
+  failure_reports.each do |(_ordinal, datetime, server_id), _report|
+    timestamps[server_id] = [timestamps[server_id], datetime].compact.max
+  end
+end
+begin
+  timestamps = {}
+  timestamps = JSON.parse(File.read(TIMESTAMPS_JSON))
+  servers = get_servers
+  failure_reports = get_failure_reports(servers)
+  filter_failure_reports(failure_reports, timestamps)
+  failure_reports.each do |_key, report|
+    notify_simpler_alerts(report)
+  end
+  File.write(TIMESTAMPS_JSON, JSON.pretty_generate(timestamps))
+rescue => e
+  NOTIFY_CHANNELS.each do |channel|
+    notify_slack("ruby/rubyci-alerts failed: #{e.class}: #{ escape(e.message) }", channel: channel)
+  end
+  puts e.backtrace
+end
+module GC
+  def self.start full_mark: true, immediate_mark: true, immediate_sweep: true
+    Primitive.gc_start_internal full_mark, immediate_mark, immediate_sweep, false
+  end
+  def garbage_collect full_mark: true, immediate_mark: true, immediate_sweep: true
+    Primitive.gc_start_internal full_mark, immediate_mark, immediate_sweep, false
+  end
+  def self.enable
+    Primitive.gc_enable
+  end
+  def self.disable
+    Primitive.gc_disable
+  end
+  def self.stress
+    Primitive.gc_stress_get
+  end
+  def self.stress=(flag)
+    Primitive.gc_stress_set_m flag
+  end
+  def self.count
+    Primitive.gc_count
+  end
+  def self.stat hash_or_key = nil
+    Primitive.gc_stat hash_or_key
+  end
+  def self.stat_heap heap_name = nil, hash_or_key = nil
+    Primitive.gc_stat_heap heap_name, hash_or_key
+  end
+  def self.latest_gc_info hash_or_key = nil
+    Primitive.gc_latest_gc_info hash_or_key
+  end
+  if respond_to?(:compact)
+    def self.verify_compaction_references(toward: nil, double_heap: false, expand_heap: false)
+      Primitive.gc_verify_compaction_references(double_heap, expand_heap, toward == :empty)
+    end
+  end
+  def self.measure_total_time=(flag)
+    Primitive.cstmt! %{
+      rb_objspace.flags.measure_gc = RTEST(flag) ? TRUE : FALSE;
+      return flag;
+    }
+  end
+  def self.measure_total_time
+    Primitive.cexpr! %{
+      RBOOL(rb_objspace.flags.measure_gc)
+    }
+  end
+  def self.total_time
+    Primitive.cexpr! %{
+      ULL2NUM(rb_objspace.profile.marking_time_ns + rb_objspace.profile.sweeping_time_ns)
+    }
+  end
+end
+module ObjectSpace
+  def garbage_collect full_mark: true, immediate_mark: true, immediate_sweep: true
+    Primitive.gc_start_internal full_mark, immediate_mark, immediate_sweep, false
+  end
+  module_function :garbage_collect
+end
+class Set
+  VERSION = "1.1.0"
+  include Enumerable
+  def self.[](*ary)
+    new(ary)
+  end
+  def initialize(enum = nil, &block) # :yields: o
+    @hash ||= Hash.new(false)
+    enum.nil? and return
+    if block
+      do_with_enum(enum) { |o| add(block[o]) }
+    else
+      merge(enum)
+    end
+  end
+  def compare_by_identity
+    if @hash.respond_to?(:compare_by_identity)
+      @hash.compare_by_identity
+      self
+    else
+      raise NotImplementedError, "#{self.class.name}\##{__method__} is not implemented"
+    end
+  end
+  def compare_by_identity?
+    @hash.respond_to?(:compare_by_identity?) && @hash.compare_by_identity?
+  end
+  def do_with_enum(enum, &block) # :nodoc:
+    if enum.respond_to?(:each_entry)
+      enum.each_entry(&block) if block
+    elsif enum.respond_to?(:each)
+      enum.each(&block) if block
+    else
+      raise ArgumentError, "value must be enumerable"
+    end
+  end
+  private :do_with_enum
+  def initialize_dup(orig)
+    super
+    @hash = orig.instance_variable_get(:@hash).dup
+  end
+  def initialize_clone(orig, **options)
+    super
+    @hash = orig.instance_variable_get(:@hash).clone(**options)
+  end
+  def freeze    # :nodoc:
+    @hash.freeze
+    super
+  end
+  def size
+    @hash.size
+  end
+  alias length size
+  def empty?
+    @hash.empty?
+  end
+  def clear
+    @hash.clear
+    self
+  end
+  def replace(enum)
+    if enum.instance_of?(self.class)
+      @hash.replace(enum.instance_variable_get(:@hash))
+      self
+    else
+      do_with_enum(enum)  # make sure enum is enumerable before calling clear
+      clear
+      merge(enum)
+    end
+  end
+  def to_a
+    @hash.keys
+  end
+  def to_set(klass = Set, *args, &block)
+    return self if instance_of?(Set) && klass == Set && block.nil? && args.empty?
+    klass.new(self, *args, &block)
+  end
+  def flatten_merge(set, seen = Set.new) # :nodoc:
+    set.each { |e|
+      if e.is_a?(Set)
+        if seen.include?(e_id = e.object_id)
+          raise ArgumentError, "tried to flatten recursive Set"
+        end
+        seen.add(e_id)
+        flatten_merge(e, seen)
+        seen.delete(e_id)
+      else
+        add(e)
+      end
+    }
+    self
+  end
+  protected :flatten_merge
+  def flatten
+    self.class.new.flatten_merge(self)
+  end
+  def flatten!
+    replace(flatten()) if any?(Set)
+  end
+  def include?(o)
+    @hash[o]
+  end
+  alias member? include?
+  def superset?(set)
+    case
+    when set.instance_of?(self.class) && @hash.respond_to?(:>=)
+      @hash >= set.instance_variable_get(:@hash)
+    when set.is_a?(Set)
+      size >= set.size && set.all?(self)
+    else
+      raise ArgumentError, "value must be a set"
+    end
+  end
+  alias >= superset?
+  def proper_superset?(set)
+    case
+    when set.instance_of?(self.class) && @hash.respond_to?(:>)
+      @hash > set.instance_variable_get(:@hash)
+    when set.is_a?(Set)
+      size > set.size && set.all?(self)
+    else
+      raise ArgumentError, "value must be a set"
+    end
+  end
+  alias > proper_superset?
+  def subset?(set)
+    case
+    when set.instance_of?(self.class) && @hash.respond_to?(:<=)
+      @hash <= set.instance_variable_get(:@hash)
+    when set.is_a?(Set)
+      size <= set.size && all?(set)
+    else
+      raise ArgumentError, "value must be a set"
+    end
+  end
+  alias <= subset?
+  def proper_subset?(set)
+    case
+    when set.instance_of?(self.class) && @hash.respond_to?(:<)
+      @hash < set.instance_variable_get(:@hash)
+    when set.is_a?(Set)
+      size < set.size && all?(set)
+    else
+      raise ArgumentError, "value must be a set"
+    end
+  end
+  alias < proper_subset?
+  def <=>(set)
+    return unless set.is_a?(Set)
+    case size <=> set.size
+    when -1 then -1 if proper_subset?(set)
+    when +1 then +1 if proper_superset?(set)
+    else 0 if self.==(set)
+    end
+  end
+  def intersect?(set)
+    case set
+    when Set
+      if size < set.size
+        any?(set)
+      else
+        set.any?(self)
+      end
+    when Enumerable
+      set.any?(self)
+    else
+      raise ArgumentError, "value must be enumerable"
+    end
+  end
+  def disjoint?(set)
+    !intersect?(set)
+  end
+  def each(&block)
+    block_given? or return enum_for(__method__) { size }
+    @hash.each_key(&block)
+    self
+  end
+  def add(o)
+    @hash[o] = true
+    self
+  end
+  alias << add
+  def add?(o)
+    add(o) unless include?(o)
+  end
+  def delete(o)
+    @hash.delete(o)
+    self
+  end
+  def delete?(o)
+    delete(o) if include?(o)
+  end
+  def delete_if
+    block_given? or return enum_for(__method__) { size }
+    select { |o| yield o }.each { |o| @hash.delete(o) }
+    self
+  end
+  def keep_if
+    block_given? or return enum_for(__method__) { size }
+    reject { |o| yield o }.each { |o| @hash.delete(o) }
+    self
+  end
+  def collect!
+    block_given? or return enum_for(__method__) { size }
+    set = self.class.new
+    each { |o| set << yield(o) }
+    replace(set)
+  end
+  alias map! collect!
+  def reject!(&block)
+    block_given? or return enum_for(__method__) { size }
+    n = size
+    delete_if(&block)
+    self if size != n
+  end
+  def select!(&block)
+    block_given? or return enum_for(__method__) { size }
+    n = size
+    keep_if(&block)
+    self if size != n
+  end
+  alias filter! select!
+  def merge(*enums, **nil)
+    enums.each do |enum|
+      if enum.instance_of?(self.class)
+        @hash.update(enum.instance_variable_get(:@hash))
+      else
+        do_with_enum(enum) { |o| add(o) }
+      end
+    end
+    self
+  end
+  def subtract(enum)
+    do_with_enum(enum) { |o| delete(o) }
+    self
+  end
+  def |(enum)
+    dup.merge(enum)
+  end
+  alias + |
+  alias union |
+  def -(enum)
+    dup.subtract(enum)
+  end
+  alias difference -
+  def &(enum)
+    n = self.class.new
+    if enum.is_a?(Set)
+      if enum.size > size
+        each { |o| n.add(o) if enum.include?(o) }
+      else
+        enum.each { |o| n.add(o) if include?(o) }
+      end
+    else
+      do_with_enum(enum) { |o| n.add(o) if include?(o) }
+    end
+    n
+  end
+  alias intersection &
+  def ^(enum)
+    n = Set.new(enum)
+    each { |o| n.add(o) unless n.delete?(o) }
+    n
+  end
+  def ==(other)
+    if self.equal?(other)
+      true
+    elsif other.instance_of?(self.class)
+      @hash == other.instance_variable_get(:@hash)
+    elsif other.is_a?(Set) && self.size == other.size
+      other.all? { |o| @hash.include?(o) }
+    else
+      false
+    end
+  end
+  def hash      # :nodoc:
+    @hash.hash
+  end
+  def eql?(o)   # :nodoc:
+    return false unless o.is_a?(Set)
+    @hash.eql?(o.instance_variable_get(:@hash))
+  end
+  def reset
+    if @hash.respond_to?(:rehash)
+      @hash.rehash # This should perform frozenness check.
+    else
+      raise FrozenError, "can't modify frozen #{self.class.name}" if frozen?
+    end
+    self
+  end
+  alias === include?
+  def classify # :yields: o
+    block_given? or return enum_for(__method__) { size }
+    h = {}
+    each { |i|
+      (h[yield(i)] ||= self.class.new).add(i)
+    }
+    h
+  end
+  def divide(&func)
+    func or return enum_for(__method__) { size }
+    if func.arity == 2
+      require 'tsort'
+      class << dig = {}         # :nodoc:
+        include TSort
+        alias tsort_each_node each_key
+        def tsort_each_child(node, &block)
+          fetch(node).each(&block)
+        end
+      end
+      each { |u|
+        dig[u] = a = []
+        each{ |v| func.call(u, v) and a << v }
+      }
+      set = Set.new()
+      dig.each_strongly_connected_component { |css|
+        set.add(self.class.new(css))
+      }
+      set
+    else
+      Set.new(classify(&func).values)
+    end
+  end
+  def join(separator=nil)
+    to_a.join(separator)
+  end
+  InspectKey = :__inspect_key__         # :nodoc:
+  def inspect
+    ids = (Thread.current[InspectKey] ||= [])
+    if ids.include?(object_id)
+      return sprintf('#<%s: {...}>', self.class.name)
+    end
+    ids << object_id
+    begin
+      return sprintf('#<%s: {%s}>', self.class, to_a.inspect[1..-2])
+    ensure
+      ids.pop
+    end
+  end
+  alias to_s inspect
+  def pretty_print(pp)  # :nodoc:
+    pp.group(1, sprintf('#<%s:', self.class.name), '>') {
+      pp.breakable
+      pp.group(1, '{', '}') {
+        pp.seplist(self) { |o|
+          pp.pp o
+        }
+      }
+    }
+  end
+  def pretty_print_cycle(pp)    # :nodoc:
+    pp.text sprintf('#<%s: {%s}>', self.class.name, empty? ? '' : '...')
+  end
+end
+module Enumerable
+  def to_set(klass = Set, *args, &block)
+    klass.new(self, *args, &block)
+  end unless method_defined?(:to_set)
+end
+autoload :SortedSet, "#{__dir__}/set/sorted_set"
