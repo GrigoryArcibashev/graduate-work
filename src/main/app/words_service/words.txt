@@ -17,6 +17,7 @@ it
 my
 no
 of
+ok
 on
 or
 os
@@ -3027,6 +3028,7 @@ necessary
 normalize
 nosigpipe
 objecturl
+obsoleted
 oldbuffer
 onesbcast
 oobinline
@@ -3144,6 +3146,7 @@ strtotime
 subscript
 substring
 supported
+switching
 symmetric
 syntactic
 synthesis
@@ -3761,6 +3764,7 @@ horizontally
 hyperchannel
 iformattable
 implementing
+insufficient
 interference
 introduction
 lookupsetter
