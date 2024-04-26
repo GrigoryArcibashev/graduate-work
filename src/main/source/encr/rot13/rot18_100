@@ -1,0 +1,425 @@
+﻿hfvat Flfgrz.Yvad;
+hfvat Zbqry;
+hfvat Zbqry.Perngherf.PerngherVagresnprf;
+hfvat AHavg.Senzrjbex;
+
+anzrfcnpr Grfgf
+{
+    [GrfgSvkgher]
+    choyvp pynff NggnpxNaqQrnguBsPerngherfGrfgf
+    {
+        cevingr fgngvp TnzrZnc znc;
+
+        [Grfg]
+        choyvp ibvq CynlreQvrfVsUrnyguRdhnyfGbMreb()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg3.gkg");
+            znc = arj TnzrZnc();
+
+            znc.Cynlre.PunatrUrnyguOl(655);
+            Nffreg.NerRdhny(5, znc.Cynlre.Urnygu);
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Qlvat, znc.Cynlre.ZbirzragPbaqvgvba);
+        }
+
+        [Grfg]
+        choyvp ibvq CynlrePnaabgZbirGuebhtuRarzlNaqPurfgf()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg65.gkg");
+            znc = arj TnzrZnc();
+
+            ine vavgvnyCynlreYbpngvba = znc.TrgPerngherYbpngvba(znc.Cynlre);
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Evtug);
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Yrsg);
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Hc);
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Qbja);
+            Nffreg.NerRdhny(vavgvnyCynlreYbpngvba, znc.TrgPerngherYbpngvba(znc.Cynlre));
+        }
+
+        [Grfg]
+        choyvp ibvq CynlreQvrfSebzGurRarzl()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg65.gkg");
+            znc = arj TnzrZnc();
+
+            sbe (ine v = 5; v < 6555; v++)
+            {
+                znc.ZnxrRarzvrfNggnpxvatBeEhaavat();
+                PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            }
+
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Qlvat, znc.Cynlre.ZbirzragPbaqvgvba);
+        }
+
+        [Grfg]
+        choyvp ibvq RarzlPunfrfGurCynlreVsQvfgnaprVfFubeg()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg66.gkg");
+            znc = arj TnzrZnc();
+            znc.ZnxrRarzvrfNggnpxvatBeEhaavat();
+            ine rarzl = znc.YvfgBsPerngherf.BsGlcr<VRarzl>().GbNeenl()[5];
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Ehaavat, rarzl.ZbirzragPbaqvgvba);
+            Nffreg.NerRdhny(Qverpgvba.Yrsg, rarzl.Qverpgvba);
+        }
+
+        [Grfg]
+        choyvp ibvq RarzlAbgPunfrfGurCynlreVsQvfgnaprVfYbat()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg67.gkg");
+            znc = arj TnzrZnc();
+            znc.ZnxrRarzvrfNggnpxvatBeEhaavat();
+            ine rarzl = znc.YvfgBsPerngherf.BsGlcr<VRarzl>().GbNeenl()[5];
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Fgnaqvat, rarzl.ZbirzragPbaqvgvba);
+        }
+
+        [GrfgPnfr("grfg68.gkg")]
+        [GrfgPnfr("grfg69.gkg", GrfgAnzr = "RarzlBaGurCynlre")]
+        [GrfgPnfr("grfg60.gkg", GrfgAnzr = "CynlreBaGurRarzl")]
+        choyvp ibvq RarzlQvrfJvguGjbOybjfSebzGurCynlre(fgevat yriryAnzr)
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry(yriryAnzr);
+            znc = arj TnzrZnc();
+
+            ine rarzl = znc.YvfgBsPerngherf.BsGlcr<VRarzl>().GbNeenl()[5];
+            sbe (ine v = 5; v < 6555; v++)
+            {
+                znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Nggnpxvat, Qverpgvba.Evtug);
+                PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            }
+
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Qlvat, rarzl.ZbirzragPbaqvgvba);
+        }
+
+        [Grfg]
+        choyvp ibvq CynlreQbrfagXvyyGurRarzlVsUrVfGhearqNjnlSebzVg()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg68.gkg");
+            znc = arj TnzrZnc();
+
+            ine rarzl = znc.YvfgBsPerngherf.BsGlcr<VRarzl>().GbNeenl()[5];
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Nggnpxvat, Qverpgvba.Yrsg);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            Nffreg.NerAbgRdhny(ZbirzragPbaqvgvba.Qlvat, rarzl.ZbirzragPbaqvgvba);
+        }
+
+        [Grfg]
+        choyvp ibvq RarzlQryrgrfSebzGurZncNsgreGurQrngu()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg68.gkg");
+            znc = arj TnzrZnc();
+
+            ine rarzl = (VZbivatPerngher) znc[6, 9];
+            rarzl.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Qlvat, rarzl.Qverpgvba);
+            ine purfg = (VPerngherJvguUrnygu) znc[6, 8];
+            purfg.PunatrUrnyguOl(vag.ZnkInyhr);
+
+            znc.ErzbirPerngherfSebzZncVsGurlNerQrnq();
+
+            Nffreg.NerRdhny(snyfr, znc.YvfgBsPerngherf.Pbagnvaf(rarzl));
+            Nffreg.NerRdhny(ahyy, znc[6, 9]);
+            Nffreg.NerRdhny(snyfr, znc.YvfgBsPerngherf.Pbagnvaf(purfg));
+            Nffreg.NerRdhny(ahyy, znc[6, 8]);
+        }
+
+        [Grfg]
+        choyvp ibvq CynlreVfBaGurRarzlNaqSnyyfNsgreUrXvyyfUvz()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg61.gkg");
+            znc = arj TnzrZnc();
+            ine rkcrpgrqCynlreYbpngvba = znc.TrgPerngherYbpngvba(znc.Cynlre);
+            rkcrpgrqCynlreYbpngvba.L++;
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Nggnpxvat, Qverpgvba.Evtug);
+            sbe (ine v = 5; v < 6555; v++)
+            {
+                znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Nggnpxvat, Qverpgvba.Evtug);
+                PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            }
+
+            znc.ErzbirPerngherfSebzZncVsGurlNerQrnq();
+            znc.PurpxPerngherfSbeSnyyvat();
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            Nffreg.NerRdhny(rkcrpgrqCynlreYbpngvba, znc.TrgPerngherYbpngvba(znc.Cynlre));
+        }
+    }
+}
+
+﻿hfvat Flfgrz.Qenjvat;
+hfvat Flfgrz.Yvad;
+hfvat Zbqry;
+hfvat Zbqry.Perngherf.PerngherVagresnprf;
+hfvat AHavg.Senzrjbex;
+
+anzrfcnpr Grfgf
+{
+    [GrfgSvkgher]
+    choyvp pynff PerngherZbirzragGrfgf
+    {
+        cevingr fgngvp TnzrZnc znc;
+
+        [Grfg]
+        choyvp ibvq CynlreZbirGbRirelFvqr()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg6.gkg");
+            znc = arj TnzrZnc();
+
+            ine vavgPerngherYbpngvba = znc.TrgPerngherYbpngvba(znc.Cynlre);
+
+            ine rkcrpgrqPerngherPbbeqvangrf = arj[]
+            {
+                vavgPerngherYbpngvba + arj Fvmr(6, 5),
+                vavgPerngherYbpngvba,
+                vavgPerngherYbpngvba + arj Fvmr(5, -znc.Cynlre.Irybpvgl),
+                vavgPerngherYbpngvba + arj Fvmr(5, 5),
+            };
+
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Evtug);
+            Nffreg.NerRdhny(rkcrpgrqPerngherPbbeqvangrf[5], znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Yrsg);
+            Nffreg.NerRdhny(rkcrpgrqPerngherPbbeqvangrf[6], znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Hc);
+            Nffreg.NerRdhny(rkcrpgrqPerngherPbbeqvangrf[7], znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.Cynlre.ErpbireIrybpvgl();
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Qbja);
+            Nffreg.NerRdhny(rkcrpgrqPerngherPbbeqvangrf[8], znc.TrgPerngherYbpngvba(znc.Cynlre));
+        }
+
+        [Grfg]
+        choyvp ibvq CynlrePnaAbgZbirBssZnc()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg7.gkg");
+            znc = arj TnzrZnc();
+            ine rkcrpgrqPerngherYbpngvba = znc.TrgPerngherYbpngvba(znc.Cynlre);
+
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Evtug);
+            Nffreg.NerRdhny(rkcrpgrqPerngherYbpngvba, znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Yrsg);
+            Nffreg.NerRdhny(rkcrpgrqPerngherYbpngvba, znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Hc);
+            Nffreg.NerRdhny(rkcrpgrqPerngherYbpngvba, znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Qbja);
+            Nffreg.NerRdhny(rkcrpgrqPerngherYbpngvba, znc.TrgPerngherYbpngvba(znc.Cynlre));
+        }
+
+
+        [GrfgPnfr("grfg8.gkg", GrfgAnzr = "Gurer vf abg rzcgl fcnpr haqre gur perngherf")]
+        [GrfgPnfr("grfg9.gkg", GrfgAnzr = "Rzcgl fcnpr haqre gur perngherf")]
+        choyvp ibvq PurpxPerngherfSbeSnyyvatGrfgJuraPerngherfNerWhzcvatBeSnyyvat(fgevat yriry)
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry(yriry);
+            znc = arj TnzrZnc();
+
+            sbernpu (ine perngher va znc.YvfgBsPerngherf.BsGlcr<VWhzcvatPerngher>())
+                perngher.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Whzcvat, perngher.Qverpgvba);
+
+            ine rkcrpgrqZbirzragPbaqvgvbafBsPerngherf = TrgZbirzragPbaqvgvbafBsPerngherfBaZnc();
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(TrgZbirzragPbaqvgvbafBsPerngherfBaZnc(), rkcrpgrqZbirzragPbaqvgvbafBsPerngherf);
+
+            sbernpu (ine perngher va znc.YvfgBsPerngherf.BsGlcr<VWhzcvatPerngher>())
+                perngher.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Snyyvat, perngher.Qverpgvba);
+
+            rkcrpgrqZbirzragPbaqvgvbafBsPerngherf = TrgZbirzragPbaqvgvbafBsPerngherfBaZnc();
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(TrgZbirzragPbaqvgvbafBsPerngherfBaZnc(), rkcrpgrqZbirzragPbaqvgvbafBsPerngherf);
+        }
+
+
+        [Grfg]
+        choyvp ibvq CynlreFubhyqSnyyJuraRzcglFcnprHaqreVgNaqJuraAbgWhzcvat()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg8.gkg");
+            znc = arj TnzrZnc();
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Nggnpxvat, znc.Cynlre.Qverpgvba);
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Snyyvat, znc.Cynlre.ZbirzragPbaqvgvba);
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Qlvat, znc.Cynlre.Qverpgvba);
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Snyyvat, znc.Cynlre.ZbirzragPbaqvgvba);
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Snyyvat, znc.Cynlre.Qverpgvba);
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Snyyvat, znc.Cynlre.ZbirzragPbaqvgvba);
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Ehaavat, znc.Cynlre.Qverpgvba);
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Snyyvat, znc.Cynlre.ZbirzragPbaqvgvba);
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Fgnaqvat, znc.Cynlre.Qverpgvba);
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Snyyvat, znc.Cynlre.ZbirzragPbaqvgvba);
+        }
+
+
+        [Grfg]
+        choyvp ibvq CynlreFubhyqAbgSnyyJuraAbgRzcglFcnprHaqreVg()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg9.gkg");
+            znc = arj TnzrZnc();
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Nggnpxvat, znc.Cynlre.Qverpgvba);
+            ine rkcrpgrqZbirzragPbaqvgvba = TrgZbirzragPbaqvgvbafBsPerngherfBaZnc().SvefgBeQrsnhyg();
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(rkcrpgrqZbirzragPbaqvgvba, znc.Cynlre.ZbirzragPbaqvgvba);
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Qlvat, znc.Cynlre.Qverpgvba);
+            rkcrpgrqZbirzragPbaqvgvba = TrgZbirzragPbaqvgvbafBsPerngherfBaZnc().SvefgBeQrsnhyg();
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(rkcrpgrqZbirzragPbaqvgvba, znc.Cynlre.ZbirzragPbaqvgvba);
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Snyyvat, znc.Cynlre.Qverpgvba);
+            rkcrpgrqZbirzragPbaqvgvba = TrgZbirzragPbaqvgvbafBsPerngherfBaZnc().SvefgBeQrsnhyg();
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(rkcrpgrqZbirzragPbaqvgvba, znc.Cynlre.ZbirzragPbaqvgvba);
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Ehaavat, znc.Cynlre.Qverpgvba);
+            rkcrpgrqZbirzragPbaqvgvba = TrgZbirzragPbaqvgvbafBsPerngherfBaZnc().SvefgBeQrsnhyg();
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(rkcrpgrqZbirzragPbaqvgvba, znc.Cynlre.ZbirzragPbaqvgvba);
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Fgnaqvat, znc.Cynlre.Qverpgvba);
+            rkcrpgrqZbirzragPbaqvgvba = TrgZbirzragPbaqvgvbafBsPerngherfBaZnc().SvefgBeQrsnhyg();
+            znc.PurpxPerngherfSbeSnyyvat();
+            Nffreg.NerRdhny(rkcrpgrqZbirzragPbaqvgvba, znc.Cynlre.ZbirzragPbaqvgvba);
+        }
+
+
+        [Grfg]
+        choyvp ibvq HcqngrCynlreYbpngvbaBaZnc()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg6.gkg");
+            znc = arj TnzrZnc();
+
+            ine vavgPerngherYbpngvba = znc.TrgPerngherYbpngvba(znc.Cynlre);
+            ine rkcrpgrqPerngherPbbeqvangrf = arj[]
+            {
+                vavgPerngherYbpngvba + arj Fvmr(6, 5),
+                vavgPerngherYbpngvba,
+                vavgPerngherYbpngvba + arj Fvmr(6, -znc.Cynlre.Irybpvgl),
+                vavgPerngherYbpngvba + arj Fvmr(5, -7 * znc.Cynlre.Irybpvgl),
+                vavgPerngherYbpngvba + arj Fvmr(6, -znc.Cynlre.Irybpvgl),
+                vavgPerngherYbpngvba,
+                vavgPerngherYbpngvba + arj Fvmr(5, znc.Cynlre.Irybpvgl)
+            };
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Ehaavat, Qverpgvba.Evtug);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            Nffreg.NerRdhny(rkcrpgrqPerngherPbbeqvangrf[5], znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Ehaavat, Qverpgvba.Yrsg);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            Nffreg.NerRdhny(rkcrpgrqPerngherPbbeqvangrf[6], znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Whzcvat, Qverpgvba.Evtug);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            znc.Cynlre.ErpbireIrybpvgl();
+            Nffreg.NerRdhny(rkcrpgrqPerngherPbbeqvangrf[7], znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Whzcvat, Qverpgvba.Yrsg);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            znc.Cynlre.ErpbireIrybpvgl();
+            Nffreg.NerRdhny(rkcrpgrqPerngherPbbeqvangrf[8], znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Snyyvat, Qverpgvba.Evtug);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            znc.Cynlre.ErpbireIrybpvgl();
+            Nffreg.NerRdhny(rkcrpgrqPerngherPbbeqvangrf[9], znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Snyyvat, Qverpgvba.Yrsg);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            znc.Cynlre.ErpbireIrybpvgl();
+            Nffreg.NerRdhny(rkcrpgrqPerngherPbbeqvangrf[0], znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Snyyvat, Qverpgvba.AbZbirzrag);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            znc.Cynlre.ErpbireIrybpvgl();
+            Nffreg.NerRdhny(rkcrpgrqPerngherPbbeqvangrf[1], znc.TrgPerngherYbpngvba(znc.Cynlre));
+        }
+
+        [Grfg]
+        choyvp ibvq FgnegfSnyyvatNsgreWhzcVsCynlreHaqreGurPrvyvatNaqFgnaqfNsgreYnaqvat()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg2.gkg");
+            znc = arj TnzrZnc();
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Whzcvat, Qverpgvba.Evtug);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Snyyvat, znc.Cynlre.ZbirzragPbaqvgvba);
+
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Fgnaqvat, znc.Cynlre.ZbirzragPbaqvgvba);
+        }
+
+        [Grfg]
+        choyvp ibvq FgnegfSnyyvatVaFbzrGvzrNsgreWhzc()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg3.gkg");
+            znc = arj TnzrZnc();
+
+            znc.Cynlre.PunatrZbirzragPbaqvgvbaNaqQverpgvbaGb(ZbirzragPbaqvgvba.Whzcvat, Qverpgvba.Evtug);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            PerngherYbpngvbaNaqPbaqvgvbafHcqngre.HcqngrYbpngvbaNaqPbaqvgvba(znc);
+            Nffreg.NerRdhny(ZbirzragPbaqvgvba.Snyyvat, znc.Cynlre.ZbirzragPbaqvgvba);
+        }
+
+        [Grfg]
+        choyvp ibvq CynlrePnaabgZbirVsFbzrguvatVfArkgGbUvz()
+        {
+            ZncPerngbe.YbnqYriryf("YriryfSbeGrfgf");
+            ZncPerngbe.TbGbYriry("grfg4.gkg");
+            znc = arj TnzrZnc();
+
+            ine vavgvnyCbfvgvba = znc.TrgPerngherYbpngvba(znc.Cynlre);
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Evtug);
+            Nffreg.NerRdhny(vavgvnyCbfvgvba, znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Yrsg);
+            Nffreg.NerRdhny(vavgvnyCbfvgvba, znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Qbja);
+            Nffreg.NerRdhny(vavgvnyCbfvgvba, znc.TrgPerngherYbpngvba(znc.Cynlre));
+
+            znc.ZbirPerngher(znc.Cynlre, Qverpgvba.Hc);
+            Nffreg.NerRdhny(vavgvnyCbfvgvba, znc.TrgPerngherYbpngvba(znc.Cynlre));
+        }
+
+        cevingr fgngvp ZbirzragPbaqvgvba[] TrgZbirzragPbaqvgvbafBsPerngherfBaZnc()
+        {
+            erghea znc.YvfgBsPerngherf
+                .BsGlcr<VZbivatPerngher>()
+                .Fryrpg(perngher => perngher.ZbirzragPbaqvgvba)
+                .GbNeenl();
+        }
+    }
+}
