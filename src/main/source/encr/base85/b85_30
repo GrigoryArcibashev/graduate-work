@@ -1,0 +1,201 @@
+<?php
+session_start();
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+require_once("includes/setdefaultpage.php");
+userlanguage();
+require("language/".$_SESSION['language']."/download.php");
+$header=explode(":",DEFAULTHEADER);
+defaultheader($header[0],$header[1],$header[2],$header[3]);
+?>
+<body>
+<?php defaulttop(); ?>
+<header class="w3-container w3-teal w3-animate-opacity">
+  <h1><?php echo WELCOME;?></h1>
+</header>
+<div class="w3-center w3-animate-opacity">
+  <div class="w3-row"><br/>
+    <article class="w3-col m10 w3-container">
+    <h1><?php echo TITLE1;?></h1>
+
+<p class="w3-justify"><?php echo TEXT1;?></p>
+<table class="w3-table w3-bordered w3-striped w3-border w3-hoverable w3-striped w3-center">
+<thead class="w3-light-blue w3-center">
+  <tr >
+  <th class="w3-center"><?php echo TH1;?></th>
+  <th class="w3-center"><?php echo TH2;?></th>
+  <th class="w3-center"><?php echo TH3;?></th>
+  <th class="w3-center"><?php echo TH4;?></th>
+  <th class="w3-center"><?php echo TH5;?></th>
+  <th class="w3-center"><?php echo TH6;?></th>
+  <th class="w3-center"><?php echo TH7;?></th>
+
+</tr>
+</thead>
+<tr class="w3-center">
+  <td class="w3-center">PHP-GTK-2.0.1</td>
+  <td class="w3-center">PHP 5.5</td>
+  <td class="w3-center">GTK+ 2.24.10</td>
+  <td class="w3-center"><a href="distributions/PHP55-GTK2.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo BETA;?></td>
+  <td class="w3-center">2015-01-15</td>
+</tr>
+<tr>
+  <td class="w3-center">PHP-GTK-2.0.1</td>
+  <td class="w3-center">PHP 5.4</td>
+  <td class="w3-center">GTK+ 2.24.10</td>
+  <td class="w3-center"><a href="distributions/PHP54-GTK2.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo BETA;?></td>
+  <td class="w3-center">2015-01-15</td>
+</tr>
+<tr>
+  <td class="w3-center">PHP-GTK-2.0.1</td>
+  <td class="w3-center">PHP 5.1.x - 5.5</td>
+  <td class="w3-center">GTK+ 2.x</td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><a href="https://github.com/php/php-gtk-src/archive/master.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2015-01-15</td>
+
+</tr>
+<tr>
+  <td class="w3-center">PHP-GTK-2.0.1 binary pack</td>
+  <td class="w3-center">PHP 5.2.6</td>
+  <td class="w3-center">GTK+ 2.12.9</td>
+  <td class="w3-center"><a href="distributions/php-gtk-2.0.1-win32-nts.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2008-05-16</td>
+
+</tr>
+<tr>
+<td class="w3-center">PHP-GTK-2.0.1 binary extensions pack</td>
+  <td class="w3-center">PHP 5.2.6</td>
+  <td class="w3-center">GTK+ 2.12.9</td>
+  <td class="w3-center"><a href="distributions/php-gtk-2.0.1-win32-extensions.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2008-05-16</td>
+
+</tr>
+<tr>
+  <td class="w3-center">PHP-GTK-2.0.1</td>
+  <td class="w3-center">PHP 5.2.6</td>
+  <td class="w3-center">GTK+ 2.12.9</td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><a href="distributions/php-gtk-2.0.1.tar.gz" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2008-05-16</td>
+
+</tr>
+<tr>
+<td class="w3-center">PHP-GTK-2.0.0 binary pack</td>
+  <td class="w3-center">PHP 5.2.5</td>
+  <td class="w3-center">GTK+ 2.12.8</td>
+  <td class="w3-center"><a href="distributions/php-gtk-2.0.0-win32-nts.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2008-02-29</td>
+
+</tr>
+<tr>
+  <td class="w3-center">PHP-GTK-2.0.0</td>
+  <td class="w3-center">PHP 5.2.5</td>
+  <td class="w3-center">GTK+ 2.12.8</td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><a href="distributions/php-gtk-2.0.0.tar.gz" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2008-02-29</td>
+4?mduE!gYtF)u&6DI7I,@<-H<.6@lJEcQ)=?ZK^sDfTr6DJ(@d?U7@Z.6@lNDJ<I!ATT=EA8-+(CghTrATDg0EcWEU+>G<,$?B]tF_Pl-?Z0glALJa:DI[L*A7]g8F(KH(AS,@nCijW)B4W]7BQ,.E3sp+OATDTqDJ+*#B4WJ?3sp">EHPu9ALJa=@;]_#@:s.)+tb-J;ajV`8P`)c-Z!4/B6@WqALCb9+tmJFGA_58@:V!0BQ,.E3sm6HART+\E]muYE,9H'ALJ``+tQ,N7R:$J<(KGD6q(!&3soM0AmoguFD,5oA7]d0,\UatA7]dc0O64TBOtU_ATD!0>q@77ART+\Ea(;)/0nn?@:Wqi>;KP63sn29$9Vd9A9g?G4?mduE$/\&AmoguFEDG?-n.5#5<]E:BOtU_ATAo'CghC+4X,)+/Rr^:FCAm$ATAo;1G*][@;I'11G*$QBl.:#AM%h>@:O"nGp5EZ+<Wd[0g7]aE+j25ARfCl+BM!*6VgEF4$Pnk05*(($9TtTART+\E]sgmA8-30@r,RpF$1^k1G**JDKKH1+EoUn@;]dr@<?'4DfB,pBlnVE4piDT4Ci/L+Cf4rF)sJgG;CgkDg*Bh4CW=a4piDT+<WdTEcc#*Ch4`!CghC+4X,)+/Rr^8+Dihe+EoUn@rH7,@;0UjE[![S+<VdL4D6H54?mduE$/_%BQ#"m8Q8AP0fqT`4>1A&4phWZE$/Y,@<6KQ,'PgpC3=T>BkDW75!2&KBQ,)*@q]d'<(0ng0fqT`4>1Y;$9WE=@VfTu@r,RpF$1^k1G*]W@VfTuG;Cg[DfTB"Eb/c(G;CglFE2)7ARlp-1G*'SEb&a%+EoUnBQ&'*Ea`EnAKZ1Q/TZ#SBlIWo+EoUn@qBP"ATAtY$9WEDART*l@r,RpF$1^k1G*EWB4uB=@Vg0u+EoUn@qBP"ATAtY$6UHRFE/Kf$6UHRFD)e,CghC+4X,)+/Rr@0FCfJ:5!2&KBQ,)*@q]d'<(J`*5<_1_FD*iF+<WdgBHUf$@<6KQ,'Pgp@qBP"ATAtY4?mduE$/_%BQ#"m82<7k5!1K?BKcbG+?XaZ+Cf4rF)sJgG;Cg\ASuU$E[!\05B(:T+D#%rD]i"M1HRfb4>1ei4piDT4EP6Z@r,RpF$1^k1G**JDKKH1,!J+RE+j25ARfCl+B1lg4$Pnk06Ckk$6UHRFD)e,CghC+4X,)+/Rr@0FCfJ:5!2&KBQ,)*@q]d'<(Jl.5<_1_FD*iF+<WdgBHUf$@<6KQ,'Pgp@qBP"ATAtY4?mduE$/_%BQ#"m82`Oo5!1K?BKcbG+?XaZ+Cf4rF)sJgG;Cg\ASuU$E[!\05B(:T+D#%rD]i"M2`j5f4>1ei4phWZ06D4u$9Tt`BOtU_4pjDoEZek.@<6KQ,'Pgp@qBP"ATAtY$6UHRFCZM(CghC+4X,)+/Rr@0FCfJ:5#=dH/Orc5/M\q4/hoIAFC[QB+<WdgA0>Au@<6KQ,'Pgp@qBP"ATAtY:e4D*2(gaK06C_g$6UHRFCZM(CghC+4X,)+/Rr@0FCfJ:5"ARF.j-T"1,LU<0K_"1A3L>C+?XaV+Cf4rF)sJgG;Cg\ASuU$E[!\0@3B6(AS+(LA8-+,EbT!*FD5Z2F"^?\:c1*^7oW,:/p_5N+s:E7GA_58@:VPaBcpo%@<6KQ,&Lb1ATDKnCb9@2Df0V?4shM!76!7`4$5015!1K,5!1K?A3L>C+?XaV+Cf4rF)sJgG;Cg\ASuU$E[!\!4>1ee4piDT4EP*V@r,RpF$1^k1G**JDKKH1,!J+RE+j25ARfCl+@8Lr5s%:p4>1ee4piDT4EP*V@r,RpF$1^k1G**JDKKH1,!Ib90f:O:0eG+;4>1ee4phWZ06D4u$9WEN4piDT4EP*V@r,RpF$1^k1G**JDKKH1,!Jgo:b>1:9._nO0J5(B06C_g$6UHRFCZM(CghC+4X,)+/Rr@0FCfJ:5#=dH+>kc.4>1ee4piDT4EP*V@r,RpF$1^k1G**JDKKH1,!JLr9.M,?/i#790eb^CFC[QB+<WdgA0>Au@<6KQ,'Pgp@qBP"ATAtY4CK@GEb/iG,%PD/FE2))F`_>9DK@I-85M0#/Orc51+mleE$?E8Dg-)8Ddd0?4D>pJCgh4rF)sJgG;Cg\ASuU
+</tr>
+</table>
+<br/>
+<h1><?php echo TITLE2;?></h1>
+<p class="w3-justify"><?php echo TEXT2;?></p>
+<table class="w3-table w3-bordered w3-striped w3-border w3-hoverable w3-striped w3-center">
+<thead class="w3-light-blue w3-center">
+  <tr >
+  <th class="w3-center"><?php echo TH1;?></th>
+  <th class="w3-center"><?php echo TH2;?></th>
+  <th class="w3-center"><?php echo TH3;?></th>
+  <th class="w3-center"><?php echo TH4;?></th>
+  <th class="w3-center"><?php echo TH5;?></th>
+  <th class="w3-center"><?php echo TH6;?></th>
+  <th class="w3-center"><?php echo TH7;?></th>
+
+</tr>
+</thead>
+<tr>
+  <td class="w3-center">php-gtk-1.0.2</td>
+  <td class="w3-center">4.4.1-dev</td>
+  <td class="w3-center">GTK+ 1.2.x</td>
+  <td class="w3-center"><a href="distributions/php-gtk-1.0.2-win32.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2005-07-15</td>
+
+</tr>
+<tr>
+<td class="w3-center">php-gtk-1.0.2</td>
+  <td class="w3-center">4.4.1-dev</td>
+  <td class="w3-center">GTK+ 1.2.x</td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><a href="distributions/php-gtk-1.0.2.tar.gz" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2005-07-15</td>
+
+</tr>
+<tr>
+  <td class="w3-center">php-gtk-1.0.1a</td>
+  <td class="w3-center">4.3.9-dev</td>
+  <td class="w3-center">GTK+ 1.2.x</td>
+  <td class="w3-center"><a href="distributions/php-gtk-1.0.1a-win32.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2004-08-25</td>
+
+</tr>
+<tr>
+<td class="w3-center">php-gtk-1.0.1</td>
+  <td class="w3-center">4.3.9-dev</td>
+  <td class="w3-center">GTK+ 1.2.x</td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><a href="distributions/php-gtk-1.0.1.tar.gz" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2004-08-25</td>
+
+</tr>
+<tr>
+<td class="w3-center">php-gtk-1.0.0</td>
+  <td class="w3-center">4.3.4RC3-dev</td>
+  <td class="w3-center">GTK+ 1.2.x</td>
+  <td class="w3-center"><a href="distributions/php-gtk-1.0.0-win32.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2003-10-23</td>
+
+</tr>
+</table>
+
+<h1><?php echo TITLE3;?></h1>
+<p class="w3-justify"><?php echo TEXT3;?>
+
+
+<p class="w3-justify"><?php echo TEXT4;?></p>
+</article>
+    <aside>
+    <nav class="w3-col m2 w3-light-grey w3-animate-opacity">
+<?php defaultmenuright();?>
+    </nav>
+    </aside>
+
+  </div>
+</div>
+<footer class="w3-container w3-small w3-teal w3-animate-opacity">
+  <p><?php echo FOOTER;?></p>
+</footer>
+<?php
+defaultfooter();
+?>
