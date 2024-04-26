@@ -69,21 +69,32 @@ class EncryptionDeterminatorByHEX:
 
 
 class EncryptionDeterminatorByEntropy:
-    def __init__(self, entropy_analyzer: EntropyAnalyzer, mode: OperatingMode):
+    def __init__(
+            self,
+            entropy_analyzer: EntropyAnalyzer,
+            mode: OperatingMode,
+            web, ulboe, clboe, poevfw):
         self._entropy_analyzer = entropy_analyzer
-        self._set_boundaries(mode)
+        self._set_boundaries(mode, web, ulboe, clboe, poevfw)
 
-    def _set_boundaries(self, mode: OperatingMode) -> None:
-        if mode == OperatingMode.OPTIMAL:
-            self._window_encryption_border = 60
-            self._unconditional_lower_bound_of_entropy = 70
-            self._conditional_lower_bound_of_entropy = 60
-            self._percent_of_entropy_vals_for_window = 60
-        elif mode.is_strict:
-            self._window_encryption_border = 55
-            self._unconditional_lower_bound_of_entropy = 65
-            self._conditional_lower_bound_of_entropy = 55
-            self._percent_of_entropy_vals_for_window = 70
+    def _set_boundaries(self, mode: OperatingMode, web, ulboe, clboe, poevfw) -> None:
+        #############
+        self._window_encryption_border = web
+        self._unconditional_lower_bound_of_entropy = ulboe
+        self._conditional_lower_bound_of_entropy = clboe
+        self._percent_of_entropy_vals_for_window = poevfw
+        #############
+
+        # if mode == OperatingMode.OPTIMAL:
+        #     self._window_encryption_border = 60
+        #     self._unconditional_lower_bound_of_entropy = 70
+        #     self._conditional_lower_bound_of_entropy = 60
+        #     self._percent_of_entropy_vals_for_window = 60
+        # elif mode.is_strict:
+        #     self._window_encryption_border = 57
+        #     self._unconditional_lower_bound_of_entropy = 65
+        #     self._conditional_lower_bound_of_entropy = 55
+        #     self._percent_of_entropy_vals_for_window = 70
 
         if mode == OperatingMode.OPTIMAL or mode == OperatingMode.LOWER_STRICT:
             self._upper_bound_of_entropy = 95
