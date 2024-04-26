@@ -1,0 +1,228 @@
+﻿﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+using Mediator.Buttons;
+using Mediator.TextBoxes;
+
+namespace Mediator
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+
+            #region InitLabels
+
+            var titleLbl = new Label
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f),
+                Text = @"Title"
+            };
+            var textLbl = new Label
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f),
+                Text = @"Text"
+            };
+
+            #endregion
+
+            #region InitComponents
+
+            var taskList = new TaskList
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var addButton = new AddButton
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var deleteButton = new DeleteButton
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var saveButton = new SaveButton
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var title = new Title
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var text = new Text
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+
+            #endregion
+
+            RegisterComponents(new IComponent[] { taskList, addButton, deleteButton, saveButton, title, text });
+            Controls.Add(CreateMainTable(
+                CreateListBoxTable(taskList),
+                CreateListButtonTable(addButton, deleteButton),
+                CreateRedactorTable(titleLbl, title, textLbl, text),
+                CreateRedactorButtonTable(saveButton)));
+        }
+
+        private static TableLayoutPanel CreateMainTable(
+            Control listBoxTable,
+            Control listButtonTable,
+            Control redactorTable,
+            Control redactorButtonTable)
+        {
+            var mainTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            mainTable.RowStyles.Add(new RowStyle(SizeType.Percent, 90));
+            mainTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+
+            mainTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            mainTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+
+            mainTable.Controls.Add(listBoxTable, 0, 0);
+            mainTable.Controls.Add(listButtonTable, 0, 1);
+            mainTable.Controls.Add(redactorTable, 1, 0);
+            mainTable.Controls.Add(redactorButtonTable, 1, 1);
+            return mainTable;
+        }
+
+        private static TableLayoutPanel CreateRedactorButtonTable(Control saveButton)
+        {
+            var redactorButtonTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            redactorButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+            redactorButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
+            redactorButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+
+            redactorButtonTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+
+            redactorButtonTable.Controls.Add(new Panel(), 0, 0);
+            redactorButtonTable.Controls.Add(saveButton, 0, 1);
+            redactorButtonTable.Controls.Add(new Panel(), 0, 2);
+            return redactorButtonTable;
+        }
+
+        private static TableLayoutPanel CreateRedactorTable(
+            Control titleLbl,
+            Control title,
+            Control textLbl,
+            Control text)
+        {
+            var redactorTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 5));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 5));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 5));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 70));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 3));
+
+            redactorTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+
+            redactorTable.Controls.Add(titleLbl, 0, 0);
+            redactorTable.Controls.Add(title, 0, 1);
+            redactorTable.Controls.Add(new Panel(), 0, 2);
+            redactorTable.Controls.Add(textLbl, 0, 3);
+            redactorTable.Controls.Add(text, 0, 4);
+            redactorTable.Controls.Add(new Panel(), 0, 5);
+            return redactorTable;
+        }
+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
+        private static TableLayoutPanel CreateListButtonTable(Control addButton, Control deleteButton)
+        {
+            var listButtonTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            listButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+            listButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
+            listButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+
+            listButtonTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            listButtonTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+
+            listButtonTable.Controls.Add(new Panel(), 0, 0);
+            listButtonTable.Controls.Add(new Panel(), 1, 0);
+            listButtonTable.Controls.Add(addButton, 0, 1);
+            listButtonTable.Controls.Add(deleteButton, 1, 1);
+            listButtonTable.Controls.Add(new Panel(), 0, 2);
+            listButtonTable.Controls.Add(new Panel(), 1, 2);
+            return listButtonTable;
+        }
+
+        private static TableLayoutPanel CreateListBoxTable(Control taskList)
+        {
+            var listBoxTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            listBoxTable.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            listBoxTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            listBoxTable.Controls.Add(taskList, 0, 0);
+            return listBoxTable;
+        }
+
+        private static void RegisterComponents(IEnumerable<IComponent> components)
+        {
+            var taskPlanner = new TaskPlanner();
+            foreach (var component in components)
+                taskPlanner.RegisterComponent((Interfaces.IComponent)component);
+        }
+    }
+}
