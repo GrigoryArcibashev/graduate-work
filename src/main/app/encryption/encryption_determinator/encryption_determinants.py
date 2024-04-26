@@ -1,7 +1,7 @@
 import re
 
 from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
-from src.main.app.encryption.entropy.enums import OperatingMode, EncrVerdict
+from src.main.app.encryption.encryption_determinator.enums import OperatingMode, EncrVerdict
 
 
 class EncryptionDeterminatorByHEX:
@@ -38,17 +38,18 @@ class EncryptionDeterminatorByHEX:
             self._min_count = 10
         elif mode == OperatingMode.STRICT:
             self._min_count = 3
+        self._ext_count = 2 * self._min_count
 
-    def determinate(self, data) -> EncrVerdict:
+    def determinate(self, data: bytes) -> EncrVerdict:
         found = re.findall(self._pattern, data)
         count = len(self._filter_unicode(found))
-        if count > 2 * self._min_count:
+        if count > self._ext_count:
             return EncrVerdict.EXTREMELY_LIKELY
         if count > self._min_count:
             return EncrVerdict.LIKELY
         return EncrVerdict.UNLIKELY
 
-    def _filter_unicode(self, found):
+    def _filter_unicode(self, found) -> list:
         for marker in self._unicode_markers:
             len_mkr = len(marker)
             if len_mkr <= len(found) and self._hex_eq(marker, found[:len_mkr]):
@@ -56,7 +57,7 @@ class EncryptionDeterminatorByHEX:
         return found
 
     @staticmethod
-    def _hex_eq(hex1, hex2):
+    def _hex_eq(hex1, hex2) -> bool:
         if len(hex1) != len(hex2):
             return False
         for i in range(len(hex1)):
