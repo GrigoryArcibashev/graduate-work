@@ -1,873 +1,203 @@
 <?php
-namespace phpdotnet\phd;
-
-abstract class Format_Abstract_PDF extends Format {
-    protected $pdfDoc;
-
-    public function getPdfDoc() {
-        return $this->pdfDoc;
-    }
-
-    public function setPdfDoc($pdfDoc) {
-        $this->pdfDoc = $pdfDoc;
-    }
-
-    public function UNDEF($open, $name, $attrs, $props) {
-        if ($open) {
-            trigger_error("No mapper found for '{$name}'", E_USER_WARNING);
-        }
-        $this->pdfDoc->setFont(PdfWriter::FONT_NORMAL, 14, array(1, 0, 0)); // Helvetica 14 red
-        $this->pdfDoc->appendText(($open ? "<" : "</") . $name . ">");
-        $this->pdfDoc->revertFont();
-        return "";
-    }
-
-    public function CDATA($str) {
-        $this->pdfDoc->appendText(utf8_decode(trim($str)));
-        return "";
-    }
-
-    public function transformFromMap($open, $tag, $name, $attrs, $props) {
-        return "";
-    }
-
-    public function createLink($for, &$desc = null, $type = Format::SDESC){}
-
-    public function TEXT($str) {}
-
-}
-
-class PdfWriter {
-    // Page format
-    const VMARGIN = 56.7; // = 1 centimeter
-    const HMARGIN = 56.7; // = 1 centimeter
-    const LINE_SPACING = 2; // nb of points between two lines
-    const INDENT_SPACING = 10; // nb of points for indent
-    const DEFAULT_SHIFT = 20; // default value (points) for shifted paragraph
-    private $SCALE; // nb of points for 1 centimeter
-    private $PAGE_WIDTH; // in points
-    private $PAGE_HEIGHT; // in points
-
-    private $haruDoc;
-    private $pages = array();
-    private $currentPage;
-    private $currentPageNumber;
-    private $currentBookName;
-
-    private $currentFont;
-    private $currentFontSize;
-    private $currentFontColor;
-    private $fonts;
-    private $oldFonts = array();
-    private $text;
-
-    private $vOffset = 0;
-    private $hOffset = 0;
-    private $lastPage = array(
-        "vOffset" => 0,
-        "hOffset" => 0,
-    );
-    private $permanentLeftSpacing = 0;
-    private $permanentRightSpacing = 0;
-
-    private $appendToBuffer = false;
-    // To append afterwards
-    private $buffer = array(
-        /* array(
-            'text'       => "",
-            'font'       => "",
-            'size'       => "",
-            'color'      => "",
-        )*/
-    );
-
-    private $current = array(
-        "leftSpacing"       => 0,
-        "rightSpacing"      => 0,
-        "oldVPosition"      => 0,
-        "vOffset"           => 0,
-        "newVOffset"        => 0,
-        "pages"             => array(),
-        "row"               => array(),
-        "align"             => "",
-        "char"              => "",
-        "charOffset"        => 0,
-    );
-
-    // To temporarily store $current(s)
-    private $old = array();
-
-    function __construct($pageWidth = 210, $pageHeight = 297) {
-    	// Initialization of properties
-    	$this->haruDoc = new \HaruDoc;
-    	$this->haruDoc->addPageLabel(1, \HaruPage::NUM_STYLE_DECIMAL, 1, "Page ");
-
-        $this->haruDoc->setPageMode(\HaruDoc::PAGE_MODE_USE_OUTLINE);
-        $this->haruDoc->setPagesConfiguration(2);
-
-    	// Page format
-    	$this->SCALE = 72/25.4;
-    	$this->PAGE_WIDTH = $pageWidth * $this->SCALE;
-    	$this->PAGE_HEIGHT = $pageHeight * $this->SCALE;
-
-    	// Set fonts
-    	$this->fonts["Helvetica"] = $this->haruDoc->getFont("Helvetica", "WinAnsiEncoding");
-    	$this->fonts["Helvetica-Bold"] = $this->haruDoc->getFont("Helvetica-Bold", "WinAnsiEncoding");
-    	$this->fonts["Helvetica-Oblique"] = $this->haruDoc->getFont("Helvetica-Oblique", "WinAnsiEncoding");
-    	$this->fonts["Courier"] = $this->haruDoc->getFont("Courier", "WinAnsiEncoding");
-    	$this->fonts["Courier-Oblique"] = $this->haruDoc->getFont("Courier-Oblique", "WinAnsiEncoding");
-
-    	// Add first page and default font settings
-    	$this->currentFont = $this->fonts["Helvetica"];
-    	$this->currentFontSize = 12;
-    	$this->currentFontColor = array(0, 0, 0); // Black
-    	$this->nextPage();
-    	$this->haruDoc->addPageLabel(1, \HaruPage::NUM_STYLE_DECIMAL, 1, "Page ");
-    }
-
-    public function getCurrentPage() {
-        return $this->currentPage;
-    }
-
-    public function setCompressionMode($mode) {
-        $this->haruDoc->setCompressionMode($mode);
-    }
-
-    // Append text into the current position
-    public function appendText($text) {
-//        if ($this->vOffset > $this->current["charOffset"] + 3*LINE_SPACING + 3*$this->currentFontSize)
-//            $this->vOffset = $this->current["charOffset"] + 3*LINE_SPACING + 3*$this->currentFontSize;
-        if ($this->appendToBuffer) {
-            array_push($this->buffer, array(
-                "text" => $text,
-                "font" => $this->currentFont,
-                "size" => $this->currentFontSize,
-                "color" => $this->currentFontColor
-            ));
-            return;
-        }
-
-HQ7XA2DQBJXGC3LFONYGCY3FEBYGQ4DEN52G4ZLULRYGQZB3BIFGCYTTORZGCY3UEBRWYYLTOMQEM33SNVQXIX2BMJZXI4TBMN2F6UCEIYQGK6DUMVXGI4ZAIZXXE3LBOQQHWCRAEAQCA4DSN52GKY3UMVSCAJDQMRTEI33DHMFAUIBAEAQHA5LCNRUWGIDGOVXGG5DJN5XCAZ3FORIGIZSEN5RSQKJAPMFCAIBAEAQCAIBAOJSXI5LSNYQCI5DINFZS2PTQMRTEI33DHMFCAIBAEB6QUCRAEAQCA4DVMJWGSYZAMZ2W4Y3UNFXW4IDTMV2FAZDGIRXWGKBEOBSGMRDPMMUSA6YKEAQCAIBAEAQCAJDUNBUXGLJ6OBSGMRDPMMQD2IBEOBSGMRDPMM5QUIBAEAQH2CQKEAQCAIDQOVRGY2LDEBTHK3TDORUW63RAKVHEIRKGFASG64DFNYWCAJDOMFWWKLBAERQXI5DSOMWCAJDQOJXXA4ZJEB5QUIBAEAQCAIBAEBUWMIBIERXXAZLOFEQHWCRAEAQCAIBAEAQCAIBAEB2HE2LHM5SXEX3FOJZG64RIEJHG6IDNMFYHAZLSEBTG65LOMQQGM33SEATXWJDOMFWWK7JHEIWCARK7KVJUKUS7K5AVETSJJZDSSOYKEAQCAIBAEAQCA7IKEAQCAIBAEAQCAJDUNBUXGLJ6OBSGMRDPMMWT443FORDG63TUFBIGIZSXOJUXIZLSHI5EMT2OKRPU4T2SJVAUYLBAGE2CYIDBOJZGC6JIGEWCAMBMEAYCSKJ3EAXS6ICIMVWHMZLUNFRWCIBRGQQHEZLEBIQCAIBAEAQCAIBEORUGS4ZNHZYGIZSEN5RS2PTBOBYGK3TEKRSXQ5BIFASG64DFNYQD6IBCHQRCAORAEI6C6IRJEAXCAJDOMFWWKIBOEARD4IRJHMFCAIBAEAQCAIBAER2GQ2LTFU7HAZDGIRXWGLJ6OJSXMZLSORDG63TUFAUTWCRAEAQCAIBAEAQHEZLUOVZG4IBCEI5QUIBAEAQH2CQKEAQCAIDQOVRGY2LDEBTHK3TDORUW63RAINCECVCBFASHG5DSFEQHWCRAEAQCAIBAEAQCI5DINFZS2PTQMRTEI33DFU7GC4DQMVXGIVDFPB2CQ5LUMY4F6ZDFMNXWIZJIORZGS3JIERZXI4RJFEUTWCRAEAQCAIBAEAQHEZLUOVZG4IBCEI5QUIBAEAQH2CQKEAQCAIDQOVRGY2LDEBTHK3TDORUW63RAORZGC3TTMZXXE3KGOJXW2TLBOAUCI33QMVXCYIBEORQWOLBAERXGC3LFFQQCIYLUORZHGLBAERYHE33QOMUSA6YKEAQCAIBAEAQCA4TFOR2XE3RAEIRDWCRAEAQCA7IKBIQCAIBAOB2WE3DJMMQGM5LOMN2GS33OEBRXEZLBORSUY2LONMUCIZTPOIWCAJREMRSXGYZAHUQG45LMNQWCAJDUPFYGKIB5EBDG64TNMF2DUOSTIRCVGQZJPN6QUCRAEAQCA4DVMJWGSYZAMZ2W4Y3UNFXW4ICUIVMFIKBEON2HEKJAPN6QUCT5BIFGG3DBONZSAUDEMZLXE2LUMVZCA6YKEAQCAIBPF4QFAYLHMUQGM33SNVQXICRAEAQCAY3PNZZXIICWJVAVER2JJYQD2IBVGYXDOOZAF4XSAPJAGEQGGZLOORUW2ZLUMVZAUIBAEAQGG33OON2CASCNIFJEOSKOEA6SANJWFY3TWIBPF4QD2IBREBRWK3TUNFWWK5DFOIFCAIBAEBRW63TTOQQEYSKOIVPVGUCBINEU4RZAHUQDEOZAF4XSA3TCEBXWMIDQN5UW45DTEBRGK5DXMVSW4IDUO5XSA3DJNZSXGCRAEAQCAY3PNZZXIICJJZCEKTSUL5JVAQKDJFHEOIB5EAYTAOZAF4XSA3TCEBXWMIDQN5UW45DTEBTG64RANFXGIZLOOQFCAIBAEBRW63TTOQQEIRKGIFKUYVC7KNEESRSUEA6SAMRQHMQC6LZAMRSWMYLVNR2CA5TBNR2WKIBIOBXWS3TUOMUSAZTPOIQHG2DJMZ2GKZBAOBQXEYLHOJQXA2AKEAQCAIDQOJUXMYLUMUQCIU2DIFGEKOZAF4XSA3TCEBXWMIDQN5UW45DTEBTG64RAGEQGGZLOORUW2ZLUMVZAUIBAEAQHA4TJOZQXIZJAERIECR2FL5LUSRCUJA5SALZPEBUW4IDQN5UW45DTBIQCAIBAOBZGS5TBORSSAJCQIFDUKX2IIVEUOSCUHMQC6LZANFXCA4DPNFXHI4YKBIQCAIBAOBZGS5TBORSSAJDIMFZHKRDPMM5QUIBAEAQHA4TJOZQXIZJAERYGCZ3FOMQD2IDBOJZGC6JIFE5QUIBAEAQHA4TJOZQXIZJAERRXK4TSMVXHIUDBM5STWCRAEAQCA4DSNF3GC5DFEASGG5LSOJSW45CQMFTWKTTVNVRGK4R3BIQCAIBAOBZGS5TBORSSAJDDOVZHEZLOORBG633LJZQW2ZJ3BIFCAIBAEBYHE2LWMF2GKIBEMN2XE4TFNZ2EM33OOQ5QUIBAEAQHA4TJOZQXIZJAERRXK4TSMVXHIRTPNZ2FG2L2MU5QUIBAEAQHA4TJOZQXIZJAERRXK4TSMVXHIRTPNZ2EG33MN5ZDWCRAEAQCA4DSNF3GC5DFEASGM33OORZTWCRAEAQCA4DSNF3GC5DFEASG63DEIZXW45DTEA6SAYLSOJQXSKBJHMFCAIBAEBYHE2LWMF2GKIBEORSXQ5B3BIFCAIBAEBYHE2LWMF2GKIBEOZHWMZTTMV2CAPJAGA5QUIBAEAQHA4TJOZQXIZJAERUE6ZTGONSXIIB5EAYDWCRAEAQCA4DSNF3GC5DFEASGYYLTORIGCZ3FEA6SAYLSOJQXSKAKEAQCAIBAEAQCAITWJ5TGM43FOQRCAPJ6EAYCYCRAEAQCAIBAEAQCE2CPMZTHGZLUEIQD2PRAGAWAUIBAEAQCSOYKEAQCAIDQOJUXMYLUMUQCI4DFOJWWC3TFNZ2EYZLGORJXAYLDNFXGOIB5EAYDWCRAEAQCA4DSNF3GC5DFEASHAZLSNVQW4ZLOORJGSZ3IORJXAYLDNFXGOIB5EAYDWCQKEAQCAIDQOJUXMYLUMUQCIYLQOBSW4ZCUN5BHKZTGMVZCAPJAMZQWY43FHMFCAIBAEAXS6ICUN4QGC4DQMVXGIIDBMZ2GK4TXMFZGI4YKEAQCAIDQOJUXMYLUMUQCIYTVMZTGK4RAHUQGC4TSMF4SQCRAEAQCAIBAEAQC6KRAMFZHEYLZFAFCAIBAEAQCAIBAEAQCAIBHORSXQ5BHEAQCAIBAEAQD2PRAEIRCYCRAEAQCAIBAEAQCAIBAEATWM33OOQTSAIBAEAQCAIB5HYQCEIRMBIQCAIBAEAQCAIBAEAQCAJ3TNF5GKJZAEAQCAIBAEA6T4IBCEIWAUIBAEAQCAIBAEAQCAIBAE5RW63DPOITSAIBAEAQCAPJ6EARCELAKEAQCAIBAEAQCAKJKF4FCAIBAEAUTWCQKEAQCAIDQOJUXMYLUMUQCIY3VOJZGK3TUEA6SAYLSOJQXSKAKEAQCAIBAEAQCAITMMVTHIU3QMFRWS3THEIQCAIBAEAQCAPJ6EAYCYCRAEAQCAIBAEAQCE4TJM5UHIU3QMFRWS3THEIQCAIBAEAQD2PRAGAWAUIBAEAQCAIBAEARG63DEKZIG643JORUW63RCEAQCAIBAEA6T4IBQFQFCAIBAEAQCAIBAEJ3E6ZTGONSXIIRAEAQCAIBAEAQCAIBAHU7CAMBMBIQCAIBAEAQCAIBCNZSXOVSPMZTHGZLUEIQCAIBAEAQCAIB5HYQDALAKEAQCAIBAEAQCAITQMFTWK4ZCEAQCAIBAEAQCAIBAEAQCAPJ6EBQXE4TBPEUCSLAKEAQCAIBAEAQCAITSN53SEIBAEAQCAIBAEAQCAIBAEAQCAPJ6EBQXE4TBPEUCSLAKEAQCAIBAEAQCAITBNRUWO3RCEAQCAIBAEAQCAIBAEAQCAPJ6EARCELAKEAQCAIBAEAQCAITDNBQXEIRAEAQCAIBAEAQCAIBAEAQCAPJ6EARCELAKEAQCAIBAEAQCAITDNBQXET3GMZZWK5BCEAQCAIBAEAQCAPJ6EAYCYCRAEAQCAKJ3BIFCAIBAEAXS6ICUN4QHIZLNOBXXEYLSNFWHSIDTORXXEZJAERRXK4TSMVXHIKDTFEFCAIBAEBYHE2LWMF2GKIBEN5WGIIB5EBQXE4TBPEUCSOYKBIQCAIBAMZ2W4Y3UNFXW4IC7L5RW63TTORZHKY3UFASHAYLHMVLWSZDUNAQD2IBSGEYCYIBEOBQWOZKIMVUWO2DUEA6SAMRZG4USA6YKEAQCAIAJF4XSASLONF2GSYLMNF5GC5DJN5XCA33GEBYHE33QMVZHI2LFOMFCAIBAEAESI5DINFZS2PTIMFZHKRDPMMQD2IDOMV3SAXCIMFZHKRDPMM5QUIBAEAQASJDUNBUXGLJ6NBQXE5KEN5RS2PTBMRSFAYLHMVGGCYTFNQUDCLBALREGC4TVKBQWOZJ2HJHFKTK7KNKFSTCFL5CEKQ2JJVAUYLBAGEWCAISQMFTWKIBCFE5QUCRAEAQCAIBAEAQCI5DINFZS2PTIMFZHKRDPMMWT443FORIGCZ3FJVXWIZJILREGC4TVIRXWGOR2KBAUORK7JVHUIRK7KVJUKX2PKVKEYSKOIUUTWCRAEAQCAIBAEAQCI5DINFZS2PTIMFZHKRDPMMWT443FORIGCZ3FONBW63TGNFTXK4TBORUW63RIGIUTWCQKEAQCAIAJF4XSAUDBM5SSAZTPOJWWC5AKEAQCAIAJER2GQ2LTFU7FGQ2BJRCSAPJAG4ZC6MRVFY2DWCRAEAQCACJEORUGS4ZNHZIECR2FL5LUSRCUJAQD2IBEOBQWOZKXNFSHI2BAFIQCI5DINFZS2PSTINAUYRJ3BIQCAIBABESHI2DJOMWT4UCBI5CV6SCFJFDUQVBAHUQCI4DBM5SUQZLJM5UHIIBKEASHI2DJOMWT4U2DIFGEKOYKBIQCAIBABEXS6ICTMV2CAZTPNZ2HGCRAEAQCACJEORUGS4ZNHZTG63TUONNSESDFNR3GK5DJMNQSEXJAHUQCI5DINFZS2PTIMFZHKRDPMMWT4Z3FORDG63TUFAREQZLMOZSXI2LDMERCYIBCK5UW4QLOONUUK3TDN5SGS3THEIUTWCRAEAQCACJEORUGS4ZNHZTG63TUONNSESDFNR3GK5DJMNQS2QTPNRSCEXJAHUQCI5DINFZS2PTIMFZHKRDPMMWT4Z3FORDG63TUFAREQZLMOZSXI2LDMEWUE33MMQRCYIBCK5UW4QLOONUUK3TDN5SGS3THEIUTWCRAEAQCACJEORUGS4ZNHZTG63TUONNSESDFNR3GK5DJMNQS2T3CNRUXC5LFEJOSAPJAER2GQ2LTFU7GQYLSOVCG6YZNHZTWK5CGN5XHIKBCJBSWY5TFORUWGYJNJ5RGY2LROVSSELBAEJLWS3SBNZZWSRLOMNXWI2LOM4RCSOYKEAQCAIAJER2GQ2LTFU7GM33OORZVWISDN52XE2LFOIRF2IB5EASHI2DJOMWT42DBOJ2UI33DFU7GOZLUIZXW45BIEJBW65LSNFSXEIRMEARFO2LOIFXHG2KFNZRW6ZDJNZTSEKJ3BIQCAIBABESHI2DJOMWT4ZTPNZ2HGWZCINXXK4TJMVZC2T3CNRUXC5LFEJOSAPJA
-        $this->currentPage->beginText();
-        do {
-            // Clear the whitespace if it begins the line or if last char is a special char
-            if (strpos($text, " ") === 0 && ($this->hOffset == 0 || in_array($this->current["char"], array("&", "$")))) {
-                $text = substr($text, 1);
-            }
-
-            // Number of chars allowed in the current line
-            $nbCarac = $this->currentFont->measureText($text,
-                ($this->PAGE_WIDTH - 2*self::HMARGIN - $this->hOffset - $this->permanentLeftSpacing - $this->permanentRightSpacing),
-                $this->currentFontSize, $this->currentPage->getCharSpace(),
-                $this->currentPage->getWordSpace(), true);
-
-            // If a the text content can't be appended (either there is no whitespaces,
-            // either the is not enough space in the line)
-            if ($nbCarac === 0) {
-                $isEnoughSpaceOnNextLine = $this->currentFont->measureText($text,
-                    ($this->PAGE_WIDTH - 2*self::HMARGIN - $this->permanentLeftSpacing - $this->permanentRightSpacing),
-                    $this->currentFontSize, $this->currentPage->getCharSpace(),
-                    $this->currentPage->getWordSpace(), true);
-                if ($isEnoughSpaceOnNextLine) {
-                    $this->vOffset += $this->currentFontSize + self::LINE_SPACING;
-                    $this->hOffset = 0;
-                    $isLastLine = false;
-                    continue;
-                } else {
-                    $nbCarac = $this->currentFont->measureText($text,
-                        ($this->PAGE_WIDTH - 2*self::HMARGIN - $this->hOffset - $this->permanentLeftSpacing - $this->permanentRightSpacing),
-                        $this->currentFontSize, $this->currentPage->getCharSpace(),
-                        $this->currentPage->getWordSpace(), false);
-                }
-            }
-            $isLastLine = ($nbCarac == strlen($text));
-
-            $textToAppend = substr($text, 0, $nbCarac);
-            $text = substr($text, $nbCarac);
-
-            // Append text (in a new page if needed) with align
-            if ($this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset) < self::VMARGIN) {
-                $this->currentPage->endText();
-                $this->current["pages"][] = $this->currentPage;
-                $this->nextPage();
-                $this->currentPage->beginText();
-            }
-            if ($this->current["align"] == "center") {
-                $spacing = $this->PAGE_WIDTH - 2*self::HMARGIN -
-                    $this->permanentLeftSpacing - $this->permanentRightSpacing - $this->currentPage->getTextWidth($textToAppend);
-                $this->currentPage->textOut(self::HMARGIN + $this->hOffset + $this->permanentLeftSpacing + $spacing/2,
-                    $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset), $textToAppend);
-            } elseif ($this->current["align"] == "right") {
-                $spacing = $this->PAGE_WIDTH - 2*self::HMARGIN -
-                    $this->permanentLeftSpacing - $this->permanentRightSpacing - $this->currentPage->getTextWidth($textToAppend);
-                $this->currentPage->textOut(self::HMARGIN + $this->hOffset + $this->permanentLeftSpacing + $spacing,
-                    $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset), $textToAppend);
-            } else { // left
-                $this->currentPage->textOut(self::HMARGIN + $this->hOffset + $this->permanentLeftSpacing,
-                    $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset), $textToAppend);
-            }
-            if ($textToAppend)
-                $this->current["char"] = $textToAppend{strlen($textToAppend)-1};
-
-            // Offsets for next line
-            if (!$isLastLine) {
-                $this->vOffset += $this->currentFontSize + self::LINE_SPACING;
-                $this->hOffset = 0;
-            } else {
-                $this->hOffset += $this->currentPage->getTextWidth($textToAppend);
-            }
-
-        }
-        while(!$isLastLine); // While it remains chars to append
-        $this->currentPage->endText();
-        $this->current["charOffset"] = $this->vOffset;
-    }
-
-    // Same function one line at a time
-    public function appendOneLine($text) {
-        if (strpos($text, " ") === 0 && ($this->hOffset == 0 || in_array($this->current["char"], array("&", "$")))) {
-            $text = substr($text, 1);
-        }
-
-        $this->currentPage->beginText();
-        $nbCarac = $this->currentFont->measureText($text,
-            ($this->PAGE_WIDTH - 2*self::HMARGIN - $this->hOffset - $this->permanentLeftSpacing - $this->permanentRightSpacing),
-            $this->currentFontSize, $this->currentPage->getCharSpace(),
-            $this->currentPage->getWordSpace(), true);
-
-        // If a the text content can't be appended (either there is no whitespaces,
-        // either the is not enough space in the line)
-        if ($nbCarac === 0) {
-            $isEnoughSpaceOnNextLine = $this->currentFont->measureText($text,
-                ($this->PAGE_WIDTH - 2*self::HMARGIN - $this->permanentLeftSpacing - $this->permanentRightSpacing),
-                $this->currentFontSize, $this->currentPage->getCharSpace(),
-                $this->currentPage->getWordSpace(), true);
-            if ($isEnoughSpaceOnNextLine) {
-                $this->currentPage->endText();
-                return $text;
-            } else {
-                $nbCarac = $this->currentFont->measureText($text,
-                    ($this->PAGE_WIDTH - 2*self::HMARGIN - $this->hOffset - $this->permanentLeftSpacing - $this->permanentRightSpacing),
-                    $this->currentFontSize, $this->currentPage->getCharSpace(),
-                    $this->currentPage->getWordSpace(), false);
-            }
-        }
-
-        $isLastLine = ($nbCarac == strlen($text));
-
-        $textToAppend = substr($text, 0, $nbCarac);
-        $text = substr($text, $nbCarac);
-
-        // Append text (in a new page if needed)
-        if ($this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset) < self::VMARGIN) {
-            $this->currentPage->endText();
-            $this->current["pages"][] = $this->currentPage;
-            $this->nextPage();
-            $this->currentPage->beginText();
-        }
-        $this->currentPage->textOut(self::HMARGIN + $this->hOffset + $this->permanentLeftSpacing,
-            $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset), $textToAppend);
-        if ($textToAppend)
-            $this->current["char"] = $textToAppend{strlen($textToAppend)-1};
-
-        $this->hOffset += $this->currentPage->getTextWidth($textToAppend);
-
-        $this->currentPage->endText();
-        $this->current["charOffset"] = $this->vOffset;
-
-        return ($isLastLine ? null : $text);
-    }
-
-    public function setAppendToBuffer($appendToBuffer) {
-        $this->appendToBuffer = $appendToBuffer;
-    }
-
-    public function appendBufferNow() {
-        foreach($this->buffer as $row) {
-            if ($row["text"] == "\n") {
-                $this->lineJump();
-            } else {
-                $this->setFont(self::FONT_MANUAL, $row["size"], $row["color"], $row["font"]);
-                $this->appendText($row["text"]);
-                $this->revertFont();
-            }
-        }
-        $this->buffer = array();
-    }
-
-    public function add($type, $option = null) {
-        if ($this->appendToBuffer) return;
-        switch ($type) {
-            case self::INDENTED_PARA:
-                $this->lineJump();
-                $this->indent();
-                break;
-            case self::PARA:
-                $this->lineJump();
-                break;
-            case self::VERBATIM_BLOCK:
-                $this->setFont(self::FONT_VERBATIM, 10, array(0.3, 0.3, 0.3));
-                $this->lineJump();
-                break;
-            case self::TITLE:
-                $this->setFont(self::FONT_BOLD, 20);
-                $this->lineJump();
-                break;
-            case self::TITLE2:
-                $this->setFont(self::FONT_BOLD, 14);
-                $this->lineJump();
-                break;
-            case self::TITLE3:
-                $this->setFont(self::FONT_BOLD, 12);
-                $this->lineJump();
-                break;
-            case self::DRAW_LINE:
-                $this->traceLine($option);
-                break;
-            case self::LINE_JUMP:
-                if ($option)
-                    $this->lineJump($option);
-                else $this->lineJump();
-                break;
-            case self::PAGE:
-                $this->nextPage();
-                break;
-            case self::ADMONITION:
-                $this->beginAdmonition();
-                break;
-            case self::ADMONITION_CONTENT:
-                $this->admonitionContent();
-                break;
-            case self::END_ADMONITION:
-                $this->endAdmonition();
-                break;
-            case self::URL_ANNOTATION:
-                $this->appendUrlAnnotation($option[0], $option[1]);
-                break;
-            case self::LINK_ANNOTATION:
-                return $this->prepareInternalLinkAnnotation($option);
-                break;
-            case self::ADD_BULLET:
-                $this->indent(-self::INDENT_SPACING-$this->currentPage->getTextWidth(chr(149)));
-                $this->appendText(chr(149)); // ANSI Bullet
-                $this->indent(0);
-                break;
-            case self::ADD_NUMBER_ITEM:
-                $this->indent(-self::INDENT_SPACING-$this->currentPage->getTextWidth($option));
-                $this->appendText($option);
-                $this->indent(0);
-                break;
-            case self::FRAMED_BLOCK:
-                $this->beginFrame();
-                break;
-            case self::END_FRAMED_BLOCK:
-                $this->endFrame($option);
-                break;
-            case self::TABLE:
-                $this->addTable($option);
-                break;
-            case self::END_TABLE:
-                $this->endTable();
-                break;
-            case self::TABLE_ROW:
-                $this->newTableRow($option[0], $option[1]);
-                break;
-            case self::TABLE_END_ROW:
-                $this->endTableRow();
-                break;
-            case self::TABLE_ENTRY:
-                $this->beginTableEntry($option[0], $option[1], $option[2]);
-                break;
-            case self::TABLE_END_ENTRY:
-                $this->endTableEntry();
-                break;
-            case self::IMAGE:
-                $this->addImage($option);
-                break;
-            default:
-                trigger_error("Unknown object type : {$type}", E_USER_WARNING);
-                break;
-        }
-    }
-
-    // Switch font on-the-fly
-    public function setFont($type, $size = null, $color = null, $font = null) {
-        if ($this->currentPage == null)
-            return false;
-        $this->oldFonts[] = array($this->currentFont, $this->currentFontSize, $this->currentFontColor);
-        $this->currentFontSize = ($size ? $size : $this->currentFontSize);
-        if ($color && count($color) === 3) {
-            $this->setColor($color[0], $color[1], $color[2]);
-            $this->currentFontColor = $color;
-        }
-        else
-            $this->setColor($this->currentFontColor[0], $this->currentFontColor[1], $this->currentFontColor[2]);
-        switch ($type) {
-            case self::FONT_NORMAL:
-                $this->currentPage->setFontAndSize($this->currentFont = $this->fonts["Helvetica"],
-                    $this->currentFontSize);
-                break;
-            case self::FONT_ITALIC:
-                $this->currentPage->setFontAndSize($this->currentFont = $this->fonts["Helvetica-Oblique"],
-                    $this->currentFontSize);
-                break;
-            case self::FONT_BOLD:
-                $this->currentPage->setFontAndSize($this->currentFont = $this->fonts["Helvetica-Bold"],
-                    $this->currentFontSize);
-                break;
-            case self::FONT_VERBATIM:
-                $this->currentPage->setFontAndSize($this->currentFont = $this->fonts["Courier"],
-                    $this->currentFontSize);
-                break;
-            case self::FONT_VERBATIM_ITALIC:
-                $this->currentPage->setFontAndSize($this->currentFont = $this->fonts["Courier-Oblique"],
-                    $this->currentFontSize);
-                break;
-            case self::FONT_MANUAL:
-                $this->currentPage->setFontAndSize($this->currentFont = $font, $this->currentFontSize);
-                break;
-            default:
-                trigger_error("Unknown font type : {$type}", E_USER_WARNING);
-                break;
-        }
-    }
-
-    // Back to the last used font
-    public function revertFont() {
-        $lastFont = array_pop($this->oldFonts);
-        $this->currentFont = $lastFont[0];
-        $this->currentFontSize = $lastFont[1];
-        $this->currentFontColor = $lastFont[2];
-        $this->currentPage->setFontAndSize($lastFont[0], $lastFont[1]);
-        $this->setColor($lastFont[2][0], $lastFont[2][1], $lastFont[2][2]);
-    }
-
-    // Change font color (1, 1, 1 = white, 0, 0, 0 = black)
-    public function setColor($r, $g, $b) {
-        if ($r < 0 || $r > 1 || $g < 0 || $g > 1 || $b < 0 || $b > 1)
-            return false;
-        $this->currentPage->setRGBStroke($r, $g, $b);
-        $this->currentPage->setRGBFill($r, $g, $b);
-        $this->currentFontColor = array($r, $g, $b);
-        return true;
-    }
-
-    // Save the current PDF Document to a file
-    public function saveToFile($filename) {
-        $this->haruDoc->save($filename);
-    }
-
-    public function createOutline($description, $parentOutline = null, $opened = false) {
-        $outline = $this->haruDoc->createOutline($description, $parentOutline);
-        $dest = $this->currentPage->createDestination();
-        $dest->setXYZ(0, $this->currentPage->getHeight(), 1);
-        $outline->setDestination($dest);
-        $outline->setOpened($opened);
-        return $outline;
-    }
-
-    public function shift($offset = self::DEFAULT_SHIFT) {
-        $this->permanentLeftSpacing += $offset;
-    }
-
-    public function unshift($offset = self::DEFAULT_SHIFT) {
-        $this->permanentLeftSpacing -= $offset;
-    }
-
-    public function vOffset($offset) {
-        $this->vOffset += $offset;
-    }
-
-    private function indent($offset = self::INDENT_SPACING) {
-        $this->hOffset = $offset;
-    }
-
-    // Jump to next page (or create a new one if none exists)
-    private function nextPage() {
-        $this->lastPage = array(
-            "vOffset" => $this->vOffset,
-            "hOffset" => $this->hOffset,
-        );
-        $footerToAppend = false;
-        $this->currentPageNumber++;
-        if (isset($this->pages[$this->currentPageNumber])) {
-            $this->currentPage = $this->pages[$this->currentPageNumber];
-            $this->vOffset = $this->currentFontSize;
-            $this->hOffset = 0;
-        } else {
-            $this->pages[$this->currentPageNumber] = $this->haruDoc->addPage();
-            $this->currentPage = $this->pages[$this->currentPageNumber];
-            $this->currentPage->setTextRenderingMode(\HaruPage::FILL);
-            $this->vOffset = $this->currentFontSize;
-            $this->hOffset = ($this->hOffset ? $this->hOffset : 0);
-            $footerToAppend = true;
-        }
-        if ($this->currentFont && $this->currentFontSize && $this->currentFontColor) {
-            $this->currentPage->setFontAndSize($this->currentFont, $this->currentFontSize);
-            $this->setColor($this->currentFontColor[0], $this->currentFontColor[1], $this->currentFontColor[2]);
-        }
-        if ($footerToAppend && $this->currentPageNumber > 1) {
-            $this->currentPage->beginText();
-            $this->setFont(self::FONT_NORMAL, 12, array(0,0,0));
-            $this->currentPage->textOut($this->PAGE_WIDTH - self::HMARGIN - $this->currentPage->getTextWidth($this->currentPageNumber),
-                self::VMARGIN - 30, $this->currentPageNumber);
-            $this->revertFont();
-            $this->setFont(self::FONT_BOLD, 12, array(0,0,0));
-            $this->currentPage->textOut(self::HMARGIN,
-                self::VMARGIN - 30, $this->currentBookName);
-            $this->revertFont();
-            $this->currentPage->endText();
-
-        }
-
-    }
-
-    public function setCurrentBookName($currentBookName) {
-        $this->currentBookName = $currentBookName;
-    }
-
-    // Set last page as the current page
-    private function lastPage() {
-        $this->currentPageNumber--;
-        $this->currentPage = $this->pages[$this->currentPageNumber];
-        $this->vOffset = $this->lastPage["vOffset"];
-        $this->hOffset = $this->lastPage["hOffset"];
-    }
-
-    // Returns true if a next page exists
-    private function isNextPage() {
-        return isset($this->pages[$this->currentPageNumber + 1]);
-    }
-
-    // Jump a line
-    private function lineJump($nbLines = 1) {
-        $this->vOffset += $nbLines * ($this->currentFontSize + self::LINE_SPACING);
-        $this->hOffset = 0;
-    }
-
-    // Trace a line from the current position
-    private function traceLine() {
-        $this->lineJump();
-        $this->currentPage->rectangle(self::HMARGIN + $this->hOffset, $this->PAGE_HEIGHT - self::VMARGIN - $this->vOffset, $this->PAGE_WIDTH - 2*$this->hOffset - 2*self::HMARGIN, 1);
-        $this->currentPage->stroke();
-    }
-
-    private function beginAdmonition() {
-        // If this admonition is inside another frame
-        array_push($this->old, $this->current);
-
-        $this->setFont(self::FONT_BOLD, 12);
-        $this->lineJump();
-        // If no space for admonition title + interleave + admonition first line on this page, then creates a new one
-        if (($this->PAGE_HEIGHT - 2*self::VMARGIN - $this->vOffset) < (3*$this->currentFontSize + 3*self::LINE_SPACING))
-            $this->nextPage();
-        $this->current["vOffset"] = $this->vOffset;
-        $this->lineJump();
-        $this->permanentLeftSpacing += self::INDENT_SPACING;
-        $this->permanentRightSpacing += self::INDENT_SPACING;
-        $this->current["pages"] = array();
-    }
-
-    private function admonitionContent() {
-        if ($this->current["pages"])
-            $this->current["vOffset"] = 0;
-        $this->beginFrame();
-        $this->revertFont();
-        $this->currentPage->rectangle(self::HMARGIN + ($this->permanentLeftSpacing - self::INDENT_SPACING),
-            $this->PAGE_HEIGHT - self::VMARGIN - $this->vOffset,
-            $this->PAGE_WIDTH - 2*self::HMARGIN - ($this->permanentLeftSpacing - self::INDENT_SPACING) - ($this->permanentRightSpacing - self::INDENT_SPACING),
-            $this->vOffset - $this->current["vOffset"]);
-        $this->currentPage->stroke();
-    }
-
-    private function endAdmonition() {
-        $this->endFrame();
-        $this->permanentLeftSpacing -= self::INDENT_SPACING;
-        $this->permanentRightSpacing -= self::INDENT_SPACING;
-        $current = array_pop($this->old);
-        $current["pages"] = array_merge($current["pages"], $this->current["pages"]);
-        $this->current = $current;
-    }
-
-    private function beginFrame() {
-        $this->lineJump();
-        $this->current["newVOffset"] = $this->vOffset;
-        $this->current["pages"] = array();
-    }
-
-    private function endFrame($dash = null) {
-        $onSinglePage = true;
-        foreach ($this->current["pages"] as $page) {
-            $page->setRGBStroke(0, 0, 0);
-            $page->setLineWidth(1.0);
-            $page->setDash($dash, 0);
-            // left border
-            $page->moveTo(self::HMARGIN + ($this->permanentLeftSpacing - self::INDENT_SPACING),
-                self::VMARGIN);
-            $page->lineTo(self::HMARGIN + ($this->permanentLeftSpacing - self::INDENT_SPACING),
-                $this->PAGE_HEIGHT - self::VMARGIN - $this->current["newVOffset"]);
-            // right border
-            $page->moveTo($this->PAGE_WIDTH - self::HMARGIN - ($this->permanentRightSpacing - self::INDENT_SPACING),
-                self::VMARGIN);
-            $page->lineTo($this->PAGE_WIDTH - self::HMARGIN - ($this->permanentRightSpacing - self::INDENT_SPACING),
-                $this->PAGE_HEIGHT - self::VMARGIN - $this->current["newVOffset"]);
-            $page->stroke();
-            $page->setDash(null, 0);
-            $this->current["newVOffset"] = 0;
-            $onSinglePage = false;
-        }
-        $this->currentPage->setRGBStroke(0, 0, 0);
-        $this->currentPage->setLineWidth(1.0);
-        $this->currentPage->setDash($dash, 0);
-        // left border
-        $this->currentPage->moveTo(self::HMARGIN + ($this->permanentLeftSpacing - self::INDENT_SPACING),
-            $this->PAGE_HEIGHT - self::VMARGIN - $this->vOffset);
-        $this->currentPage->lineTo(self::HMARGIN + ($this->permanentLeftSpacing - self::INDENT_SPACING),
-            $this->PAGE_HEIGHT - self::VMARGIN - $this->current["newVOffset"]);
-        // right border
-        $this->currentPage->moveTo($this->PAGE_WIDTH - self::HMARGIN - ($this->permanentRightSpacing - self::INDENT_SPACING),
-            $this->PAGE_HEIGHT - self::VMARGIN - $this->vOffset);
-        $this->currentPage->lineTo($this->PAGE_WIDTH - self::HMARGIN - ($this->permanentRightSpacing - self::INDENT_SPACING),
-            $this->PAGE_HEIGHT - self::VMARGIN - $this->current["newVOffset"]);
-        // bottom border
-        $this->currentPage->moveTo(self::HMARGIN + ($this->permanentLeftSpacing - self::INDENT_SPACING),
-            $this->PAGE_HEIGHT - self::VMARGIN - $this->vOffset);
-        $this->currentPage->lineTo($this->PAGE_WIDTH - self::HMARGIN - ($this->permanentRightSpacing - self::INDENT_SPACING),
-            $this->PAGE_HEIGHT - self::VMARGIN - $this->vOffset);
-        // top border (if frame's on a single page)
-        if ($onSinglePage) {
-            $this->currentPage->moveTo(self::HMARGIN + ($this->permanentLeftSpacing - self::INDENT_SPACING),
-                $this->PAGE_HEIGHT - self::VMARGIN - $this->current["newVOffset"]);
-            $this->currentPage->lineTo($this->PAGE_WIDTH - self::HMARGIN - ($this->permanentRightSpacing - self::INDENT_SPACING),
-                $this->PAGE_HEIGHT - self::VMARGIN - $this->current["newVOffset"]);
-        }
-
-        $this->currentPage->stroke();
-        $this->lineJump();
-        $this->currentPage->setDash(null, 0);
-        $this->current["oldVPosition"] = 0;
-    }
-ER2GQ2LTFU7GQYLSOVCG6YZNHZTWK5CGN5XHIKBCINXXK4TJMVZC2T3CNRUXC5LFEIWCAISXNFXEC3TTNFCW4Y3PMRUW4ZZCFE5QUCRAEAQCACJPF4QECZDEEBTGS4TTOQQHAYLHMUQGC3TEEBSGKZTBOVWHIIDGN5XHIIDTMV2HI2LOM5ZQUIBAEAQASJDUNBUXGLJ6MN2XE4TFNZ2EM33OOQQD2IBEORUGS4ZNHZTG63TUONNSESDFNR3GK5DJMNQSEXJ3BIQCAIBABESHI2DJOMWT4Y3VOJZGK3TUIZXW45CTNF5GKIB5EAYTEOYKEAQCAIAJER2GQ2LTFU7GG5LSOJSW45CGN5XHIQ3PNRXXEIB5EBQXE4TBPEUDALBAGAWCAMBJHMQC6LZAIJWGCY3LBIQCAIBABESHI2DJOMWT43TFPB2FAYLHMUUCSOYKEAQCAIAJER2GQ2LTFU7GQYLSOVCG6YZNHZQWIZCQMFTWKTDBMJSWYKBRFQQFYSDBOJ2VAYLHMU5DUTSVJVPVGVCZJRCV6RCFINEU2QKMFQQDCLBAEJIGCZ3FEARCSOYKEAQCAID5BIFCAIBAEBYHKYTMNFRSAZTVNZRXI2LPNYQGOZLUIN2XE4TFNZ2FAYLHMUUCSID3BIQCAIBAEAQCAIDSMV2HK4TOEASHI2DJOMWT4Y3VOJZGK3TUKBQWOZJ3BIQCAIBAPUFAUIBAEAQHA5LCNRUWGIDGOVXGG5DJN5XCA43FORBW63LQOJSXG43JN5XE233EMUUCI3LPMRSSSID3BIQCAIBAEAQCAIBEORUGS4ZNHZUGC4TVIRXWGLJ6ONSXIQ3PNVYHEZLTONUW63SNN5SGKKBENVXWIZJJHMFCAIBAEB6QUCRAEAQCALZPEBAXA4DFNZSCA5DFPB2CA2LOORXSA5DIMUQGG5LSOJSW45BAOBXXG2LUNFXW4CRAEAQCA4DVMJWGSYZAMZ2W4Y3UNFXW4IDBOBYGK3TEKRSXQ5BIER2GK6DUFEQHWCRPF4QCAIBAEAQCAIDJMYQCQJDUNBUXGLJ6OZHWMZTTMV2CAPRAER2GQ2LTFU7GG5LSOJSW45C3EJRWQYLSJ5TGM43FOQRF2IBLEAZSUTCJJZCV6U2QIFBUSTSHEAVSAMZKER2GQ2LTFU7GG5LSOJSW45CGN5XHIU3JPJSSSCRPF4QCAIBAEAQCAIBAEAQCAJDUNBUXGLJ6OZHWMZTTMV2CAPJAER2GQ2LTFU7GG5LSOJSW45C3EJRWQYLSJ5TGM43FOQRF2IBLEAZSUTCJJZCV6U2QIFBUSTSHEAVSAMZKER2GQ2LTFU7GG5LSOJSW45CGN5XHIU3JPJSTWCRAEAQCAIBAEAQGSZRAFASHI2DJOMWT4YLQOBSW4ZCUN5BHKZTGMVZCSID3BIQCAIBAEAQCAIBAEAQCAYLSOJQXSX3QOVZWQKBEORUGS4ZNHZRHKZTGMVZCYIDBOJZGC6JIBIQCAIBAEAQCAIBAEAQCAIBAEAQCE5DFPB2CEIB5HYQCI5DFPB2CYCRAEAQCAIBAEAQCAIBAEAQCAIBAEJTG63TUEIQD2PRAER2GQ2LTFU7GG5LSOJSW45CGN5XHILAKEAQCAIBAEAQCAIBAEAQCAIBAEARHG2L2MURCAPJ6EASHI2DJOMWT4Y3VOJZGK3TUIZXW45CTNF5GKLAKEAQCAIBAEAQCAIBAEAQCAIBAEARGG33MN5ZCEIB5HYQCI5DINFZS2PTDOVZHEZLOORDG63TUINXWY33SBIQCAIBAEAQCAIBAEAQCAKJJHMFCAIBAEAQCAIBAEAQCAIDSMV2HK4TOHMFCAIBAEAQCAIBAPUFAUIBAEAQCAIBAEASHI2DJOMWT4Y3VOJZGK3TUKBQWOZJNHZRGKZ3JNZKGK6DUFAUTWCRAEAQCAIBAEAQGI3ZAPMFCAIBAEAQCAIBAEAQCAIBPF4QEG3DFMFZCA5DIMUQHO2DJORSXG4DBMNSSA2LGEBUXIIDCMVTWS3TTEB2GQZJANRUW4ZJAN5ZCA2LGEBWGC43UEBRWQYLSEBUXGIDBEBZXAZLDNFQWYIDDNBQXECRAEAQCAIBAEAQCAIBAEBUWMIBION2HE4DPOMUCI5DFPB2CYIBCEARCSIB5HU6SAMBAEYTCAKBEORUGS4ZNHZUE6ZTGONSXIIB5HUQDAID4PQQGS3S7MFZHEYLZFASHI2DJOMWT4Y3VOJZGK3TULMRGG2DBOIRF2LBAMFZHEYLZFARCMIRMEARCIIRJFEUSSID3BIQCAIBAEAQCAIBAEAQCAIBAEAQCI5DFPB2CAPJAON2WE43UOIUCI5DFPB2CYIBRFE5QUIBAEAQCAIBAEAQCAIBAPUFAUIBAEAQCAIBAEAQCAIBAF4XSATTVNVRGK4RAN5TCAY3IMFZHGIDBNRWG653FMQQGS3RAORUGKIDDOVZHEZLOOQQGY2LOMUFCAIBAEAQCAIBAEAQCAIBENZREGYLSMFRSAPJAER2GQ2LTFU7GG5LSOJSW45CGN5XHILJ6NVSWC43VOJSVIZLYOQUCI5DFPB2CYCRAEAQCAIBAEAQCAIBAEAQCAIBAFASHI2DJOMWT4UCBI5CV6V2JIRKEQIBNEAZCU43FNRTDUOSIJVAVER2JJYQC2IBEORUGS4ZNHZUE6ZTGONSXIIBNEASHI2DJOMWT44DFOJWWC3TFNZ2EYZLGORJXAYLDNFXGOIBNEASHI2DJOMWT44DFOJWWC3TFNZ2FE2LHNB2FG4DBMNUW4ZZJFQFCAIBAEAQCAIBAEAQCAIBAEAQCAJDUNBUXGLJ6MN2XE4TFNZ2EM33OORJWS6TFFQQCI5DINFZS2PTDOVZHEZLOORIGCZ3FFU7GOZLUINUGC4STOBQWGZJIFEWAUIBAEAQCAIBAEAQCAIBAEAQCAIBEORUGS4ZNHZRXK4TSMVXHIUDBM5SS2PTHMV2FO33SMRJXAYLDMUUCSLBAORZHKZJJHMFAUIBAEAQCAIBAEAQCAIBAF4XSASLGEBQSA5DIMUQHIZLYOQQGG33OORSW45BAMNQW4J3UEBRGKIDBOBYGK3TEMVSCAKDFNF2GQZLSEB2GQZLSMUQGS4ZANZXSA53INF2GK43QMFRWK4ZMBIQCAIBAEAQCAIBAEAQCALZPEBSWS5DIMVZCA5DIMUQGS4ZANZXXIIDFNZXXKZ3IEBZXAYLDMUQGS3RAORUGKIDMNFXGKKIKEAQCAIBAEAQCAIBAEAQGSZRAFASG4YSDMFZGCYZAHU6T2IBQFEQHWCRAEAQCAIBAEAQCAIBAEAQCAIBAERUXGRLON52WO2CTOBQWGZKPNZHGK6DUJRUW4ZJAHUQCI5DINFZS2PTDOVZHEZLOORDG63TUFU7G2ZLBON2XEZKUMV4HIKBEORSXQ5BMBIQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAUCI5DINFZS2PSQIFDUKX2XJFCFISBAFUQDEKTTMVWGMOR2JBGUCUSHJFHCALJAER2GQ2LTFU7HAZLSNVQW4ZLOORGGKZTUKNYGCY3JNZTSALJAER2GQ2LTFU7HAZLSNVQW4ZLOORJGSZ3IORJXAYLDNFXGOKJMBIQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEASHI2DJOMWT4Y3VOJZGK3TUIZXW45CTNF5GKLBAER2GQ2LTFU7GG5LSOJSW45CQMFTWKLJ6M5SXIQ3IMFZFG4DBMNSSQKJMBIQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEASHI2DJOMWT4Y3VOJZGK3TUKBQWOZJNHZTWK5CXN5ZGIU3QMFRWKKBJFQQHI4TVMUUTWCRAEAQCAIBAEAQCAIBAEAQCAIBANFTCAKBENFZUK3TPOVTWQU3QMFRWKT3OJZSXQ5CMNFXGKKJAPMFCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCI5DINFZS2PTWJ5TGM43FOQQCWPJAER2GQ2LTFU7GG5LSOJSW45CGN5XHIU3JPJSSAKZAONSWYZR2HJGESTSFL5JVAQKDJFHEOOYKEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAER2GQ2LTFU7GQT3GMZZWK5BAHUQDAOYKEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAERUXGTDBON2EY2LOMUQD2IDGMFWHGZJ3BIQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEBRW63TUNFXHKZJ3BIQCAIBAEAQCAIBAEAQCAIBAEAQH2IDFNRZWKID3BIQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEASG4YSDMFZGCYZAHUQCI5DINFZS2PTDOVZHEZLOORDG63TUFU7G2ZLBON2XEZKUMV4HIKBEORSXQ5BMBIQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAFASHI2DJOMWT4UCBI5CV6V2JIRKEQIBNEAZCU43FNRTDUOSIJVAVER2JJYQC2IBEORUGS4ZNHZUE6ZTGONSXIIBNEASHI2DJOMWT44DFOJWWC3TFNZ2EYZLGORJXAYLDNFXGOIBNEASHI2DJOMWT44DFOJWWC3TFNZ2FE2LHNB2FG4DBMNUW4ZZJFQFCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEASHI2DJOMWT4Y3VOJZGK3TUIZXW45CTNF5GKLBAER2GQ2LTFU7GG5LSOJSW45CQMFTWKLJ6M5SXIQ3IMFZFG4DBMNSSQKJMBIQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAER2GQ2LTFU7GG5LSOJSW45CQMFTWKLJ6M5SXIV3POJSFG4DBMNSSQKJMEBTGC3DTMUUTWCRAEAQCAIBAEAQCAIBAEAQCAIBAPUFCAIBAEAQCAIBAEAQCAID5BIQCAIBAEAQCAIBAEAQCAJDJONGGC43UJRUW4ZJAHUQCQJDOMJBWC4TBMMQD2PJAON2HE3DFNYUCI5DFPB2CSKJ3BIFCAIBAEAQCAIBAEAQCAIBEORSXQ5CUN5AXA4DFNZSCAPJAON2WE43UOIUCI5DFPB2CYIBQFQQCI3TCINQXEYLDFE5QUIBAEAQCAIBAEAQCAIBAER2GK6DUEA6SA43VMJZXI4RIER2GK6DUFQQCI3TCINQXEYLDFE5QUCRAEAQCAIBAEAQCAIBAEAXS6ICBOBYGK3TEEB2GK6DUEAUGS3RAMEQG4ZLXEBYGCZ3FEBUWMIDOMVSWIZLEFEQHO2LUNAQGC3DJM5XAUIBAEAQCAIBAEAQCAIBANFTCAKBEORUGS4ZNHZIECR2FL5EEKSKHJBKCALJAFBZWK3DGHI5FMTKBKJDUSTRAFMQCI5DINFZS2PTWJ5TGM43FOQUSAPBAONSWYZR2HJLE2QKSI5EU4KJAPMFCAIBAEAQCAIBAEAQCAIBAEAQCAJDUNBUXGLJ6MN2XE4TFNZ2FAYLHMUWT4ZLOMRKGK6DUFAUTWCRAEAQCAIBAEAQCAIBAEAQCAIBAER2GQ2LTFU7GG5LSOJSW45C3EJYGCZ3FOMRF2W25EA6SAJDUNBUXGLJ6MN2XE4TFNZ2FAYLHMU5QUIBAEAQCAIBAEAQCAIBAEAQCAIBEORUGS4ZNHZXGK6DUKBQWOZJIFE5QUIBAEAQCAIBAEAQCAIBAEAQCAIBEORUGS4ZNHZRXK4TSMVXHIUDBM5SS2PTCMVTWS3SUMV4HIKBJHMFCAIBAEAQCAIBAEAQCAID5BIQCAIBAEAQCAIBAEAQCA2LGEAUCI5DINFZS2PTDOVZHEZLOORNSEYLMNFTW4IS5EA6T2IBCMNSW45DFOIRCSID3BIQCAIBAEAQCAIBAEAQCAIBAEAQCI43QMFRWS3THEA6SAJDUNBUXGLJ6KBAUORK7K5EUIVCIEAWSAMRKONSWYZR2HJEE2QKSI5EU4IBNBIQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEASHI2DJOMWT44DFOJWWC3TFNZ2EYZLGORJXAYLDNFXGOIBNEASHI2DJOMWT44DFOJWWC3TFNZ2FE2LHNB2FG4DBMNUW4ZZAFUQCI5DINF
-    // Append $text with an underlined blue style with a link to $url
-    private function appendUrlAnnotation($text, $url) {
-        $this->appendText(" ");
-        $fromHOffset = $this->hOffset;
-
-        // If more than one text line to append
-        while ($text = $this->appendOneLine($text)) {
-            // Trace the underline
-            $this->currentPage->setLineWidth(1.0);
-            $this->currentPage->setDash(null, 0);
-            $this->currentPage->moveTo(self::HMARGIN + $this->permanentLeftSpacing + $fromHOffset,
-                $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset + self::LINE_SPACING));
-            $this->currentPage->lineTo(self::HMARGIN + $this->permanentLeftSpacing + $this->hOffset,
-                $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset + self::LINE_SPACING));
-            $this->currentPage->stroke();
-
-            // Create link
-            $annotationArea = array(self::HMARGIN + $this->permanentLeftSpacing + $fromHOffset,
-                $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset + self::LINE_SPACING),
-                self::HMARGIN + $this->permanentLeftSpacing + $this->hOffset,
-                $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset - $this->currentFontSize));
-            $this->currentPage->createURLAnnotation($annotationArea, $url)->setBorderStyle(0, 0, 0);
-
-            // Prepare the next line
-            $this->vOffset += $this->currentFontSize + self::LINE_SPACING;
-            $this->hOffset = 0;
-            $fromHOffset = $this->hOffset;
-        }
-
-        // Trace the underline
-        $this->currentPage->setLineWidth(1.0);
-        $this->currentPage->setDash(null, 0);
-        $this->currentPage->moveTo(self::HMARGIN + $this->permanentLeftSpacing + $fromHOffset,
-            $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset + self::LINE_SPACING));
-        $this->currentPage->lineTo(self::HMARGIN + $this->permanentLeftSpacing + $this->hOffset,
-            $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset + self::LINE_SPACING));
-        $this->currentPage->stroke();
-
-        // Create link
-        $annotationArea = array(self::HMARGIN + $this->permanentLeftSpacing + $fromHOffset,
-            $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset + self::LINE_SPACING),
-            self::HMARGIN + $this->permanentLeftSpacing + $this->hOffset,
-            $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset - $this->currentFontSize));
-        $this->currentPage->createURLAnnotation($annotationArea, $url)->setBorderStyle(0, 0, 0);
-
-    }
-
-    // Append $text with an underlined blue style and prepare an internal link (which will be resolved later)
-    private function prepareInternalLinkAnnotation($text) {
-        $this->appendText(" ");
-        $fromHOffset = $this->hOffset;
-        $linkAreas = array(/* page, left, bottom, right, top */);
-
-        // If more than one text line to append
-        while ($text = $this->appendOneLine($text)) {
-           // Create link
-            $linkAreas[] = array($this->currentPage,
-                self::HMARGIN + $this->permanentLeftSpacing + $fromHOffset,
-                $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset + self::LINE_SPACING),
-                self::HMARGIN + $this->permanentLeftSpacing + $this->hOffset,
-                $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset - $this->currentFontSize));
-
-            // Prepare the next line
-            $this->vOffset += $this->currentFontSize + self::LINE_SPACING;
-            $this->hOffset = 0;
-            $fromHOffset = $this->hOffset;
-        }
-
-        // Prepare link
-        $linkAreas[] = array($this->currentPage,
-                self::HMARGIN + $this->permanentLeftSpacing + $fromHOffset,
-                $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset + self::LINE_SPACING),
-                self::HMARGIN + $this->permanentLeftSpacing + $this->hOffset,
-                $this->PAGE_HEIGHT - (self::VMARGIN + $this->vOffset - $this->currentFontSize));
-
-        return $linkAreas;
-    }
-
-    public function resolveInternalLink($page, $rectangle, $destPage) {
-        $page->setRGBStroke(0, 0, 1); // blue
-        // Trace the underline
-        $page->setLineWidth(1.0);
-        $page->setDash(array(2), 1);
-        $page->moveTo($rectangle[0], $rectangle[1]);
-        $page->lineTo($rectangle[2], $rectangle[1]);
-        $page->stroke();
-        // Create link
-        $page->createLinkAnnotation($rectangle, $destPage->createDestination())
-            ->setBorderStyle(0, 0, 0);
-        $page->setDash(null, 0);
-    }
-
-    public function addTable($colCount) {
-        // If this table is inside another table or frame
-        array_push($this->old, $this->current);
-        $this->current["leftSpacing"] = $this->permanentLeftSpacing;
-        $this->current["rightSpacing"] = $this->permanentRightSpacing;
-        // First horizontal line
-        $this->currentPage->moveTo(self::HMARGIN + $this->current["leftSpacing"], $this->PAGE_HEIGHT - self::VMARGIN - $this->vOffset);
-        $this->currentPage->lineTo($this->PAGE_WIDTH - self::HMARGIN - $this->current["rightSpacing"], $this->PAGE_HEIGHT - self::VMARGIN - $this->vOffset);
-        $this->currentPage->stroke();
-    }
-
-    public function endTable() {
-        $this->permanentLeftSpacing = $this->current["leftSpacing"];
-        $this->permanentRightSpacing = $this->current["rightSpacing"];
-        $this->lineJump();
-        $current = array_pop($this->old);
-        $current["pages"] = array_merge($current["pages"], $this->current["pages"]);
-        $this->current = $current;
-    }
-
-    public function newTableRow($colCount, $valign) {
-        $this->current["vOffset"] = $this->vOffset;
-        $this->current["row"]["cellCount"] = $colCount;
-        $this->current["row"]["activeCell"] = 0;
-        $this->current["row"]["hSize"] = ($this->PAGE_WIDTH - 2*self::HMARGIN -
-            $this->current["leftSpacing"] - $this->current["rightSpacing"]) / $this->current["row"]["cellCount"];
-        $this->current["row"]["vPosition"] = 0;
-        $this->current["row"]["pages"] = array();
-        $this->current["row"]["cutPolicy"] = array(1);
-        $this->current["pages"] = array();
-    }
-
-    public function beginTableEntry($colspan, $rowspan, $align) {
-        $this->permanentLeftSpacing = ($this->current["row"]["activeCell"]++) * $this->current["row"]["hSize"] +
-            self::LINE_SPACING + $this->current["leftSpacing"];
-        $this->permanentRightSpacing = $this->PAGE_WIDTH - 2*self::HMARGIN -
-            ($this->current["row"]["activeCell"] + $colspan - 1) * $this->current["row"]["hSize"] -
-            $this->current["leftSpacing"] + self::LINE_SPACING;
-
-        foreach ($this->current["pages"] as $page) {
-            $this->lastPage();
-        }
-        $this->current["pages"] = array();
-
-        $this->hOffset = 0;
-        $this->vOffset = $this->current["vOffset"] + $this->currentFontSize + self::LINE_SPACING;
-        $this->current["align"] = $align;
-
-        array_push($this->current["row"]["cutPolicy"], $colspan);
-    }
-
-    public function endTableEntry() {
-        $this->current["align"] = "";
-        $newOffset = $this->vOffset + $this->currentFontSize + self::LINE_SPACING;
-        if ($newOffset + $this->PAGE_HEIGHT * count($this->current["pages"]) > $this->current["row"]["vPosition"]) {
-            $this->current["row"]["vPosition"] = $newOffset + $this->PAGE_HEIGHT * count($this->current["pages"]);
-        }
-        if (count($this->current["pages"]) > count($this->current["row"]["pages"])) {
-            $this->current["row"]["pages"] = $this->current["pages"];
-        }
-    }
-
-    public function endTableRow() {
-        $vOffset = $this->current["vOffset"];
-        while($this->isNextPage())
-            $this->nextPage();
-        // Vertical lines
-        for ($i = 0, $x = self::HMARGIN + $this->current["leftSpacing"]; $i <= $this->current["row"]["cellCount"]; $i++, $x += $this->current["row"]["hSize"]) {
-
-            // Don't trace vertical line if colspan
-            if (($cellCount = array_shift($this->current["row"]["cutPolicy"])) > 1) {
-                array_unshift($this->current["row"]["cutPolicy"], $cellCount - 1);
-                continue;
-            }
-
-            foreach ($this->current["row"]["pages"] as $page) {
-                $page->setRGBStroke(0, 0, 0);
-                $page->moveTo($x, self::VMARGIN);
-                $page->lineTo($x, $this->PAGE_HEIGHT - self::VMARGIN - $this->current["vOffset"]);
-                $page->stroke();
-                $this->current["vOffset"] = 0;
-            }
-
-            $this->currentPage->moveTo($x, $this->PAGE_HEIGHT - self::VMARGIN - ($this->current["vOffset"]));
-            $this->currentPage->lineTo($x, $this->PAGE_HEIGHT - self::VMARGIN - ($this->current["row"]["vPosition"] % $this->PAGE_HEIGHT));
-            $this->currentPage->stroke();
-            $this->current["vOffset"] = $vOffset;
-        }
-        // Horizontal line
-        $this->currentPage->moveTo(self::HMARGIN + $this->current["leftSpacing"], $this->PAGE_HEIGHT - self::VMARGIN - ($this->current["row"]["vPosition"] % $this->PAGE_HEIGHT));
-        $this->currentPage->lineTo($this->PAGE_WIDTH - self::HMARGIN - $this->current["rightSpacing"],
-            $this->PAGE_HEIGHT - self::VMARGIN - ($this->current["row"]["vPosition"] % $this->PAGE_HEIGHT));
-        $this->currentPage->stroke();
-
-        // Store position
-        $this->vOffset = $this->current["row"]["vPosition"] % $this->PAGE_HEIGHT;
-
-        // Store pages
-        $last = array_pop($this->old);
-        $last["pages"] = array_merge($last["pages"], $this->current["row"]["pages"]);
-        array_push($this->old, $last);
-
-        // Erase current properties
-        $this->current["row"] = array();
-    }
-
-    private function endsWith($str, $sub) {
-        return ( substr( $str, strlen( $str ) - strlen( $sub ) ) === $sub );
-    }
-
-    private function addImage($url) {
-        $image = null;
-        if ($this->endsWith(strtolower($url), ".png")) {
-            $image = $this->haruDoc->loadPNG($url);
-        } elseif ($this->endsWith(strtolower($url), ".jpg") || $this->endsWith(strtolower($url), ".jpeg")) {
-            $image = $this->haruDoc->loadJPEG($url);
-        }
-        if ($image) {
-            if ($this->PAGE_HEIGHT - $this->vOffset - 2*self::VMARGIN < $image->getHeight())
-                $this->nextPage();
-            $this->currentPage->drawImage($image,
-                self::HMARGIN + $this->permanentLeftSpacing + $this->hOffset,
-                $this->PAGE_HEIGHT - self::HMARGIN - $this->vOffset - $image->getHeight(),
-                $image->getWidth(),
-                $image->getHeight());
-
-            $this->hOffset = 0;
-            $this->vOffset += $image->getWidth();
-        }
-    }
-}
+session_start();
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+require_once("includes/setdefaultpage.php");
+userlanguage();
+require("language/".$_SESSION['language']."/download.php");
+$header=explode(":",DEFAULTHEADER);
+defaultheader($header[0],$header[1],$header[2],$header[3]);
+?>
+<body>
+<?php defaulttop(); ?>
+<header class="w3-container w3-teal w3-animate-opacity">
+  <h1><?php echo WELCOME;?></h1>
+</header>
+<div class="w3-center w3-animate-opacity">
+  <div class="w3-row"><br/>
+    <article class="w3-col m10 w3-container">
+    <h1><?php echo TITLE1;?></h1>
+
+<p class="w3-justify"><?php echo TEXT1;?></p>
+<table class="w3-table w3-bordered w3-striped w3-border w3-hoverable w3-striped w3-center">
+<thead class="w3-light-blue w3-center">
+  <tr >
+  <th class="w3-center"><?php echo TH1;?></th>
+  <th class="w3-center"><?php echo TH2;?></th>
+  <th class="w3-center"><?php echo TH3;?></th>
+  <th class="w3-center"><?php echo TH4;?></th>
+  <th class="w3-center"><?php echo TH5;?></th>
+  <th class="w3-center"><?php echo TH6;?></th>
+  <th class="w3-center"><?php echo TH7;?></th>
+
+</tr>
+</thead>
+<tr class="w3-center">
+  <td class="w3-center">PHP-GTK-2.0.1</td>
+  <td class="w3-center">PHP 5.5</td>
+  <td class="w3-center">GTK+ 2.24.10</td>
+  <td class="w3-center"><a href="distributions/PHP55-GTK2.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo BETA;?></td>
+  <td class="w3-center">2015-01-15</td>
+BSWG2DPEBLUKTCDJ5GUKOZ7HY6C62BRHYFDYL3IMVQWIZLSHYFDYZDJOY2ITXGMWWU5LTORUWM6JCHY6D64DIOAQGKY3IN4QFIRKYKQYTWPZ6HQXXAPQKHR2GCYTMMUQGG3DBONZCHYFCAIB4ORZCAPQKEAQDY5DIEBRWYYLTOM6SE5ZTFVRWK3TUMVZCEPR4H5YGQ4BAMVRFMNUG6ICUJAZTWPZ6HQXXI2B6BIQCAPDUNAQGG3DBONZT2ITXGMWWGZLOORSXEIR6HQ7XA2DQEBSWG2DPEBKEQNB3H47DYL365DIMVQWIPQKHR2HEIDDNRQXG4Z5EJ3TGLLDMVXHIZLSEI7AUIBAHR2GIIDDNRQXG4Z5EJ3TGLLDMVXHIZLSEI7FASCQFVDVISZNGIXDALRRHQXXIZB6BIQCAPDUMQQGG3DBONZT2ITXGMWWGZLOORSXEIR6KBEFAIBVFY2TYL3UMQ7AUIBAHR2GIIDDNRQXG4Z5EJ3TGLLDMVXHIZLSEI7EOVCLFMQDELRSGQXDCMB4F52GIPQKEAQDY5DEEBRWYYLTOM6SE5ZTFVRWK3TUMVZCEPR4MEQGQ4TFMY6SEZDJON2HE2LCOV2GS33OOMXVASCQGU2S2R2UJMZC46TJOARCAZDPO5XGY33BMQ7DY2JAMNWGC43THURG2YLUMVZGSYLMFVUWG33OOMRD4JRDPBCTQOBUHM6C62J6HQXWCPR4F52GIPQKEAQDY5DEEBRWYYLTOM6SE5ZTFVRWK3TUMVZCEPRNHQXXIZB6BIQCAPDUMQQGG3DBONZT2ITXGMWWGZLOORSXEIR6HQ7XA2DQEBSWG2DPEBBEKVCBHM7T4PBPORSD4CRAEA6HIZBA
+</tr>
+<tr>
+  <td class="w3-center">PHP-GTK-2.0.1</td>
+  <td class="w3-center">PHP 5.4</td>
+  <td class="w3-center">GTK+ 2.24.10</td>
+  <td class="w3-center"><a href="distributions/PHP54-GTK2.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo BETA;?></td>
+  <td class="w3-center">2015-01-15</td>
+
+</tr>
+<tr>
+  <td class="w3-center">PHP-GTK-2.0.1</td>
+  <td class="w3-center">PHP 5.1.x - 5.5</td>
+  <td class="w3-center">GTK+ 2.x</td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><a href="https://github.com/php/php-gtk-src/archive/master.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2015-01-15</td>
+
+</tr>
+<tr>
+  <td class="w3-center">PHP-GTK-2.0.1 binary pack</td>
+  <td class="w3-center">PHP 5.2.6</td>
+  <td class="w3-center">GTK+ 2.12.9</td>
+  <td class="w3-center"><a href="distributions/php-gtk-2.0.1-win32-nts.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2008-05-16</td>
+
+</tr>
+<tr>
+<td class="w3-center">PHP-GTK-2.0.1 binary extensions pack</td>
+  <td class="w3-center">PHP 5.2.6</td>
+  <td class="w3-center">GTK+ 2.12.9</td>
+  <td class="w3-center"><a href="distributions/php-gtk-2.0.1-win32-extensions.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2008-05-16</td>
+
+</tr>
+<tr>
+  <td class="w3-center">PHP-GTK-2.0.1</td>
+  <td class="w3-center">PHP 5.2.6</td>
+  <td class="w3-center">GTK+ 2.12.9</td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><a href="distributions/php-gtk-2.0.1.tar.gz" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2008-05-16</td>
+
+</tr>
+<tr>
+<td class="w3-center">PHP-GTK-2.0.0 binary pack</td>
+  <td class="w3-center">PHP 5.2.5</td>
+  <td class="w3-center">GTK+ 2.12.8</td>
+  <td class="w3-center"><a href="distributions/php-gtk-2.0.0-win32-nts.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2008-02-29</td>
+
+</tr>
+<tr>
+  <td class="w3-center">PHP-GTK-2.0.0</td>
+  <td class="w3-center">PHP 5.2.5</td>
+  <td class="w3-center">GTK+ 2.12.8</td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><a href="distributions/php-gtk-2.0.0.tar.gz" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2008-02-29</td>
+
+</tr>
+</table>
+<br/>
+<h1><?php echo TITLE2;?></h1>
+<p class="w3-justify"><?php echo TEXT2;?></p>
+<table class="w3-table w3-bordered w3-striped w3-border w3-hoverable w3-striped w3-center">
+<thead class="w3-light-blue w3-center">
+  <tr >
+  <th class="w3-center"><?php echo TH1;?></th>
+  <th class="w3-center"><?php echo TH2;?></th>
+  <th class="w3-center"><?php echo TH3;?></th>
+  <th class="w3-center"><?php echo TH4;?></th>
+  <th class="w3-center"><?php echo TH5;?></th>
+  <th class="w3-center"><?php echo TH6;?></th>
+  <th class="w3-center"><?php echo TH7;?></th>
+
+</tr>
+</thead>
+<tr>
+  <td class="w3-center">php-gtk-1.0.2</td>
+  <td class="w3-center">4.4.1-dev</td>
+  <td class="w3-center">GTK+ 1.2.x</td>
+  <td class="w3-center"><a href="distributions/php-gtk-1.0.2-win32.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2005-07-15</td>
+EMNWGC43THURHOMZNMNSW45DFOIRD4MRQGE2S2MBRFUYTKPBPORSD4CQKHQXXI4R6BI6HI4R6BIQCAPDUMQQGG3DBONZT2ITXGMWWGZLOORSXEIR6KBEFALKHKRFS2MROGAXDCPBPORSD4CRAEA6HIZBAMNWGC43THURHOMZNMNSW45DFOIRD4UCIKAQDKLRUHQXXIZB6BIQCAPDUMQQGG3DBONZT2ITXGMWWGZLOORSXEIR6I5KEWKZAGIXDENBOGEYDYL3UMQ7AUIBAHR2GIIDDNRQXG4Z5EJ3TGLLDMVXHIZLSEI7DYYJANBZGKZR5EJSGS43UOJUWE5LUNFXW44ZPKBEFANJUFVDVISZSFZ5GS4BCEBSG653ONRXWCZB6HRUSAY3MMFZXGPJCNVQXIZLSNFQWYLLJMNXW44ZCHYTCG6CFHA4DIOZ4F5UT4PBPME7DYL3UMQ7AUIBAHR2GIIDDNRQXG4Z5EJ3TGLLDMVXHIZLSEI7C2PBPORSD4CRAEA6HIZBAMNWGC43THURHOMZNMNSW45DFOIRD4PB7OBUHAIDFMNUG6ICCIVKECOZ7HY6C65DEHYFCAIB4ORSCAY3MMFZXGPJCO4ZS2Y3FNZ2GK4RCHYZDAMJVFUYDCLJRGU6C65DEHYFAUPBPORZD4CR4ORZD4CRAEA6HIZBAMNWGC43THURHOMZNMNSW45DFOIRD4UCIKAWUOVCLFUZC4MBOGE6C65DEHYFCAIB4ORSCAY3MMFZXGPJCO4ZS2Y3FNZ2GK4RCHZIEQUBAGUXDCLTYEAWSANJOGU6C65DEHYFCAIB4ORSCAY3MMFZXGPJCO4ZS2Y3FNZ2GK4RCHZDVISZLEAZC46B4F52GIPQKEAQDY5DEEBRWYYLTOM6SE5ZTFVRWK3TUMVZCEPRNHQXXIZB6BIQCAPDUMQQGG3DBONZT2ITXGMWWGZLOORSXEIR6HRQSA2DSMVTD2ITIOR2HA4Z2F4XWO2LUNB2WELTDN5WS64DIOAXXA2DQFVTXI2ZNONZGGL3BOJRWQ2LWMUXW2YLTORSXELT2NFYCEIDEN53W43DPMFSD4PDJEBRWYYLTOM6SE3LBORSXE2LBNQWWSY3PNZZSEPRGEN4EKOBYGQ5TYL3JHY6C6YJ6HQXXIZB6BIQCAPDUMQQGG3DBONZT2ITXGMWWGZLOORSXEIR6HQ7XA2DQEBSWG2DPEBJVIQKCJRCTWPZ6HQXXIZB6BIQCAPDUMQQGG3DBONZT2ITX
+</tr>
+<tr>
+<td class="w3-center">php-gtk-1.0.2</td>
+  <td class="w3-center">4.4.1-dev</td>
+  <td class="w3-center">GTK+ 1.2.x</td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><a href="distributions/php-gtk-1.0.2.tar.gz" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2005-07-15</td>
+
+</tr>
+<tr>
+  <td class="w3-center">php-gtk-1.0.1a</td>
+  <td class="w3-center">4.3.9-dev</td>
+  <td class="w3-center">GTK+ 1.2.x</td>
+  <td class="w3-center"><a href="distributions/php-gtk-1.0.1a-win32.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2004-08-25</td>
+
+</tr>
+<tr>
+<td class="w3-center">php-gtk-1.0.1</td>
+  <td class="w3-center">4.3.9-dev</td>
+  <td class="w3-center">GTK+ 1.2.x</td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><a href="distributions/php-gtk-1.0.1.tar.gz" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2004-08-25</td>
+
+</tr>
+<tr>
+<td class="w3-center">php-gtk-1.0.0</td>
+  <td class="w3-center">4.3.4RC3-dev</td>
+  <td class="w3-center">GTK+ 1.2.x</td>
+  <td class="w3-center"><a href="distributions/php-gtk-1.0.0-win32.zip" download><i class="material-icons">&#xE884;</i></a></td>
+  <td class="w3-center">-</td>
+  <td class="w3-center"><?php echo STABLE;?></td>
+  <td class="w3-center">2003-10-23</td>
+
+</tr>
+</table>
+
+<h1><?php echo TITLE3;?></h1>
+<p class="w3-justify"><?php echo TEXT3;?>
+
+
+<p class="w3-justify"><?php echo TEXT4;?></p>
+</article>
+    <aside>
+    <nav class="w3-col m2 w3-light-grey w3-animate-opacity">
+<?php defaultmenuright();?>
+    </nav>
+    </aside>
+
+  </div>
+</div>
+<footer class="w3-container w3-small w3-teal w3-animate-opacity">
+  <p><?php echo FOOTER;?></p>
+</footer>
+<?php
+defaultfooter();
+?>
