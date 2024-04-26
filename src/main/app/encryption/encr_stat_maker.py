@@ -11,7 +11,6 @@ from src.main.app.words_service.word_loader import SimpleWordLoader
 
 def make_entropy_for_encr():
     start = time.time()
-    tp = tn = fp = fn = 0
 
     determinator = EncryptionDeterminator(
         OperatingMode.OPTIMAL,
@@ -19,34 +18,10 @@ def make_entropy_for_encr():
     )
     encr_files, no_encr_files = get_files_for_stat()
     total_count = len(encr_files) + len(no_encr_files)
-    cur_count = 0
 
     file_stat = open('../../source/encr_stat.txt', 'w')
-    write_terminator_line(file_stat)
-    for filename in no_encr_files:
-        result: EncrAnalyzeResult = determinator.determinate(read_file(filename))
-        write_result(result, file_stat, filename)
-        if result.entr_verdict.is_encr or result.hex_verdict.is_encr:
-            fp += 1
-        else:
-            tn += 1
-        # if entr_verdict == EncrVerdict.UNLIKELY and not hex_verdict.is_encr:
-        #     tp += 1
-        cur_count += 1
-        print(f'\r{round(100 * cur_count / total_count)}% : {filename}', end='')
-    write_terminator_line(file_stat)
-    for filename in encr_files:
-        result: EncrAnalyzeResult = determinator.determinate(read_file(filename))
-        write_result(result, file_stat, filename)
-        if result.entr_verdict.is_encr or result.hex_verdict.is_encr:
-            tp += 1
-        else:
-            fn += 1
-        # if entr_verdict == EncrVerdict.UNLIKELY and not hex_verdict.is_encr:
-        #     fp += 1
-        cur_count += 1
-        print(f'\r{round(100 * cur_count / total_count)}% : {filename}', end='')
-    print()
+    fp, tn, cur_count = process_files(total_count, 0, determinator, no_encr_files, file_stat)
+    tp, fn, _ = process_files(total_count, cur_count, determinator, encr_files, file_stat)
 
     precision, recall, f_score = calc_metrics(fn, fp, tp)
     write_metrics(f_score, file_stat, fn, fp, precision, recall, tn, tp)
@@ -61,6 +36,22 @@ def make_entropy_for_encr():
     print(f'F-score =  {round(100 * f_score, 2)}%')
 
     print(f'\n{total_count} файлов - {round(time.time() - start, 2)} сек.')
+
+
+def process_files(total_count, cur_count, determinator, filenames, file_stat):
+    positive = negative = 0
+    write_terminator_line(file_stat)
+    for filename in filenames:
+        result: EncrAnalyzeResult = determinator.determinate(read_file(filename))
+        write_result(result, file_stat, filename)
+        if result.entr_verdict.is_encr or result.hex_verdict.is_encr:
+            positive += 1  # tp += 1
+        else:
+            negative += 1  # fn += 1
+        cur_count += 1
+        print(f'\r{round(100 * cur_count / total_count)}% : {filename}', end='')
+    print()
+    return positive, negative, cur_count
 
 
 def get_files_for_stat():
