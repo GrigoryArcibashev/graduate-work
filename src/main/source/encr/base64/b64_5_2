@@ -1,1 +1,176 @@
-PD9waHAKc2Vzc2lvbl9zdGFydCgpOwplcnJvcl9yZXBvcnRpbmcoRV9BTEwpOwppbmlfc2V0KCJkaXNwbGF5X2Vycm9ycyIsIDEpOwpyZXF1aXJlX29uY2UoImluY2x1ZGVzL3NldGRlZmF1bHRwYWdlLnBocCIpOwp1c2VybGFuZ3VhZ2UoKTsKcmVxdWlyZSgibGFuZ3VhZ2UvIi4kX1NFU1NJT05bJ2xhbmd1YWdlJ10uIi9kb3dubG9hZC5waHAiKTsKJGhlYWRlcj1leHBsb2RlKCI6IixERUZBVUxUSEVBREVSKTsKZGVmYXVsdGhlYWRlcigkaGVhZGVyWzBdLCRoZWFkZXJbMV0sJGhlYWRlclsyXSwkaGVhZGVyWzNdKTsKPz4KPGJvZHk+Cjw/cGhwIGRlZmF1bHR0b3AoKTsgPz4KPGhlYWRlciBjbGFzcz0idzMtY29udGFpbmVyIHczLXRlYWwgdzMtYW5pbWF0ZS1vcGFjaXR5Ij4KICA8aDE+PD9waHAgZWNobyBXRUxDT01FOz8+PC9oMT4KPC9oZWFkZXI+CjxkaXYgY2xhc3M9InczLWNlbnRlciB3My1hbmltYXRlLW9wYWNpdHkiPgogIDxkaXYgY2xhc3M9InczLXJvdyI+PGJyLz4KICAgIDxhcnRpY2xlIGNsYXNzPSJ3My1jb2wgbTEwIHczLWNvbnRhaW5lciI+CiAgICA8aDE+PD9waHAgZWNobyBUSVRMRTE7Pz48L2gxPgoKPHAgY2xhc3M9InczLWp1c3RpZnkiPjw/cGhwIGVjaG8gVEVYVDE7Pz48L3A+Cjx0YWJsZSBjbGFzcz0idzMtdGFibGUgdzMtYm9yZGVyZWQgdzMtc3RyaXBlZCB3My1ib3JkZXIgdzMtaG92ZXJhYmxlIHczLXN0cmlwZWQgdzMtY2VudGVyIj4KPHRoZWFkIGNsYXNzPSJ3My1saWdodC1ibHVlIHczLWNlbnRlciI+CiAgPHRyID4KICA8dGggY2xhc3M9InczLWNlbnRlciI+PD9waHAgZWNobyBUSDE7Pz48L3RoPgogIDx0aCBjbGFzcz0idzMtY2VudGVyIj48P3BocCBlY2hvIFRIMjs/PjwvdGg+CiAgPHRoIGNsYXNzPSJ3My1jZW50ZXIiPjw/cGhwIGVjaG8gVEgzOz8+PC90aD4KICA8dGggY2xhc3M9InczLWNlbnRlciI+PD9waHAgZWNobyBUSDQ7Pz48L3RoPgogIDx0aCBjbGFzcz0idzMtY2VudGVyIj48P3BocCBlY2hvIFRINTs/PjwvdGg+CiAgPHRoIGNsYXNzPSJ3My1jZW50ZXIiPjw/cGhwIGVjaG8gVEg2Oz8+PC90aD4KICA8dGggY2xhc3M9InczLWNlbnRlciI+PD9waHAgZWNobyBUSDc7Pz48L3RoPgoKPC90cj4KPC90aGVhZD4KPHRyIGNsYXNzPSJ3My1jZW50ZXIiPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj5QSFAtR1RLLTIuMC4xPC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+UEhQIDUuNTwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPkdUSysgMi4yNC4xMDwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjxhIGhyZWY9ImRpc3RyaWJ1dGlvbnMvUEhQNTUtR1RLMi56aXAiIGRvd25sb2FkPjxpIGNsYXNzPSJtYXRlcmlhbC1pY29ucyI+JiN4RTg4NDs8L2k+PC9hPjwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPi08L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48P3BocCBlY2hvIEJFVEE7Pz48L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj4yMDE1LTAxLTE1PC90ZD4KCjwvdHI+Cjx0cj4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+UEhQLUdUSy0yLjAuMTwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPlBIUCA1LjQ8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj5HVEsrIDIuMjQuMTA8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48YSBocmVmPSJkaXN0cmlidXRpb25zL1BIUDU0LUdUSzIuemlwIiBkb3dubG9hZD48aSBjbGFzcz0ibWF0ZXJpYWwtaWNvbnMiPiYjeEU4ODQ7PC9pPjwvYT48L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj4tPC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+PD9waHAgZWNobyBCRVRBOz8+PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+MjAxNS0wMS0xNTwvdGQ+Cgo8L3RyPgo8dHI+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPlBIUC1HVEstMi4wLjE8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj5QSFAgNS4xLnggLSA1LjU8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj5HVEsrIDIueDwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPi08L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48YSBocmVmPSJodHRwczovL2dpdGh1Yi5jb20vcGhwL3BocC1ndGstc3JjL2FyY2hpdmUvbWFzdGVyLnppcCIgZG93bmxvYWQ+PGkgY2xhc3M9Im1hdGVyaWFsLWljb25zIj4mI3hFODg0OzwvaT48L2E+PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+PD9waHAgZWNobyBTVEFCTEU7Pz48L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj4yMDE1LTAxLTE1PC90ZD4KCjwvdHI+Cjx0cj4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+UEhQLUdUSy0yLjAuMSBiaW5hcnkgcGFjazwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPlBIUCA1LjIuNjwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPkdUSysgMi4xMi45PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+PGEgaHJlZj0iZGlzdHJpYnV0aW9ucy9waHAtZ3RrLTIuMC4xLXdpbjMyLW50cy56aXAiIGRvd25sb2FkPjxpIGNsYXNzPSJtYXRlcmlhbC1pY29ucyI+JiN4RTg4NDs8L2k+PC9hPjwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPi08L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48P3BocCBlY2hvIFNUQUJMRTs/PjwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjIwMDgtMDUtMTY8L3RkPgoKPC90cj4KPHRyPgo8dGQgY2xhc3M9InczLWNlbnRlciI+UEhQLUdUSy0yLjAuMSBiaW5hcnkgZXh0ZW5zaW9ucyBwYWNrPC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+UEhQIDUuMi42PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+R1RLKyAyLjEyLjk8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48YSBocmVmPSJkaXN0cmlidXRpb25zL3BocC1ndGstMi4wLjEtd2luMzItZXh0ZW5zaW9ucy56aXAiIGRvd25sb2FkPjxpIGNsYXNzPSJtYXRlcmlhbC1pY29ucyI+JiN4RTg4NDs8L2k+PC9hPjwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPi08L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48P3BocCBlY2hvIFNUQUJMRTs/PjwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjIwMDgtMDUtMTY8L3RkPgoKPC90cj4KPHRyPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj5QSFAtR1RLLTIuMC4xPC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+UEhQIDUuMi42PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+R1RLKyAyLjEyLjk8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj4tPC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+PGEgaHJlZj0iZGlzdHJpYnV0aW9ucy9waHAtZ3RrLTIuMC4xLnRhci5neiIgZG93bmxvYWQ+PGkgY2xhc3M9Im1hdGVyaWFsLWljb25zIj4mI3hFODg0OzwvaT48L2E+PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+PD9waHAgZWNobyBTVEFCTEU7Pz48L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj4yMDA4LTA1LTE2PC90ZD4KCjwvdHI+Cjx0cj4KPHRkIGNsYXNzPSJ3My1jZW50ZXIiPlBIUC1HVEstMi4wLjAgYmluYXJ5IHBhY2s8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj5QSFAgNS4yLjU8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj5HVEsrIDIuMTIuODwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjxhIGhyZWY9ImRpc3RyaWJ1dGlvbnMvcGhwLWd0ay0yLjAuMC13aW4zMi1udHMuemlwIiBkb3dubG9hZD48aSBjbGFzcz0ibWF0ZXJpYWwtaWNvbnMiPiYjeEU4ODQ7PC9pPjwvYT48L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj4tPC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+PD9waHAgZWNobyBTVEFCTEU7Pz48L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj4yMDA4LTAyLTI5PC90ZD4KCjwvdHI+Cjx0cj4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+UEhQLUdUSy0yLjAuMDwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPlBIUCA1LjIuNTwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPkdUSysgMi4xMi44PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+LTwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjxhIGhyZWY9ImRpc3RyaWJ1dGlvbnMvcGhwLWd0ay0yLjAuMC50YXIuZ3oiIGRvd25sb2FkPjxpIGNsYXNzPSJtYXRlcmlhbC1pY29ucyI+JiN4RTg4NDs8L2k+PC9hPjwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjw/cGhwIGVjaG8gU1RBQkxFOz8+PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+MjAwOC0wMi0yOTwvdGQ+Cgo8L3RyPgo8L3RhYmxlPgo8YnIvPgo8aDE+PD9waHAgZWNobyBUSVRMRTI7Pz48L2gxPgo8cCBjbGFzcz0idzMtanVzdGlmeSI+PD9waHAgZWNobyBURVhUMjs/PjwvcD4KPHRhYmxlIGNsYXNzPSJ3My10YWJsZSB3My1ib3JkZXJlZCB3My1zdHJpcGVkIHczLWJvcmRlciB3My1ob3ZlcmFibGUgdzMtc3RyaXBlZCB3My1jZW50ZXIiPgo8dGhlYWQgY2xhc3M9InczLWxpZ2h0LWJsdWUgdzMtY2VudGVyIj4KICA8dHIgPgogIDx0aCBjbGFzcz0idzMtY2VudGVyIj48P3BocCBlY2hvIFRIMTs/PjwvdGg+CiAgPHRoIGNsYXNzPSJ3My1jZW50ZXIiPjw/cGhwIGVjaG8gVEgyOz8+PC90aD4KICA8dGggY2xhc3M9InczLWNlbnRlciI+PD9waHAgZWNobyBUSDM7Pz48L3RoPgogIDx0aCBjbGFzcz0idzMtY2VudGVyIj48P3BocCBlY2hvIFRINDs/PjwvdGg+CiAgPHRoIGNsYXNzPSJ3My1jZW50ZXIiPjw/cGhwIGVjaG8gVEg1Oz8+PC90aD4KICA8dGggY2xhc3M9InczLWNlbnRlciI+PD9waHAgZWNobyBUSDY7Pz48L3RoPgogIDx0aCBjbGFzcz0idzMtY2VudGVyIj48P3BocCBlY2hvIFRINzs/PjwvdGg+Cgo8L3RyPgo8L3RoZWFkPgo8dHI+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPnBocC1ndGstMS4wLjI8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj40LjQuMS1kZXY8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj5HVEsrIDEuMi54PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+PGEgaHJlZj0iZGlzdHJpYnV0aW9ucy9waHAtZ3RrLTEuMC4yLXdpbjMyLnppcCIgZG93bmxvYWQ+PGkgY2xhc3M9Im1hdGVyaWFsLWljb25zIj4mI3hFODg0OzwvaT48L2E+PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+LTwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjw/cGhwIGVjaG8gU1RBQkxFOz8+PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+MjAwNS0wNy0xNTwvdGQ+Cgo8L3RyPgo8dHI+Cjx0ZCBjbGFzcz0idzMtY2VudGVyIj5waHAtZ3RrLTEuMC4yPC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+NC40LjEtZGV2PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+R1RLKyAxLjIueDwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPi08L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48YSBocmVmPSJkaXN0cmlidXRpb25zL3BocC1ndGstMS4wLjIudGFyLmd6IiBkb3dubG9hZD48aSBjbGFzcz0ibWF0ZXJpYWwtaWNvbnMiPiYjeEU4ODQ7PC9pPjwvYT48L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48P3BocCBlY2hvIFNUQUJMRTs/PjwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjIwMDUtMDctMTU8L3RkPgoKPC90cj4KPHRyPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj5waHAtZ3RrLTEuMC4xYTwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjQuMy45LWRldjwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPkdUSysgMS4yLng8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48YSBocmVmPSJkaXN0cmlidXRpb25zL3BocC1ndGstMS4wLjFhLXdpbjMyLnppcCIgZG93bmxvYWQ+PGkgY2xhc3M9Im1hdGVyaWFsLWljb25zIj4mI3hFODg0OzwvaT48L2E+PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+LTwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjw/cGhwIGVjaG8gU1RBQkxFOz8+PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+MjAwNC0wOC0yNTwvdGQ+Cgo8L3RyPgo8dHI+Cjx0ZCBjbGFzcz0idzMtY2VudGVyIj5waHAtZ3RrLTEuMC4xPC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+NC4zLjktZGV2PC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+R1RLKyAxLjIueDwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPi08L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48YSBocmVmPSJkaXN0cmlidXRpb25zL3BocC1ndGstMS4wLjEudGFyLmd6IiBkb3dubG9hZD48aSBjbGFzcz0ibWF0ZXJpYWwtaWNvbnMiPiYjeEU4ODQ7PC9pPjwvYT48L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48P3BocCBlY2hvIFNUQUJMRTs/PjwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjIwMDQtMDgtMjU8L3RkPgoKPC90cj4KPHRyPgo8dGQgY2xhc3M9InczLWNlbnRlciI+cGhwLWd0ay0xLjAuMDwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPjQuMy40UkMzLWRldjwvdGQ+CiAgPHRkIGNsYXNzPSJ3My1jZW50ZXIiPkdUSysgMS4yLng8L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj48YSBocmVmPSJkaXN0cmlidXRpb25zL3BocC1ndGstMS4wLjAtd2luMzIuemlwIiBkb3dubG9hZD48aSBjbGFzcz0ibWF0ZXJpYWwtaWNvbnMiPiYjeEU4ODQ7PC9pPjwvYT48L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj4tPC90ZD4KICA8dGQgY2xhc3M9InczLWNlbnRlciI+PD9waHAgZWNobyBTVEFCTEU7Pz48L3RkPgogIDx0ZCBjbGFzcz0idzMtY2VudGVyIj4yMDAzLTEwLTIzPC90ZD4KCjwvdHI+CjwvdGFibGU+Cgo8aDE+PD9waHAgZWNobyBUSVRMRTM7Pz48L2gxPgo8cCBjbGFzcz0idzMtanVzdGlmeSI+PD9waHAgZWNobyBURVhUMzs/PgoKCjxwIGNsYXNzPSJ3My1qdXN0aWZ5Ij48P3BocCBlY2hvIFRFWFQ0Oz8+PC9wPgo8L2FydGljbGU+CiAgICA8YXNpZGU+CiAgICA8bmF2IGNsYXNzPSJ3My1jb2wgbTIgdzMtbGlnaHQtZ3JleSB3My1hbmltYXRlLW9wYWNpdHkiPgo8P3BocCBkZWZhdWx0bWVudXJpZ2h0KCk7Pz4KICAgIDwvbmF2PgogICAgPC9hc2lkZT4KCiAgPC9kaXY+CjwvZGl2Pgo8Zm9vdGVyIGNsYXNzPSJ3My1jb250YWluZXIgdzMtc21hbGwgdzMtdGVhbCB3My1hbmltYXRlLW9wYWNpdHkiPgogIDxwPjw/cGhwIGVjaG8gRk9PVEVSOz8+PC9wPgo8L2Zvb3Rlcj4KPD9waHAKZGVmYXVsdGZvb3RlcigpOwo/Pg==
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+using Mediator.Buttons;
+using Mediator.TextBoxes;
+
+namespace Mediator
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+
+            #region InitLabels
+
+            var titleLbl = new Label
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f),
+                Text = @"Title"
+            };
+            var textLbl = new Label
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f),
+                Text = @"Text"
+            };
+
+            #endregion
+
+            #region InitComponents
+
+            var taskList = new TaskList
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var addButton = new AddButton
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var deleteButton = new DeleteButton
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var saveButton = new SaveButton
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var title = new Title
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var text = new Text
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+
+            #endregion
+
+            RegisterComponents(new IComponent[] { taskList, addButton, deleteButton, saveButton, title, text });
+            Controls.Add(CreateMainTable(
+                CreateListBoxTable(taskList),
+                CreateListButtonTable(addButton, deleteButton),
+                CreateRedactorTable(titleLbl, title, textLbl, text),
+                CreateRedactorButtonTable(saveButton)));
+        }
+MYXlvdXRQYW5lbCBDcmVhdCAgICAgICAgIENvbnRyb2wgbGlzdEJveFRhYmxlLAogICAgICAgICAgICBDb250cm9sIGxpc3RCdXR0b25UYWJsZSwKICAgICAgICAgICAgQ29udHJvbCByZWRhY3RvclRhYmxlLAogICAgICAgICAgICBDb250cm9sIH
+        private static TableLayoutPanel CreateMainTable(
+            Control listBoxTable,
+            Control listButtonTable,
+            Control redactorTable,
+            Control redactorButtonTable)
+        {
+            var mainTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            mainTable.RowStyles.Add(new RowStyle(SizeType.Percent, 90));
+            mainTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+
+            mainTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            mainTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+
+            mainTable.Controls.Add(listBoxTable, 0, 0);
+            mainTable.Controls.Add(listButtonTable, 0, 1);
+            mainTable.Controls.Add(redactorTable, 1, 0);
+            mainTable.Controls.Add(redactorButtonTable, 1, 1);
+            return mainTable;
+        }
+
+        private static TableLayoutPanel CreateRedactorButtonTable(Control saveButton)
+        {
+            var redactorButtonTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            redactorButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+            redactorButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
+            redactorButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+
+            redactorButtonTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+
+            redactorButtonTable.Controls.Add(new Panel(), 0, 0);
+            redactorButtonTable.Controls.Add(saveButton, 0, 1);
+            redactorButtonTable.Controls.Add(new Panel(), 0, 2);
+            return redactorButtonTable;
+        }
+
+        private static TableLayoutPanel CreateRedactorTable(
+            Control titleLbl,
+            Control title,
+            Control textLbl,
+            Control text)
+        {
+            var redactorTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 5));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 5));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 5));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 70));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 3));
+
+            redactorTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+
+            redactorTable.Controls.Add(titleLbl, 0, 0);
+            redactorTable.Controls.Add(title, 0, 1);
+            redactorTable.Controls.Add(new Panel(), 0, 2);
+            redactorTable.Controls.Add(textLbl, 0, 3);
+            redactorTable.Controls.Add(text, 0, 4);
+            redactorTable.Controls.Add(new Panel(), 0, 5);
+            return redactorTable;
+        }
+        JlZGFjdG9yQnV0dG9uVGFibGUpCiAgICAgICAgewogICAgICAgICAgICB2YXIgbWFpblRhYmxlID0gbmV3IFRhYmxlTGF5b3V0UGFuZWwgeyBEb2NrID0gRG9ja1N0eWxlLkZpbGwgfTsKCiAgICAgI
+        private static TableLayoutPanel CreateListButtonTable(Control addButton, Control deleteButton)
+        {
+            var listButtonTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            listButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+            listButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
+            listButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+
+            listButtonTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            listButtonTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+
+            listButtonTable.Controls.Add(new Panel(), 0, 0);
+            listButtonTable.Controls.Add(new Panel(), 1, 0);
+            listButtonTable.Controls.Add(addButton, 0, 1);
+            listButtonTable.Controls.Add(deleteButton, 1, 1);
+            listButtonTable.Controls.Add(new Panel(), 0, 2);
+            listButtonTable.Controls.Add(new Panel(), 1, 2);
+            return listButtonTable;
+        }
+
+        private static TableLayoutPanel CreateListBoxTable(Control taskList)
+        {
+            var listBoxTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            listBoxTable.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            listBoxTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            listBoxTable.Controls.Add(taskList, 0, 0);
+            return listBoxTable;
+        }
+
+        private static void RegisterComponents(IEnumerable<IComponent> components)
+        {
+            var taskPlanner = new TaskPlanner();
+            foreach (var component in components)
+                taskPlanner.RegisterComponent((Interfaces.IComponent)component);
+        }
+    }
+}
