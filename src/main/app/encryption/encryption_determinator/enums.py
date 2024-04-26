@@ -3,6 +3,7 @@ from enum import Enum
 
 class OperatingMode(Enum):
     OPTIMAL = 0
+    LOWER_STRICT = 1
     STRICT = 1
 
 

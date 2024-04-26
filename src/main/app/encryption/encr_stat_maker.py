@@ -13,7 +13,7 @@ def make_entropy_for_encr():
     start = time.time()
 
     determinator = EncryptionDeterminator(
-        OperatingMode.OPTIMAL,
+        OperatingMode.LOWER_STRICT,
         WordDictService(SimpleWordLoader('../words_service/words_by_len.bin'))
     )
     encr_files, no_encr_files = get_files_for_stat()
@@ -27,7 +27,7 @@ def make_entropy_for_encr():
     write_metrics(f_score, file_stat, fn, fp, precision, recall, tn, tp)
     file_stat.close()
 
-    print(f'Вер. срабатывание: {tp} (TP)')
+    print(f'\nВер. срабатывание: {tp} (TP)')
     print(f'Лож. срабатывание: {fp} (FP)')
     print(f'Вер. пропуск:      {tn} (TN)')
     print(f'Лож. пропуск:      {fn} (FN)')
@@ -45,12 +45,11 @@ def process_files(total_count, cur_count, determinator, filenames, file_stat):
         result: EncrAnalyzeResult = determinator.determinate(read_file(filename))
         write_result(result, file_stat, filename)
         if result.entr_verdict.is_encr or result.hex_verdict.is_encr:
-            positive += 1  # tp += 1
+            positive += 1
         else:
-            negative += 1  # fn += 1
+            negative += 1
         cur_count += 1
         print(f'\r{round(100 * cur_count / total_count)}% : {filename}', end='')
-    print()
     return positive, negative, cur_count
 
 
