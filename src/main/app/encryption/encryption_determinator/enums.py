@@ -6,6 +6,10 @@ class OperatingMode(Enum):
     LOWER_STRICT = 1
     STRICT = 1
 
+    @property
+    def is_strict(self) -> bool:
+        return self == OperatingMode.LOWER_STRICT or self == OperatingMode.STRICT
+
 
 class EncrVerdict(Enum):
     EXTREMELY_LIKELY = 0
