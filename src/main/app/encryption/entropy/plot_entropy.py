@@ -1,13 +1,9 @@
 import matplotlib.pyplot as plt
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import savgol_filter
 
-from src.main.app.encryption.encryption_determinator import EncryptionDeterminatorByEntropy, \
-    EncryptionDeterminatorByHEX, OperatingMode
-from src.main.app.encryption.encryption_filter import EncryptionFilter
-from src.main.app.encryption.entropy.entropy import Entropy
-from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
+from src.main.app.encryption.encryption_determinator.determinator import EncryptionDeterminator, EncrAnalyzeResult
+from src.main.app.encryption.encryption_determinator.enums import OperatingMode
 from src.main.app.file_reader import read_file
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.words_service.word_loader import SimpleWordLoader
@@ -42,29 +38,18 @@ def _get_savgol_filter_params(entropies_len: int):
 
 
 def main():
+    determinator = EncryptionDeterminator(
+        OperatingMode.OPTIMAL,
+        WordDictService(SimpleWordLoader('../../words_service/words_by_len.bin'))
+    )
     text = read_file(f'../../../source/x.txt')
     # text = input().encode()
-    data = list(text)
-    len_before = len(data)
 
-    ed = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()), OperatingMode.STRICT)
-    ed_hex = EncryptionDeterminatorByHEX(OperatingMode.STRICT)
-    ef = EncryptionFilter(WordDictService(SimpleWordLoader('../../words_service/words_by_len.bin')))
-    data = ef.filter(data)
-    entr_verdict, entropy, entropy_above_border = ed.determinate(data)
-    hex_verdict = ed_hex.determinate(text)
+    result: EncrAnalyzeResult = determinator.determinate(text)
 
-    cut_out = round(100 - len(data) / (len_before / 100), 2)
-    print(f'\nВырезано {cut_out}%')
-    print(f'HEX: {hex_verdict}')
-    print(f'Etr: {entr_verdict}\n{entropy}% | {entropy_above_border}%')
-
-    # entropy_analyzer = EntropyAnalyzer(Entropy())
-    # entropies, window_size, hop = entropy_analyzer.window_analyze(data)
-    #
-    # title = f'{f"ЕСТЬ ШИФР (entr={entr_verdict}) (hex={hex_verdict})" if entr_verdict or hex_verdict else "НЕТ ШИФРА"}, вырезано {cut_out}%'
-    # title += f'\nЭнтропия {entropy}% | {entropy_above_border}%{",  => HEX!" if hex_verdict else ""}'
-    # plot_entropy(title, entropies, hop, window_size, len(data))
+    print(f'\n1. Вырезано {result.cut_out_in_percent}%')
+    print(f'2. HEX: {result.hex_verdict}')
+    print(f'3. Etr: {result.entr_verdict}\n   {result.entropy}% | {result.entropy_above_border}%')
 
 
 if __name__ == '__main__':
