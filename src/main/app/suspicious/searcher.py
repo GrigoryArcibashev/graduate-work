@@ -38,7 +38,7 @@ class SuspySearcher:
                 SuspiciousType.GENERAL: {
                     re.compile(br'[_\W](rot_?(?:5|13|18|47))', re.IGNORECASE),
                     re.compile(
-                        br'[_\W]((?:ascii|base|radix)_?(?:16|32|36|45|56|58|62|64|85|91|94|122|xml)_?(?:hex|url)?)',
+                        br'[_\W]((?:ascii|base|radix)_?(?:16|32|36|45|56|58|62|64|85|91|94|122|125|xml)_?(?:hex|url)?)',
                         re.IGNORECASE
                     ),
                 },
