@@ -59,7 +59,7 @@ def get_files_for_stat():
         '../../source/encr/base64',
         '../../source/encr/base85',
         '../../source/encr/base122',
-        # '../../source/encr/rot13',
+        '../../source/encr/rot13',
         '../../source/encr/hex',
         '../../source/encr/AES',
         '../../source/encr/DES_triple',
