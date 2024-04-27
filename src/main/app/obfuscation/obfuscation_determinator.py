@@ -31,9 +31,9 @@ class ObfuscationDeterminator:
             count += 1
             if self.is_obfuscated(name_info):
                 obf_count += 1
-        print_res = round(obf_count / max(1, count), 2)
-        print(f'\nobf_count ({obf_count}) / count ({count}) = {print_res} ', end='')
-        print(f'[{">=" if print_res >= self._obf_text_border else "<"}{self._obf_text_border}]')
+        # print_res = round(obf_count / max(1, count), 2)
+        # print(f'\nobf_count ({obf_count}) / count ({count}) = {print_res} ', end='')
+        # print(f'[{">=" if print_res >= self._obf_text_border else "<"}{self._obf_text_border}]')
         return count and obf_count / count >= self._obf_text_border
 
     def is_obfuscated(self, name_info: NameInfo) -> bool:
@@ -51,8 +51,8 @@ class ObfuscationDeterminator:
                 continue
             k = self._calc_max_levenshtein_distance(word)
             result = self._searcher_by_levenshtein_metric.search(word, k)
-            print(f'{word}')
-            print('OBF' if result is None else f'NON OBF\n{result[1]} : {result[0]}', end='\n\n')
+            # print(f'{word}')
+            # print('OBF' if result is None else f'NON OBF\n{result[1]} : {result[0]}', end='\n\n')
             obf_word_count += not bool(result)
             self._words[word] = not bool(result)
         return not word_count or obf_word_count / word_count >= self._obf_name_border

@@ -16,7 +16,6 @@ class PatternContainer:
 
 
 class SuspySearcher:
-
     def __init__(self):
         self._patterns = {
             DangerLevel.DANGEROUS: {

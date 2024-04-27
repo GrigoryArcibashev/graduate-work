@@ -84,7 +84,7 @@ class VariableSearcher(AbstractSearcher):
     @property
     def patterns(self) -> Iterator[re.Pattern]:
         for pattern in self._patterns:
-            print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
+            # print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
             yield pattern
 
 
@@ -126,7 +126,7 @@ class FunctionSearcher(AbstractSearcher):
     @property
     def patterns(self) -> Iterator[re.Pattern]:
         for pattern in self._patterns:
-            print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
+            # print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
             yield pattern
 
 
@@ -150,7 +150,7 @@ class ClassSearcher(AbstractSearcher):
     @property
     def patterns(self) -> Iterator[re.Pattern]:
         for pattern in self._patterns:
-            print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
+            # print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
             yield pattern
 
 

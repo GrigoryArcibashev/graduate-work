@@ -1,12 +1,39 @@
 import re
+from abc import abstractmethod
+from typing import Union
 
 from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
 from src.main.app.encryption.encryption_determinator.enums import OperatingMode, EncrVerdict
 
 
-class EncryptionDeterminatorByHEX:
-    def __init__(self, mode: OperatingMode):
+class AbstractEncryptionDeterminator:
+    def __init__(self):
+        self._mode = None
+
+    @property
+    def mode(self) -> OperatingMode:
+        return self._mode
+
+    @mode.setter
+    def mode(self, mode: OperatingMode) -> None:
+        self._mode = mode
         self._set_boundaries(mode)
+
+    @abstractmethod
+    def _set_boundaries(self, mode: OperatingMode) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def determinate(self, data: Union[list[int], bytes]):
+        raise NotImplementedError()
+
+
+class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
+    def __init__(self, mode: OperatingMode = OperatingMode.OPTIMAL):
+        super().__init__()
+        self._min_count = None
+        self._ext_count = None
+        self.mode = mode
         self._pattern = re.compile(br'(?:\\x|0x|\\u)[0-9abcdef]{2}', re.IGNORECASE)
         self._unicode_markers = [
             (br'\xef', br'\xbb', br'\xbf'),  # UTF8
@@ -66,10 +93,16 @@ class EncryptionDeterminatorByHEX:
         return True
 
 
-class EncryptionDeterminatorByEntropy:
-    def __init__(self, entropy_analyzer: EntropyAnalyzer, mode: OperatingMode):
+class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
+    def __init__(self, entropy_analyzer: EntropyAnalyzer, mode: OperatingMode = OperatingMode.OPTIMAL):
+        super().__init__()
         self._entropy_analyzer = entropy_analyzer
-        self._set_boundaries(mode)
+        self._window_encryption_border = None
+        self._unconditional_lower_bound_of_entropy = None
+        self._conditional_lower_bound_of_entropy = None
+        self._percent_of_entropy_vals_for_window = None
+        self._upper_bound_of_entropy = None
+        self.mode = mode
 
     def _set_boundaries(self, mode: OperatingMode) -> None:
         self._window_encryption_border = 60

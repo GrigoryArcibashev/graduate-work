@@ -44,10 +44,21 @@ class EncrAnalyzeResult:
 
 
 class EncryptionDeterminator:
-    def __init__(self, mode: OperatingMode, word_dict_service: WordDictService):
-        self._det_hex = EncryptionDeterminatorByHEX(mode)
-        self._det_ent = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()), mode)
+    def __init__(self, word_dict_service: WordDictService, mode: OperatingMode = OperatingMode.OPTIMAL):
+        self._det_hex = EncryptionDeterminatorByHEX()
+        self._det_ent = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()))
         self._filter = EncryptionFilter(word_dict_service)
+        self.mode = mode
+
+    @property
+    def mode(self) -> OperatingMode:
+        return self._mode
+
+    @mode.setter
+    def mode(self, mode: OperatingMode) -> None:
+        self._mode = mode
+        self._det_hex.mode = mode
+        self._det_ent.mode = mode
 
     def determinate(self, data: bytes) -> EncrAnalyzeResult:
         hex_verdict = self._det_hex.determinate(data)

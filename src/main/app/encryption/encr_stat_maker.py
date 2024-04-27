@@ -12,8 +12,8 @@ from src.main.app.words_service.word_loader import SimpleWordLoader
 def make_entropy_for_encr():
     word_dict_service = WordDictService(SimpleWordLoader('../words_service/words_by_len.bin'))
     determinator = EncryptionDeterminator(
+        word_dict_service,
         OperatingMode.OPTIMAL,
-        word_dict_service
     )
     encr_files, no_encr_files = get_files_for_stat()
     total_count = len(encr_files) + len(no_encr_files)
