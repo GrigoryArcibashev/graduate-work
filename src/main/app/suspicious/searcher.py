@@ -33,27 +33,24 @@ class SuspySearcher:
                 },
             },
             DangerLevel.SUSPICIOUS: {
-                SuspiciousType.GENERAL: {
-                    re.compile(br'[_\W](rot_?(?:5|13|18|47))', re.IGNORECASE),
-                    re.compile(
-                        br'[_\W]((?:ascii|base|radix)_?(?:16|32|36|45|56|58|62|64|85|91|94|122|125|xml)_?(?:hex|url)?)',
-                        re.IGNORECASE
-                    ),
-                },
                 SuspiciousType.COMMAND: {
                     re.compile(
                         br'\W([\"\'] *'
-                        + br'(?:cmd(?:\.exe)?|(?:ch|mk|rm)?dir|[cmr]d|'
-                        + br'del|erase|format|mo[vr]e|openfiles|path|'
-                        + br'pushd|replace|robocopy|set|task(?:list|kill)|'
-                        + br'tree|type|ipconfig|arp|awk|cat|cp|grep|head|'
-                        + br'kill|find|locate|ln|ls|mv|nc|net(?:stat)?|'
-                        + br'ps|pwd|rm|tail|touch)'
-                        + br'[ \w\'\"*!.:/<>|\-\\]*[\"\'])\W',
+                        + br'((?:ch|mk|rm)?dir|[cmr]d|openfiles|'
+                        + br'pushd|robocopy|ipconfig|arp|awk|cp|grep|locate|ln|ls|'
+                        + br'mv|nc|netstat|ps|pwd|rm|touch)'
+                        + br'(?:\s+(?:--?[ \w\'\"*!.:/<>|\-\\]*)*)?[\"\'])\W',
                         re.IGNORECASE
                     ),
                 },
                 SuspiciousType.ENCRYPT: {
+                    re.compile(br'[_\W](rot_?(?:1[38]|47))', re.IGNORECASE),
+                    re.compile(
+                        br'[_\W]((?:ascii|base|radix)_?'
+                        + br'(?:16|3[26]|45|5[68]|6[24]|85|9[14]|12[25]|xml)'
+                        + br'_?(?:hex|url)?)',
+                        re.IGNORECASE
+                    ),
                     re.compile(br'\W((?:standard_|urlsafe_)?[ab](?:16|32|64|85)(?:hex)?(?:en|de)code)\s*\('),
                     re.compile(br'\W((?:strict_|urlsafe_)?(?:en|de)code64)\s*[({]'),
                     re.compile(br'\W(gzinflate)\s*\('),
@@ -70,25 +67,20 @@ class SuspySearcher:
                     re.compile(br'\W(FileMode\s*.\s*OpenOrCreate)\W'),
                     re.compile(br'\W(DriveInfo)\W'),
                     re.compile(br'\W(DirectoryInfo)\W'),
-                    re.compile(br'\W(Create(?:Subd|D)irectory|SymbolicLink)\s*\('),
+                    re.compile(br'\W(Create(?:(?:Subd|D)irectory|SymbolicLink))\s*\('),
                     re.compile(br'\W(Enumerate(?:File(?:System(?:Infos)?|s)|Directories))\s*\('),
                     re.compile(
                         br'\W(Get(?:Drives|File(?:SystemEntries|s|Name|)|'
                         + br'(?:Current)?Directory(?:Name)?|Directories))\s*\('
                     ),
                     re.compile(br'\W(Open(?:Read|Text|Write))\s*\('),
-                    re.compile(br'\W((?:Read|Write)All(?:Lines|Bytes|Text)(?:Async)?)\s*\('),
-                    re.compile(br'\W(ReadLines(?:Async)?)\s*\('),
+                    re.compile(br'\W((?:Read|Write)(?:All)?(?:Lines|Bytes|Text)(?:Async)?)\s*\('),
                     re.compile(br'\W((?:re|sys)open)\s*\('),
                     re.compile(br'\W(each_line)\s*[({]'),
-                    re.compile(
-                        br'\Wf(?:ile)?\s*\.\s*((?:write|read)(?:lines?)?)',
-                        re.IGNORECASE
-                    ),
                     re.compile(br'\W(directory\?)\s*\('),
                     re.compile(br'\W((?:read|execut)able(?:_real)?\?)\s*\('),
                     re.compile(br'\W([lf]?ch(?:grp|mod|own)(?:Sync|))\s*\('),
-                    re.compile(br'\W(file(?:_exists|_get_contents|_put_contents|inode|size|type|\?))\s*\('),
+                    re.compile(br'\W(file_?(?:read|write|exists|(?:ge|pu)t_contents|inode|size|type|\?))\s*\('),
                     re.compile(br'\W(f(?:cntl|open|passthru|read|scanf|[lr]?seek|(?:data)?sync|stat|write))\s*\('),
                     re.compile(br'\W(dirname)\s*\('),
                     re.compile(br'\W(is_?(?:dir|executable|file|link|readable|uploaded_file|write?able))\s*\('),
@@ -98,10 +90,9 @@ class SuspySearcher:
                     re.compile(br'\W(p(?:open|readv?|writev?|ipe))\s*\('),
                     re.compile(br'\W(rm(?:dir|)(?:Sync|))\s*\('),
                     re.compile(br'\W(appendFile(?:Sync|))\s*\('),
-                    re.compile(br'\W(create(?:Read|Write)Stream)\s*\('),
                     re.compile(br'\.(fd)\W'),
-                    re.compile(br'\W(read(?:v|dir|[Ff]ile|link|[Ll]ines?|partial|ableWebStream)(?:Sync|))\s*\('),
-                    re.compile(br'\W(write(?:v|File)(?:Sync|))\s*\('),
+                    re.compile(br'\W(read(?:v|dir|[Ff]iles?|links?|[Ll]ines?|partial|ableWebStream)(?:Sync|))\s*\('),
+                    re.compile(br'\W(write(?:v|[Ff]iles?|[Ll]ines?|links?)(?:Sync|))\s*\('),
                     re.compile(br'\W(open(?:dir|AsBlob)(?:Sync|))\s*\('),
                     re.compile(br'\W(removedirs)\s*\('),
                     re.compile(
@@ -112,7 +103,6 @@ class SuspySearcher:
                     ),
                 },
                 SuspiciousType.IMPORT: {
-                    re.compile(br'\W(include(?:_once)?\s*\(.+?\))'),
                     re.compile(br'\W(require\s*\(\s*[\"\'](?:fs|multer|express-fileupload|socket\.io)[\"\']\s*\))'),
                 },
                 SuspiciousType.NET: {
@@ -128,6 +118,7 @@ class SuspySearcher:
             },
             DangerLevel.PAY_ATTENTION: {
                 SuspiciousType.GENERAL: {
+                    re.compile(br'\W([\"\']cmd(?:\.exe)?[\"\'])\W', re.IGNORECASE),
                     re.compile(br'\W([\"\']/bin/sh[\"\'])\W', re.IGNORECASE),
                     re.compile(br'((?:web)?shell(?:exec)?)', re.IGNORECASE),
                 },
@@ -141,7 +132,7 @@ class SuspySearcher:
                     re.compile(br'(=\s*open\(.+\))'),
                 },
                 SuspiciousType.IMPORT: {
-                    re.compile(br'\W(require(?:_once)?\s*\(.+?\))'),
+                    re.compile(br'\W((?:include|require)(?:_once)?\s*\(.+?\))'),
                 },
                 SuspiciousType.NET: {
                     re.compile(br'\W(urllib\.urlretrieve)\s*\('),

@@ -1,12 +1,28 @@
-from src.main.app.words_service.word_loader import SimpleWordLoader
-from src.main.app.words_service.word_dict_service import WordDictService
-from src.main.app.extractors.token_extractor import TokenExtractor
+from typing import Optional
+
 from src.main.app.extractors.word import Word
-from src.main.app.extractors.word_extractor import WordExtractor
-from src.main.app.util.file_reader import read_file
 from src.main.app.obfuscation.levenshtein_metric import SearcherByLevenshteinMetric
 from src.main.app.obfuscation.name_processor import NameInfo, NameProcessor
-from src.main.app.obfuscation.searchers.searchers import VariableSearcher, FunctionSearcher, ClassSearcher
+
+
+class ObfuscationResult:
+    def __init__(self, prop_of_obf_names: Optional[float] = None, max_allow_prop: Optional[float] = None):
+        self._prop_of_obf_names = round(prop_of_obf_names, 2) if prop_of_obf_names else prop_of_obf_names
+        self._max_allow_prop = round(max_allow_prop, 2) if max_allow_prop else max_allow_prop
+
+    @property
+    def is_obf(self) -> bool:
+        if self._prop_of_obf_names and self._max_allow_prop:
+            return self._prop_of_obf_names > self._max_allow_prop
+        return False
+
+    @property
+    def proportion_of_obf_names(self) -> float:
+        return self._prop_of_obf_names
+
+    @property
+    def max_allowable_proportion(self) -> float:
+        return self._max_allow_prop
 
 
 class ObfuscationDeterminator:
@@ -24,7 +40,7 @@ class ObfuscationDeterminator:
     def _clear_words(self) -> None:
         self._words.clear()
 
-    def determinate(self, text: bytes) -> bool:
+    def determinate(self, text: bytes) -> ObfuscationResult:
         self._clear_words()
         count = obf_count = 0
         for name_info in self._name_processor.get_next_name_info(text):
@@ -34,7 +50,7 @@ class ObfuscationDeterminator:
         # print_res = round(obf_count / max(1, count), 2)
         # print(f'\nobf_count ({obf_count}) / count ({count}) = {print_res} ', end='')
         # print(f'[{">=" if print_res >= self._obf_text_border else "<"}{self._obf_text_border}]')
-        return count and obf_count / count >= self._obf_text_border
+        return ObfuscationResult(obf_count / count if count else 0, self._obf_text_border)
 
     def is_obfuscated(self, name_info: NameInfo) -> bool:
         if name_info.digit_len > 4:
@@ -51,11 +67,9 @@ class ObfuscationDeterminator:
                 continue
             k = self._calc_max_levenshtein_distance(word)
             result = self._searcher_by_levenshtein_metric.search(word, k)
-            # print(f'{word}')
-            # print('OBF' if result is None else f'NON OBF\n{result[1]} : {result[0]}', end='\n\n')
             obf_word_count += not bool(result)
             self._words[word] = not bool(result)
-        return not word_count or obf_word_count / word_count >= self._obf_name_border
+        return not word_count or obf_word_count / word_count > self._obf_name_border
 
     @staticmethod
     def _calc_max_levenshtein_distance(word: Word) -> int:
@@ -68,26 +82,3 @@ class ObfuscationDeterminator:
         if len(word) < 10:
             return 3
         return round(0.35 * len(word))
-
-
-def main():
-    var_searcher = VariableSearcher(TokenExtractor())
-    func_searcher = FunctionSearcher(TokenExtractor())
-    class_searcher = ClassSearcher(TokenExtractor())
-    processor = NameProcessor([var_searcher, func_searcher, class_searcher], WordExtractor())
-    checker = ObfuscationDeterminator(
-        name_processor=processor,
-        searcher_by_levenshtein_metric=SearcherByLevenshteinMetric(
-            WordDictService(
-                SimpleWordLoader('../words_service/words_by_len.bin')
-            )
-        )
-    )
-    text = read_file('../../source/x.txt')
-    # text = input().encode()
-    is_obf_text = checker.determinate(text)
-    print(f"VERDICT: {'OBF' if is_obf_text else 'NO OBF'}")
-
-
-if __name__ == '__main__':
-    main()
