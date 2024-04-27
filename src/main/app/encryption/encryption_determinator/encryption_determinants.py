@@ -34,12 +34,10 @@ class EncryptionDeterminatorByHEX:
         ]
 
     def _set_boundaries(self, mode: OperatingMode) -> None:
-        if mode == OperatingMode.OPTIMAL:
-            self._min_count = 10
-        elif mode.is_strict:
+        if mode.is_strict:
             self._min_count = 3
         else:
-            raise NotImplementedError(f'{mode} is not supported')
+            self._min_count = 10
         self._ext_count = 2 * self._min_count
 
     def determinate(self, data: bytes) -> EncrVerdict:
@@ -69,39 +67,19 @@ class EncryptionDeterminatorByHEX:
 
 
 class EncryptionDeterminatorByEntropy:
-    def __init__(
-            self,
-            entropy_analyzer: EntropyAnalyzer,
-            mode: OperatingMode,
-            web, ulboe, clboe, poevfw):
+    def __init__(self, entropy_analyzer: EntropyAnalyzer, mode: OperatingMode):
         self._entropy_analyzer = entropy_analyzer
-        self._set_boundaries(mode, web, ulboe, clboe, poevfw)
+        self._set_boundaries(mode)
 
-    def _set_boundaries(self, mode: OperatingMode, web, ulboe, clboe, poevfw) -> None:
-        #############
-        self._window_encryption_border = web
-        self._unconditional_lower_bound_of_entropy = ulboe
-        self._conditional_lower_bound_of_entropy = clboe
-        self._percent_of_entropy_vals_for_window = poevfw
-        #############
-
-        # if mode == OperatingMode.OPTIMAL:
-        #     self._window_encryption_border = 60
-        #     self._unconditional_lower_bound_of_entropy = 70
-        #     self._conditional_lower_bound_of_entropy = 60
-        #     self._percent_of_entropy_vals_for_window = 60
-        # elif mode.is_strict:
-        #     self._window_encryption_border = 57
-        #     self._unconditional_lower_bound_of_entropy = 65
-        #     self._conditional_lower_bound_of_entropy = 55
-        #     self._percent_of_entropy_vals_for_window = 70
-
-        if mode == OperatingMode.OPTIMAL or mode == OperatingMode.LOWER_STRICT:
-            self._upper_bound_of_entropy = 95
-        elif mode == OperatingMode.STRICT:
+    def _set_boundaries(self, mode: OperatingMode) -> None:
+        self._window_encryption_border = 60
+        self._unconditional_lower_bound_of_entropy = 70
+        self._conditional_lower_bound_of_entropy = 59
+        self._percent_of_entropy_vals_for_window = 5
+        if mode.is_strict:
             self._upper_bound_of_entropy = float('+inf')
         else:
-            raise NotImplementedError(f'{mode} is not supported')
+            self._upper_bound_of_entropy = 95
 
     def determinate(self, data) -> (EncrVerdict, float, float):
         entropy = self._entropy_analyzer.analyze(data)
@@ -113,9 +91,9 @@ class EncryptionDeterminatorByEntropy:
     def _determinate(self, entropy, entropy_above_border) -> EncrVerdict:
         if entropy >= self._upper_bound_of_entropy:
             return EncrVerdict.UNLIKELY
-        if entropy >= self._unconditional_lower_bound_of_entropy:
+        elif entropy >= self._unconditional_lower_bound_of_entropy:
             return EncrVerdict.EXTREMELY_LIKELY
-        if (
+        elif (
                 entropy >= self._conditional_lower_bound_of_entropy
                 and entropy_above_border >= self._percent_of_entropy_vals_for_window
         ):

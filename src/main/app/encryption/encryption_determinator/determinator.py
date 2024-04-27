@@ -43,30 +43,14 @@ class EncrAnalyzeResult:
         return self._entropy_above_border
 
 
-HEX = EncryptionDeterminatorByHEX(OperatingMode.LOWER_STRICT)
-EAnal = EntropyAnalyzer(Entropy())
-
-
 class EncryptionDeterminator:
-    def __init__(
-            self,
-            mode: OperatingMode,
-            word_dict_service: WordDictService,
-            web, ulboe, clboe, poevfw):
-        # self._det_hex = EncryptionDeterminatorByHEX(mode)
-        self._det_hex = HEX
-        self._det_ent = EncryptionDeterminatorByEntropy(
-            EAnal,
-            mode,
-            web, ulboe, clboe, poevfw
-        )
+    def __init__(self, mode: OperatingMode, word_dict_service: WordDictService):
+        self._det_hex = EncryptionDeterminatorByHEX(mode)
+        self._det_ent = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()), mode)
         self._filter = EncryptionFilter(word_dict_service)
 
     def determinate(self, data: bytes) -> EncrAnalyzeResult:
-        # hex_verdict = self._det_hex.determinate(data)
-        #################
-        hex_verdict = EncrVerdict.UNLIKELY
-        #################
+        hex_verdict = self._det_hex.determinate(data)
 
         num_data = list(data)
         len_before = len(num_data)
