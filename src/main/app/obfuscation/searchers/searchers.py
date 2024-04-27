@@ -5,7 +5,7 @@ from typing import Iterator
 
 from src.main.app.extractors.token import Token, TokenType
 from src.main.app.extractors.token_extractor import TokenExtractor
-from src.main.app.file_reader import read_file
+from src.main.app.util.file_reader import read_file
 from src.main.app.obfuscation.searchers.name import Name
 
 

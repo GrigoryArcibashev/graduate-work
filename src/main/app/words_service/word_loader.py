@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from src.main.app.extractors.word import Word
-from src.main.app.file_reader import read_file_by_pickle
+from src.main.app.util.file_reader import read_file_by_pickle
 
 
 class AbstractWordLoader:

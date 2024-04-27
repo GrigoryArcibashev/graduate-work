@@ -3,7 +3,7 @@ from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.extractors.token_extractor import TokenExtractor
 from src.main.app.extractors.word import Word
 from src.main.app.extractors.word_extractor import WordExtractor
-from src.main.app.file_reader import read_file
+from src.main.app.util.file_reader import read_file
 from src.main.app.obfuscation.levenshtein_metric import SearcherByLevenshteinMetric
 from src.main.app.obfuscation.name_processor import NameInfo, NameProcessor
 from src.main.app.obfuscation.searchers.searchers import VariableSearcher, FunctionSearcher, ClassSearcher

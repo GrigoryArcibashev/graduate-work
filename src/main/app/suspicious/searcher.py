@@ -1,7 +1,6 @@
 import re
 from typing import Iterator
 
-from src.main.app.file_reader import read_file
 from src.main.app.suspicious.enums import DangerLevel, SuspiciousType
 from src.main.app.suspicious.suspicious_code import SuspiciousCode
 
