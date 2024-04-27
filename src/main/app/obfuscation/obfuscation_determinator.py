@@ -47,9 +47,6 @@ class ObfuscationDeterminator:
             count += 1
             if self.is_obfuscated(name_info):
                 obf_count += 1
-        # print_res = round(obf_count / max(1, count), 2)
-        # print(f'\nobf_count ({obf_count}) / count ({count}) = {print_res} ', end='')
-        # print(f'[{">=" if print_res >= self._obf_text_border else "<"}{self._obf_text_border}]')
         return ObfuscationResult(obf_count / count if count else 0, self._obf_text_border)
 
     def is_obfuscated(self, name_info: NameInfo) -> bool:
