@@ -68,7 +68,7 @@ class VariableSearcher(AbstractSearcher):
         super().__init__(token_extractor)
         self._patterns = (
             # PHP
-            re.compile(rb'((?:\$\w+\s*=\s*)+)'),
+            re.compile(rb'((?:\$\w+\s*(?:=|->)\s*)+)'),
             re.compile(rb'\$(\w+)((?:\s*,\s*\$\w+)*)'),
             re.compile(rb'(?:array\s*\(|\[)\s*\"(\w+)\"\s*=>'),
 
@@ -113,9 +113,9 @@ class FunctionSearcher(AbstractSearcher):
 
             # PHP
             # function displayInfo($name, ...$age){
-            re.compile(rb'function\s+(\w+)\s*\(((?:\s*(?:\.\.\.)?\$\w+\s*(?:,|=.*?)?)*)\s*\)\s*{'),
+            re.compile(rb'function\s+(\w+)\s*\(((?:\s*(?:\.\.\.)?\$\w+\s*(?:,|(?:=|->).*?)?)*)\s*\)\s*{'),
             # $displayInfo = function($name, $age){
-            re.compile(rb'\$(\w+)\s*=\s*function\s*\(((?:\s*(?:\.\.\.)?\$\w+\s*(?:,|=.*?)?)*)\s*\)\s*{'),
+            re.compile(rb'\$(\w+)\s*=\s*function\s*\(((?:\s*(?:\.\.\.)?\$\w+\s*(?:,|(?:=|->).*?)?)*)\s*\)\s*{'),
 
             # C_SHARP
             re.compile(

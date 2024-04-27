@@ -37,7 +37,7 @@ def print_state(processed, total, start) -> None:
 
 def print_analyze_results(results: list[(str, AnalysisResult)], inp: bool = False) -> None:
     for filename, result in results:
-        if not result.suspy_res:
+        if not result.obf_res.is_obf:
             continue
         if inp:
             input('\n<<ДАЛЕЕ (Enter)>>')
@@ -55,6 +55,8 @@ def run_analyzer(filenames: list[str], path_to_dict: str) -> Iterator[AnalysisRe
 
 def main():
     paths = [
+        '../../source/obf',
+        '../../source/obf_non',
         '../../source/encr/base32',
         '../../source/encr/base64',
         '../../source/encr/base85',
@@ -89,7 +91,7 @@ def main():
         processed += 1
         print_state(processed, total, start)
     print_time_results(time.time() - start, total)
-    print_analyze_results(results, inp=False)
+    print_analyze_results(results, inp=True)
 
 
 if __name__ == '__main__':

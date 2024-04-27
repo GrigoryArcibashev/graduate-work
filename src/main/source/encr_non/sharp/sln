@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskPlannerWithMediator", "TaskPlannerWithMediator\TaskPlannerWithMediator.csproj", "{D7BDF6BF-4A97-4DAA-87D5-779586948A4F}"
+Project("project") = "TaskPlannerWithMediator", "TaskPlannerWithMediator\TaskPlannerWithMediator.csproj", "project"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskPlannerWithoutMediator", "TaskPlannerWithoutMediator\TaskPlannerWithoutMediator.csproj", "{6210F5A1-6824-43CB-8C11-8E377C0344E5}"
+Project("project") = "TaskPlannerWithoutMediator", "TaskPlannerWithoutMediator\TaskPlannerWithoutMediator.csproj", "project"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,13 +10,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D7BDF6BF-4A97-4DAA-87D5-779586948A4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7BDF6BF-4A97-4DAA-87D5-779586948A4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D7BDF6BF-4A97-4DAA-87D5-779586948A4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D7BDF6BF-4A97-4DAA-87D5-779586948A4F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6210F5A1-6824-43CB-8C11-8E377C0344E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6210F5A1-6824-43CB-8C11-8E377C0344E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6210F5A1-6824-43CB-8C11-8E377C0344E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6210F5A1-6824-43CB-8C11-8E377C0344E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		project.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		project.Debug|Any CPU.Build.0 = Debug|Any CPU
+		project.Release|Any CPU.ActiveCfg = Release|Any CPU
+		project.Release|Any CPU.Build.0 = Release|Any CPU
+		project.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		project.Debug|Any CPU.Build.0 = Debug|Any CPU
+		project.Release|Any CPU.ActiveCfg = Release|Any CPU
+		project.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

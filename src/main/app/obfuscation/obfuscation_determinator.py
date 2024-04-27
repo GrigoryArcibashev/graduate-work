@@ -33,8 +33,8 @@ class ObfuscationDeterminator:
     ):
         self._searcher_by_levenshtein_metric = searcher_by_levenshtein_metric
         self._name_processor = name_processor
-        self._obf_text_border = 0.35
-        self._obf_name_border = 0.35
+        self._obf_text_border = 0.5
+        self._obf_name_border = 0.4
         self._words: dict[Word, bool] = dict()
 
     def _clear_words(self) -> None:
@@ -62,20 +62,7 @@ class ObfuscationDeterminator:
             if word in self._words:
                 obf_word_count += int(self._words[word])
                 continue
-            k = self._calc_max_levenshtein_distance(word)
-            result = self._searcher_by_levenshtein_metric.search(word, k)
+            result = self._searcher_by_levenshtein_metric.search(word)
             obf_word_count += not bool(result)
             self._words[word] = not bool(result)
         return not word_count or obf_word_count / word_count > self._obf_name_border
-
-    @staticmethod
-    def _calc_max_levenshtein_distance(word: Word) -> int:
-        if len(word) < 3:
-            return 0
-        if len(word) < 5:
-            return 1
-        if len(word) < 7:
-            return 2
-        if len(word) < 10:
-            return 3
-        return round(0.35 * len(word))

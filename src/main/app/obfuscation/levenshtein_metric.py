@@ -1,3 +1,5 @@
+from typing import Optional
+
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.extractors.word import Word
 
@@ -59,9 +61,10 @@ class SearcherByLevenshteinMetric:
         self._word_dict_service = word_dict_service
         self._metric_calculator = CalculatorLevenshteinMetric()
 
-    def search(self, word: Word, k: int, first_appropriate: bool = True) -> (Word, int):
+    def search(self, word: Word, k: Optional[int] = None, first_appropriate: bool = True) -> (Word, int):
         if self._word_dict_service.check_word(word):
             return word, 0
+        k = self._calc_max_levenshtein_distance(word) if k is None else k
         order = self.get_len_order(len(word), k)
         best_metric = float('+inf')
         best_word = None
@@ -89,6 +92,18 @@ class SearcherByLevenshteinMetric:
         left = max(self._word_dict_service.get_min_len(), word_len - k)
         right = min(self._word_dict_service.get_max_len(), word_len + k)
         return sorted(range(left, right + 1), key=lambda x: abs(word_len - x))
+
+    @staticmethod
+    def _calc_max_levenshtein_distance(word: Word) -> int:
+        if len(word) < 3:
+            return 0
+        if len(word) < 5:
+            return 1
+        if len(word) < 7:
+            return 2
+        if len(word) < 10:
+            return 3
+        return round(0.35 * len(word))
 
 
 if __name__ == '__main__':
