@@ -7,28 +7,61 @@ from src.main.app.encryption.encryption_determinator.enums import OperatingMode,
 
 
 class AbstractEncryptionDeterminator:
+    """
+    Абстрактный определитель шифра
+    """
+
     def __init__(self):
         self._mode = None
 
     @property
     def mode(self) -> OperatingMode:
+        """
+        Возвращает режим работы определителя
+
+        :return: режим работы определителя
+        """
         return self._mode
 
     @mode.setter
     def mode(self, mode: OperatingMode) -> None:
+        """
+        Устанавливает режим работы определителя
+
+        :param mode: режим работы определителя
+        :return: None
+        """
         self._mode = mode
         self._set_boundaries(mode)
 
     @abstractmethod
     def _set_boundaries(self, mode: OperatingMode) -> None:
+        """
+        Устанавливает граничные параметры для определения шифра,
+        основываясь на режиме работы определителя
+
+        :param mode: режим работы определителя
+
+        :return: None
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def determinate(self, data: Union[list[int], bytes]):
+        """
+        Определяет наличие шифра в тексте
+
+        :param data: текст
+        :return: см. реализацию
+        """
         raise NotImplementedError()
 
 
 class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
+    """
+    Обнаруживает HEX в тексте
+    """
+
     def __init__(self, mode: OperatingMode = OperatingMode.OPTIMAL):
         super().__init__()
         self._min_count = None
@@ -61,10 +94,24 @@ class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
         ]
 
     def _set_boundaries(self, mode: OperatingMode) -> None:
+        """
+        Устанавливает граничные параметры для определения шифра,
+        основываясь на режиме работы определителя
+
+        :param mode: режим работы определителя
+
+        :return: None
+        """
         self._min_count = 3 if mode.is_strict else 10
         self._ext_count = 2 * self._min_count
 
     def determinate(self, data: bytes) -> EncrVerdict:
+        """
+        Определяет наличие шифра в тексте
+
+        :param data: текст
+        :return: вердикт (EncrVerdict)
+        """
         found = re.findall(self._pattern, data)
         count = len(self._filter_unicode(found))
         if count > self._ext_count:
@@ -74,6 +121,12 @@ class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
         return EncrVerdict.UNLIKELY
 
     def _filter_unicode(self, found) -> list:
+        """
+        Удаляет маркеры кодировок из найденного hex
+
+        :param found: hex
+        :return: hex без маркеров кодировок
+        """
         for marker in self._unicode_markers:
             len_mkr = len(marker)
             if len_mkr <= len(found) and self._hex_eq(marker, found[:len_mkr]):
@@ -82,6 +135,15 @@ class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
 
     @staticmethod
     def _hex_eq(hex1, hex2) -> bool:
+        """
+        (Вспомогательный метод)
+
+        Проверяет равенство hex-ов
+
+        :param hex1: первый hex
+        :param hex2: второй hex
+        :return: равны => True, нет => False
+        """
         if len(hex1) != len(hex2):
             return False
         for i in range(len(hex1)):
@@ -91,6 +153,10 @@ class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
 
 
 class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
+    """
+    Обнаруживает шифр в тексте путём расчёта энтропии
+    """
+
     def __init__(self, entropy_analyzer: EntropyAnalyzer, mode: OperatingMode = OperatingMode.OPTIMAL):
         super().__init__()
         self._entropy_analyzer = entropy_analyzer
@@ -102,6 +168,14 @@ class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
         self.mode = mode
 
     def _set_boundaries(self, mode: OperatingMode) -> None:
+        """
+        Устанавливает граничные параметры для определения шифра,
+        основываясь на режиме работы определителя
+
+        :param mode: режим работы определителя
+
+        :return: None
+        """
         self._window_encryption_border = 60
         self._unconditional_lower_bound_of_entropy = 70
         self._conditional_lower_bound_of_entropy = 59
@@ -111,14 +185,28 @@ class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
         else:
             self._upper_bound_of_entropy = 95
 
-    def determinate(self, data) -> (EncrVerdict, float, float):
+    def determinate(self, data: list[int]) -> (EncrVerdict, float, float):
+        """
+        Рассчитывает энтропию текста и выносит вердикт (зашифрован/не зашифрован)
+
+        :param data: текст в виде последовательности номеров байт
+
+        :return: (вердикт, энтропия в целом, процент "окон" с энтропией выше установленной границы)
+        """
         entropy = self._entropy_analyzer.analyze(data)
-        entropies, window_size, hop = self._entropy_analyzer.window_analyze(data)
+        entropies = self._entropy_analyzer.window_analyze(data)
         count_above_border = len(list(filter(lambda entr: entr >= self._window_encryption_border, entropies)))
         entropy_above_border = round(100 * count_above_border / len(entropies))
         return self._determinate(entropy, entropy_above_border), entropy, entropy_above_border
 
-    def _determinate(self, entropy, entropy_above_border) -> EncrVerdict:
+    def _determinate(self, entropy: float, entropy_above_border: float) -> EncrVerdict:
+        """
+        Выносит вердикт (EncrVerdict)
+
+        :param entropy: энтропия в целом
+        :param entropy_above_border: процент "окон" с энтропией выше установленной границы
+        :return: вердикт (зашифрован/не зашифрован)
+        """
         if entropy >= self._upper_bound_of_entropy:
             return EncrVerdict.UNLIKELY
         elif entropy >= self._unconditional_lower_bound_of_entropy:

@@ -2,6 +2,9 @@ from enum import Enum
 
 
 class OperatingMode(Enum):
+    """
+    Режимы работы определителя шифра
+    """
     OPTIMAL = 0
     STRICT = 1
 
@@ -11,6 +14,11 @@ class OperatingMode(Enum):
 
 
 class EncrVerdict(Enum):
+    """
+    Вердикт определителя шифра:
+    крайне вероятно / вероятно / маловероятно,
+    что зашифрован
+    """
     EXTREMELY_LIKELY = 0
     LIKELY = 1
     UNLIKELY = 2

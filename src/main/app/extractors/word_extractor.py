@@ -11,19 +11,19 @@ class WordExtractor:
     def __init__(self):
         self._case_distance = ord('a') - ord('A')
 
-    def get_word_iter(self, string: tuple[int], to_lower: bool = True) -> Iterator[Word]:
+    def get_word_iter(self, data: tuple[int], to_lower: bool = True) -> Iterator[Word]:
         """
-        Возвращает итератор по всем словам в string
+        Возвращает итератор по всем словам в data
 
         :param to_lower: перевод в нижний регистр (по умолчанию True)
-        :param string: последовательность символов в виде их номеров
+        :param data: последовательность символов в виде их номеров
 
         :return: очередное слово
         """
         current_lexeme = list()
         prev_symbol = None
-        for i in range(len(string)):
-            symbol = string[i]
+        for i in range(len(data)):
+            symbol = data[i]
             if self.is_new_word(prev_symbol, symbol):
                 yield Word(self._to_lower(current_lexeme) if to_lower else current_lexeme)
                 current_lexeme = []

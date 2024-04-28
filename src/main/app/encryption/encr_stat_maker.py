@@ -113,7 +113,7 @@ def calc_metrics(fn, fp, tp):
 
 def write_result(result: EncrAnalyzeResult, file_stat, filename):
     file_stat.write(f'ИМЯ: {filename}\n')
-    file_stat.write(f'\tЭнтропия {result.entropy}% | {result.entropy_above_border}%\n')
+    file_stat.write(f'\tЭнтропия {result.entropy_in_percent}% | {result.entropy_above_border_in_percent}%\n')
     file_stat.write(f'\tВырезано {result.cut_out_in_percent}%\n')
     file_stat.write(f'{">ЕСТЬ ШИФР" if result.entr_verdict.is_encr or result.hex_verdict.is_encr else ">НЕТ ШИФРА"}\n')
     if result.entr_verdict.is_encr:

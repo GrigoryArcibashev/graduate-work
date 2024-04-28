@@ -49,7 +49,7 @@ def main():
 
     print(f'\n1. Вырезано {result.cut_out_in_percent}%')
     print(f'2. HEX: {result.hex_verdict}')
-    print(f'3. Etr: {result.entr_verdict}\n   {result.entropy}% | {result.entropy_above_border}%')
+    print(f'3. Etr: {result.entr_verdict}\n   {result.entropy_in_percent}% | {result.entropy_above_border_in_percent}%')
 
 
 if __name__ == '__main__':

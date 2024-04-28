@@ -2,8 +2,16 @@ from typing import Iterable
 
 
 class Word:
+    """
+    Класс-обёртка над словом
+    """
+
     def __init__(self, value: Iterable):
         self.__value = tuple(value)
+
+    @property
+    def value(self) -> tuple[int]:
+        return self.__value
 
     def __str__(self):
         return f'{self.value} ({repr(self._numbers_of_bytes_to_str(self.value))})'
@@ -18,10 +26,6 @@ class Word:
         if not isinstance(other, Word):
             raise TypeError(f'Operand type: expected {type(self)}, but actual is {type(other)}')
         return self.value == other.value
-
-    @property
-    def value(self) -> tuple[int]:
-        return self.__value
 
     @staticmethod
     def _numbers_of_bytes_to_str(numbers: tuple[int]) -> str:
