@@ -1,7 +1,6 @@
 import time
 from os import listdir
 from os.path import isfile, join
-from typing import Iterator
 
 from src.main.app.analyzer.analysis_result import AnalysisResult
 from src.main.app.analyzer.analyzer import Analyzer
@@ -47,7 +46,7 @@ def print_analyze_results(results: list[(str, AnalysisResult)], inp: bool = Fals
         print(result)
 
 
-def run_analyzer(filenames: list[str], path_to_dict: str) -> Iterator[AnalysisResult]:
+def run_analyzer(filenames: list[str], path_to_dict: str) -> list[AnalysisResult]:
     analyzer = Analyzer(path_to_dict=path_to_dict)
     for filename in filenames:
         yield analyzer.analyze(read_file(filename))
