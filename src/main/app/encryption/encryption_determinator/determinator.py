@@ -2,8 +2,7 @@ from src.main.app.encryption.encryption_determinator.encryption_determinants imp
     EncryptionDeterminatorByEntropy
 from src.main.app.encryption.encryption_determinator.enums import OperatingMode, EncrVerdict
 from src.main.app.encryption.encryption_filter import EncryptionFilter
-from src.main.app.encryption.entropy.entropy import Entropy
-from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
+from src.main.app.encryption.entropy_analyzer import EntropyAnalyzer, EntropyCalculator
 from src.main.app.words_service.word_dict_service import WordDictService
 
 
@@ -46,7 +45,7 @@ class EncrAnalyzeResult:
 class EncryptionDeterminator:
     def __init__(self, word_dict_service: WordDictService, mode: OperatingMode = OperatingMode.OPTIMAL):
         self._det_hex = EncryptionDeterminatorByHEX()
-        self._det_ent = EncryptionDeterminatorByEntropy(EntropyAnalyzer(Entropy()))
+        self._det_ent = EncryptionDeterminatorByEntropy(EntropyAnalyzer(EntropyCalculator()))
         self._filter = EncryptionFilter(word_dict_service)
         self.mode = mode
 

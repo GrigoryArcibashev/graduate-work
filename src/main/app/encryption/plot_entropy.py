@@ -39,10 +39,10 @@ def _get_savgol_filter_params(entropies_len: int):
 
 def main():
     determinator = EncryptionDeterminator(
-        WordDictService(SimpleWordLoader('../../words_service/words_by_len.bin')),
+        WordDictService(SimpleWordLoader('../words_service/words_by_len.bin')),
         OperatingMode.OPTIMAL,
     )
-    text = read_file(f'../../../source/x.txt')
+    text = read_file(f'../../source/x.txt')
     # text = input().encode()
 
     result: EncrAnalyzeResult = determinator.determinate(text)

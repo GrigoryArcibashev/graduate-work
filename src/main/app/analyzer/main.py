@@ -36,8 +36,8 @@ def print_state(processed, total, start) -> None:
 
 def print_analyze_results(results: list[(str, AnalysisResult)], inp: bool = False) -> None:
     for filename, result in results:
-        if not result.obf_res.is_obf:
-            continue
+        # if not result.obf_res.is_obf:
+        #     continue
         if inp:
             input('\n<<ДАЛЕЕ (Enter)>>')
         else:

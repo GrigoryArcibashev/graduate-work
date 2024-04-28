@@ -2,7 +2,7 @@ import re
 from abc import abstractmethod
 from typing import Union
 
-from src.main.app.encryption.entropy.entropy_analyzer import EntropyAnalyzer
+from src.main.app.encryption.entropy_analyzer import EntropyAnalyzer
 from src.main.app.encryption.encryption_determinator.enums import OperatingMode, EncrVerdict
 
 
@@ -61,10 +61,7 @@ class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
         ]
 
     def _set_boundaries(self, mode: OperatingMode) -> None:
-        if mode.is_strict:
-            self._min_count = 3
-        else:
-            self._min_count = 10
+        self._min_count = 3 if mode.is_strict else 10
         self._ext_count = 2 * self._min_count
 
     def determinate(self, data: bytes) -> EncrVerdict:

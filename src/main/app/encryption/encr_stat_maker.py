@@ -119,7 +119,7 @@ def write_result(result: EncrAnalyzeResult, file_stat, filename):
     if result.entr_verdict.is_encr:
         file_stat.write(f'\t-Энтропия ({result.entr_verdict.to_str()})\n')
     if result.hex_verdict.is_encr:
-        file_stat.write(f'\tHEX ({result.hex_verdict.to_str()})\n')
+        file_stat.write(f'\t-HEX ({result.hex_verdict.to_str()})\n')
     file_stat.write('\n' + '-' * 20 + '\n\n')
 
 
