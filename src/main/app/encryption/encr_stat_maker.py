@@ -3,7 +3,7 @@ from os import listdir
 from os.path import isfile, join
 
 from src.main.app.encryption.encryption_determinator.determinator import EncryptionDeterminator, EncrAnalyzeResult
-from src.main.app.encryption.encryption_determinator.enums import OperatingMode
+from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode
 from src.main.app.util.file_reader import read_file
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.words_service.word_loader import SimpleWordLoader

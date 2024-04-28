@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from src.main.app.analyzer.analysis_result import AnalysisResult
 from src.main.app.encryption.encryption_determinator.determinator import EncryptionDeterminator
-from src.main.app.encryption.encryption_determinator.enums import OperatingMode
+from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode
 from src.main.app.extractors.token_extractor import TokenExtractor
 from src.main.app.extractors.word_extractor import WordExtractor
 from src.main.app.obfuscation.levenshtein_metric import SearcherByLevenshteinMetric

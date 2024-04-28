@@ -1,7 +1,9 @@
 from src.main.app.encryption.encryption_determinator.encr_analyze_result import EncrAnalyzeResult
-from src.main.app.encryption.encryption_determinator.encryption_determinants import EncryptionDeterminatorByHEX, \
+from src.main.app.encryption.encryption_determinator.encryption_determinants.encryption_determinator_entropy import \
     EncryptionDeterminatorByEntropy
-from src.main.app.encryption.encryption_determinator.enums import OperatingMode
+from src.main.app.encryption.encryption_determinator.encryption_determinants.encryption_determinator_hex import \
+    EncryptionDeterminatorByHEX
+from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode
 from src.main.app.encryption.encryption_filter import EncryptionFilter
 from src.main.app.encryption.entropy_analyzer import EntropyAnalyzer, EntropyCalculator
 from src.main.app.words_service.word_dict_service import WordDictService

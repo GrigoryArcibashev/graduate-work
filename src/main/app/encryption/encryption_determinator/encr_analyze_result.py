@@ -1,4 +1,4 @@
-from src.main.app.encryption.encryption_determinator.enums import EncrVerdict
+from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import EncrVerdict
 
 
 class EncrAnalyzeResult:
