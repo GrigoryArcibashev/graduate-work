@@ -65,6 +65,8 @@ def get_files_for_stat():
         '../../source/encr/DES_triple',
     ]
     path_to_non_encr = [
+        '../../source/obf',
+        '../../source/obf_non',
         '../../source/encr_non/php',
         '../../source/encr_non/js',
         '../../source/encr_non/python',
