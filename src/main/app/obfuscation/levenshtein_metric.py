@@ -95,14 +95,6 @@ class SearcherByLevenshteinMetric:
 
     @staticmethod
     def _calc_max_levenshtein_distance(word: Word) -> int:
-        if len(word) < 3:
-            return 0
-        if len(word) < 5:
-            return 1
-        if len(word) < 7:
-            return 2
-        if len(word) < 10:
-            return 3
         return round(0.35 * len(word))
 
 
