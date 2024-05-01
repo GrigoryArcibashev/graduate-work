@@ -30,19 +30,6 @@ class AbstractEncryptionDeterminator:
         :return: None
         """
         self._mode = mode
-        self._set_boundaries(mode)
-
-    @abstractmethod
-    def _set_boundaries(self, mode: OperatingMode) -> None:
-        """
-        Устанавливает граничные параметры для определения шифра,
-        основываясь на режиме работы определителя
-
-        :param mode: режим работы определителя
-
-        :return: None
-        """
-        raise NotImplementedError()
 
     @abstractmethod
     def determinate(self, data: Union[list[int], bytes]):

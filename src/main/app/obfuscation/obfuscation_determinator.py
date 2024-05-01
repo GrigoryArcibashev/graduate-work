@@ -49,6 +49,7 @@ class ObfuscationDeterminator:
         self._name_processor = name_processor
         self._obf_text_border = 0.5
         self._obf_name_border = 0.4
+        self._max_non_obf_count_digits = 4
         self._words: dict[Word, bool] = dict()
 
     def _clear_words(self) -> None:
@@ -64,10 +65,8 @@ class ObfuscationDeterminator:
         return ObfuscationResult(obf_count / count if count else 0, self._obf_text_border)
 
     def is_obfuscated_name(self, name_info: NameInfo) -> bool:
-        if name_info.digit_len > 4:
+        if name_info.digit_len > self._max_non_obf_count_digits:
             return True
-        if name_info.letters_len < 3 and name_info.digit_len < 2:
-            return False
         word_count = obf_word_count = 0
         for word in name_info.words:
             if len(word) < 2:

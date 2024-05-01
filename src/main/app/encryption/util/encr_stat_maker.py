@@ -10,7 +10,7 @@ from src.main.app.words_service.word_loader import SimpleWordLoader
 
 
 def make_entropy_for_encr():
-    word_dict_service = WordDictService(SimpleWordLoader('../words_service/words_by_len.bin'))
+    word_dict_service = WordDictService(SimpleWordLoader('../../words_service/words_by_len.bin'))
     determinator = EncryptionDeterminator(
         word_dict_service,
         OperatingMode.OPTIMAL,
@@ -18,7 +18,7 @@ def make_entropy_for_encr():
     )
     encr_files, no_encr_files = get_files_for_stat()
     total_count = len(encr_files) + len(no_encr_files)
-    file_stat = open('../../source/encr_stat.txt', 'w')
+    file_stat = open('../../../source/encr_stat.txt', 'w')
 
     start = time.time()
     fp, tn, cur_count = process_files(total_count, 0, determinator, no_encr_files, file_stat)
@@ -56,30 +56,30 @@ def process_files(total_count, cur_count, determinator, filenames, file_stat):
 
 def get_files_for_stat():
     path_to_encr = [
-        '../../source/encr/base32',
-        '../../source/encr/base64',
-        '../../source/encr/base85',
-        '../../source/encr/base122',
-        '../../source/encr/rot13',
-        '../../source/encr/hex',
-        '../../source/encr/AES',
-        '../../source/encr/DES_triple',
+        '../../../source/encr/base32',
+        '../../../source/encr/base64',
+        '../../../source/encr/base85',
+        '../../../source/encr/base122',
+        '../../../source/encr/rot13',
+        '../../../source/encr/hex',
+        '../../../source/encr/AES',
+        '../../../source/encr/DES_triple',
     ]
     path_to_non_encr = [
-        '../../source/obf',
-        '../../source/obf_non',
-        '../../source/encr_non/php',
-        '../../source/encr_non/js',
-        '../../source/encr_non/python',
-        '../../source/encr_non/ruby',
-        '../../source/encr_non/sharp',
-        '../../source/encr_non/bash',
-        '../../source/encr_non/html',
-        '../../source/encr_non/css',
-        '../../source/encr_non/xml',
-        '../../source/encr_non/sql',
-        '../../source/encr_non/other/arch',
-        '../../source/encr_non/other/img',
+        '../../../source/obf',
+        '../../../source/obf_non',
+        '../../../source/encr_non/php',
+        '../../../source/encr_non/js',
+        '../../../source/encr_non/python',
+        '../../../source/encr_non/ruby',
+        '../../../source/encr_non/sharp',
+        '../../../source/encr_non/bash',
+        '../../../source/encr_non/html',
+        '../../../source/encr_non/css',
+        '../../../source/encr_non/xml',
+        '../../../source/encr_non/sql',
+        '../../../source/encr_non/other/arch',
+        '../../../source/encr_non/other/img',
     ]
     encr_files = get_filenames_by_path(path_to_encr)
     no_encr_files = get_filenames_by_path(path_to_non_encr)

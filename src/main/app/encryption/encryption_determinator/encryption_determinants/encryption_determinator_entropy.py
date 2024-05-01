@@ -12,30 +12,13 @@ class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
     def __init__(self, entropy_analyzer: EntropyAnalyzer, mode: OperatingMode):
         super().__init__()
         self._entropy_analyzer = entropy_analyzer
-        self._window_encryption_border = None
-        self._unconditional_lower_bound_of_entropy = None
-        self._conditional_lower_bound_of_entropy = None
-        self._percent_of_entropy_vals_for_window = None
-        self._upper_bound_of_entropy = None
-        self.mode = mode
-
-    def _set_boundaries(self, mode: OperatingMode) -> None:
-        """
-        Устанавливает граничные параметры для определения шифра,
-        основываясь на режиме работы определителя
-
-        :param mode: режим работы определителя
-
-        :return: None
-        """
         self._window_encryption_border = 60
         self._unconditional_lower_bound_of_entropy = 70
         self._conditional_lower_bound_of_entropy = 59
         self._percent_of_entropy_vals_for_window = 5
-        if mode.is_strict:
-            self._upper_bound_of_entropy = float('+inf')
-        else:
-            self._upper_bound_of_entropy = 95
+        self._upper_bound_of_entropy_optimal = 95
+        self._upper_bound_of_entropy_strict = float('+inf')
+        self.mode = mode
 
     def determinate(self, data: list[int]) -> (EncrVerdict, float, float):
         """
@@ -50,6 +33,16 @@ class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
         count_above_border = len(list(filter(lambda entr: entr >= self._window_encryption_border, entropies)))
         entropy_above_border = round(100 * count_above_border / len(entropies))
         return self._determinate(entropy, entropy_above_border), entropy, entropy_above_border
+
+    @property
+    def _upper_bound_of_entropy(self) -> int:
+        """
+        Устанавливает граничный параметр для обнаружения шифра,
+        основываясь на режиме работы определителя
+
+        :return: граничный параметр
+        """
+        return self._upper_bound_of_entropy_strict if self.mode.is_strict else self._upper_bound_of_entropy_optimal
 
     def _determinate(self, entropy: float, entropy_above_border: float) -> EncrVerdict:
         """

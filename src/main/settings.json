@@ -1,0 +1,49 @@
+{
+  "encryption": {
+    "encryption_determinators": {
+      "entropy": {
+        "mode": "opt",
+        "window_encryption_border": 60,
+        "unconditional_lower_bound_of_entropy": 70,
+        "conditional_lower_bound_of_entropy": 59,
+        "percent_of_entropy_vals_for_window": 5,
+        "upper_bound_of_entropy_optimal": 95,
+        "upper_bound_of_entropy_strict": "+inf"
+      },
+      "hex": {
+        "mode": "opt",
+        "min_count_optimal": 3,
+        "min_count_strict": 10
+      }
+    },
+    "encryption_filter": {
+      "encryption_boundary": 0.5,
+      "save_del_size": 0.5
+    },
+    "entropy_analyzer": {
+      "min_window_size": 100,
+      "min_hope": 1,
+      "divider_for_window": 120,
+      "divider_for_hop": 5
+    },
+    "modes": {
+      "opt": "optimal",
+      "str": "strict"
+    }
+  },
+  "obfuscation": {
+    "obfuscation_determinator": {
+      "obf_text_border": 0.5,
+      "obf_name_border": 0.4,
+      "max_non_obf_count_digits": 4
+    },
+    "searcher_by_levenshtein_metric": {
+      "mult_for_max_lev_distance": 0.35
+    },
+    "calculator_levenshtein_metric": {
+      "insert_cost": 1,
+      "delete_cost": 1,
+      "replace_cost": 1
+    }
+  }
+}

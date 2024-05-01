@@ -1,7 +1,7 @@
 from src.main.app.encryption.encryption_determinator.encr_analyze_result import EncrAnalyzeResult
 from src.main.app.encryption.encryption_determinator.encryption_determinants.encryption_determinator_entropy import \
     EncryptionDeterminatorByEntropy
-from src.main.app.encryption.encryption_determinator.encryption_determinants.encryption_determinator_hex import \
+from src.main.app.encryption.encryption_determinator.encryption_determinants.encr_determinator_hex.encryption_determinator_hex import \
     EncryptionDeterminatorByHEX
 from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode
 from src.main.app.encryption.encryption_filter import EncryptionFilter
