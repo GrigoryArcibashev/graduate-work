@@ -19,21 +19,18 @@ class EncrVerdict(Enum):
     крайне вероятно / вероятно / маловероятно,
     что зашифрован
     """
-    EXTREMELY_LIKELY = 0
-    LIKELY = 1
-    UNLIKELY = 2
+    DETECTED = 0
+    NOT_DETECTED = 1
 
     def __str__(self):
         return self.to_str()
 
     def to_str(self) -> str:
-        if self == EncrVerdict.EXTREMELY_LIKELY:
-            return 'КРАЙНЕ ВЕРОЯТНО'
-        if self == EncrVerdict.LIKELY:
-            return 'ВЕРОЯТНО'
-        if self == EncrVerdict.UNLIKELY:
-            return 'НЕТ'
+        if self == EncrVerdict.DETECTED:
+            return 'ОБНАРУЖЕН'
+        else:
+            return 'НЕ ОБНАРУЖЕН'
 
     @property
     def is_encr(self) -> bool:
-        return self != EncrVerdict.UNLIKELY
+        return self != EncrVerdict.NOT_DETECTED

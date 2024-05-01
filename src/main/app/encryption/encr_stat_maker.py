@@ -14,6 +14,7 @@ def make_entropy_for_encr():
     determinator = EncryptionDeterminator(
         word_dict_service,
         OperatingMode.OPTIMAL,
+        OperatingMode.OPTIMAL,
     )
     encr_files, no_encr_files = get_files_for_stat()
     total_count = len(encr_files) + len(no_encr_files)

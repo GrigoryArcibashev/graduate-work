@@ -9,7 +9,7 @@ class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
     Обнаруживает шифр в тексте путём расчёта энтропии
     """
 
-    def __init__(self, entropy_analyzer: EntropyAnalyzer, mode: OperatingMode = OperatingMode.OPTIMAL):
+    def __init__(self, entropy_analyzer: EntropyAnalyzer, mode: OperatingMode):
         super().__init__()
         self._entropy_analyzer = entropy_analyzer
         self._window_encryption_border = None
@@ -60,12 +60,11 @@ class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
         :return: вердикт (зашифрован/не зашифрован)
         """
         if entropy >= self._upper_bound_of_entropy:
-            return EncrVerdict.UNLIKELY
-        elif entropy >= self._unconditional_lower_bound_of_entropy:
-            return EncrVerdict.EXTREMELY_LIKELY
-        elif (
-                entropy >= self._conditional_lower_bound_of_entropy
+            return EncrVerdict.NOT_DETECTED
+        if (
+                entropy >= self._unconditional_lower_bound_of_entropy
+                or entropy >= self._conditional_lower_bound_of_entropy
                 and entropy_above_border >= self._percent_of_entropy_vals_for_window
         ):
-            return EncrVerdict.LIKELY
-        return EncrVerdict.UNLIKELY
+            return EncrVerdict.DETECTED
+        return EncrVerdict.NOT_DETECTED

@@ -10,31 +10,50 @@ from src.main.app.words_service.word_dict_service import WordDictService
 
 
 class EncryptionDeterminator:
-    def __init__(self, word_dict_service: WordDictService, mode: OperatingMode = OperatingMode.OPTIMAL):
-        self._det_hex = EncryptionDeterminatorByHEX()
-        self._det_ent = EncryptionDeterminatorByEntropy(EntropyAnalyzer(EntropyCalculator()))
+    def __init__(self, word_dict_service: WordDictService, entr_mode: OperatingMode, hex_mode: OperatingMode):
+        self._det_hex = EncryptionDeterminatorByHEX(hex_mode)
+        self._det_ent = EncryptionDeterminatorByEntropy(EntropyAnalyzer(EntropyCalculator()), entr_mode)
         self._filter = EncryptionFilter(word_dict_service)
-        self.mode = mode
+        self.hex_mode = hex_mode
+        self.entr_mode = entr_mode
 
     @property
-    def mode(self) -> OperatingMode:
+    def hex_mode(self) -> OperatingMode:
         """
-        Возвращает режим работы определителя
+        Возвращает режим работы обнаружителя HEX
 
-        :return: режим работы определителя
+        :return: режим работы обнаружителя
         """
-        return self._mode
+        return self._det_hex.mode
 
-    @mode.setter
-    def mode(self, mode: OperatingMode) -> None:
+    @hex_mode.setter
+    def hex_mode(self, mode: OperatingMode) -> None:
         """
-        Устанавливает режим работы определителя
+        Устанавливает режим работы обнаружителя HEX
 
-        :param mode: режим работы определителя
+        :param mode: режим работы обнаружителя
         :return: None
         """
-        self._mode = mode
         self._det_hex.mode = mode
+
+    @property
+    def entr_mode(self) -> OperatingMode:
+        """
+        Возвращает режим работы обнаружителя высокой энтропии
+
+        :return: режим работы обнаружителя
+        """
+        return self._det_ent.mode
+
+    @entr_mode.setter
+    def entr_mode(self, mode: OperatingMode) -> None:
+        """
+        Устанавливает режим работы обнаружителя высокой энтропии
+
+        :param mode: режим работы обнаружителя
+
+        :return: None
+        """
         self._det_ent.mode = mode
 
     def determinate(self, data: bytes) -> EncrAnalyzeResult:

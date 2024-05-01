@@ -5,8 +5,8 @@ from typing import Iterator
 
 from src.main.app.extractors.token import Token, TokenType
 from src.main.app.extractors.token_extractor import TokenExtractor
-from src.main.app.util.file_reader import read_file
 from src.main.app.obfuscation.searchers.name import Name
+from src.main.app.util.file_reader import read_file
 
 
 class AbstractSearcher:
@@ -21,25 +21,23 @@ class AbstractSearcher:
     def get_name_iter(self, text: bytes) -> Iterator[Name]:
         names = set()
         for pattern in self.patterns:
-            found = pattern.findall(text)
-            if not found:
-                continue
-            for group_num in range(len(found)):
-                for match in self._wrap_in_tuple_if_necessary(found[group_num]):
-                    if not match:
-                        continue
-                    for name in self._extract_names(match):
-                        if name not in names:
-                            names.add(name)
-                            yield Name(value=name)
+            for match in self._get_match_iter(pattern.findall(text)):
+                for name in self._extract_names(match):
+                    if name not in names:
+                        names.add(name)
+                        yield Name(value=name)
+
+    def _get_match_iter(self, found_by_pattern: list) -> Iterator[bytes]:
+        for group_num in range(len(found_by_pattern)):
+            for match in self._wrap_in_tuple_if_necessary(found_by_pattern[group_num]):
+                for submatch in self._wrap_in_tuple_if_necessary(match):
+                    yield submatch
 
     @staticmethod
-    def _wrap_in_tuple_if_necessary(group):
-        if not isinstance(group, tuple):
-            return (group,)
-        return group
+    def _wrap_in_tuple_if_necessary(unwrapped) -> tuple:
+        return unwrapped if isinstance(unwrapped, tuple) else (unwrapped,)
 
-    def _extract_names(self, raw_str) -> Iterator[tuple[Token]]:
+    def _extract_names(self, raw_str: bytes) -> Iterator[tuple[Token]]:
         current_name = list()
         for token in self._token_extractor.get_token_iter(list(raw_str)):
             if self._is_token_include_in_name(token, current_name):

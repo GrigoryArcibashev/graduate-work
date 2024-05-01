@@ -4,6 +4,7 @@ from os.path import isfile, join
 
 from src.main.app.analyzer.analysis_result import AnalysisResult
 from src.main.app.analyzer.analyzer import Analyzer
+from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode
 from src.main.app.util.file_reader import read_file
 
 
@@ -47,7 +48,7 @@ def print_analyze_results(results: list[(str, AnalysisResult)], inp: bool = Fals
 
 
 def run_analyzer(filenames: list[str], path_to_dict: str) -> list[AnalysisResult]:
-    analyzer = Analyzer(path_to_dict=path_to_dict)
+    analyzer = Analyzer(path_to_dict, OperatingMode.OPTIMAL, OperatingMode.OPTIMAL)
     for filename in filenames:
         yield analyzer.analyze(read_file(filename))
 

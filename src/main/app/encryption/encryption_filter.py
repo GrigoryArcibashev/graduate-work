@@ -14,6 +14,7 @@ class EncryptionFilter:
         self._token_extractor = TokenExtractor()
         self._word_extractor = WordExtractor()
         self._encryption_boundary = 0.5
+        self._save_del_size = 0.5
 
     def filter(self, data: list[int]) -> list[int]:
         """
@@ -64,13 +65,13 @@ class EncryptionFilter:
             if prev_let_token_is_encr:  # encr _ encr
                 res.extend(current_non_letter_tokens)
             elif len(current_non_letter_tokens) > 1:  # non _ encr
-                half = current_non_letter_tokens[len(current_non_letter_tokens) // 2:]
+                half = current_non_letter_tokens[int(len(current_non_letter_tokens) * self._save_del_size):]
                 res.extend(half)
             res.append(token)
             is_encr = True
         else:
             if prev_let_token_is_encr and len(current_non_letter_tokens) > 1:  # encr _ non
-                half = current_non_letter_tokens[:len(current_non_letter_tokens) // 2]
+                half = current_non_letter_tokens[:int(len(current_non_letter_tokens) * self._save_del_size)]
                 res.extend(half)
             is_encr = False
         return res, is_encr

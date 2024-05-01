@@ -18,10 +18,11 @@ class Analyzer:
     def __init__(
             self,
             path_to_dict: str,
-            encr_mode: OperatingMode = OperatingMode.OPTIMAL
+            encr_entr_mode: OperatingMode,
+            encr_hex_mode: OperatingMode,
     ):
         word_dict_service = WordDictService(SimpleWordLoader(path_to_dict))
-        self._encr_determinator = EncryptionDeterminator(word_dict_service, encr_mode)
+        self._encr_determinator = EncryptionDeterminator(word_dict_service, encr_entr_mode, encr_hex_mode)
         self._obf_determinator = ObfuscationDeterminator(
             name_processor=self._built_name_processor(),
             searcher_by_levenshtein_metric=SearcherByLevenshteinMetric(word_dict_service)

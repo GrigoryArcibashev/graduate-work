@@ -35,7 +35,9 @@ class AnalysisResult:
             result.append('\tНЕТ ШИФРА')
         if self.encr_res.entr_verdict.is_encr:
             result.append(f'\t  +Энтропия ({self.encr_res.entr_verdict.to_str()})')
-            result.append(f'\t\t(энт. {self.encr_res.entropy_in_percent}% | {self.encr_res.entropy_above_border_in_percent}%)')
+            result.append(
+                f'\t\t(энт. {self.encr_res.entropy_in_percent}% | {self.encr_res.entropy_above_border_in_percent}%)'
+            )
             result.append(f'\t\t(выр. {self.encr_res.cut_out_in_percent}%)')
         if self.encr_res.hex_verdict.is_encr:
             result.append(f'\t  +HEX ({self.encr_res.hex_verdict.to_str()})')

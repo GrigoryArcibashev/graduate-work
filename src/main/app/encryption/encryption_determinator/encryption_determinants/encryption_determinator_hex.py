@@ -10,10 +10,9 @@ class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
     Обнаруживает HEX в тексте
     """
 
-    def __init__(self, mode: OperatingMode = OperatingMode.OPTIMAL):
+    def __init__(self, mode: OperatingMode):
         super().__init__()
         self._min_count = None
-        self._ext_count = None
         self.mode = mode
         self._pattern = re.compile(br'(?:\\x|0x|\\u)[0-9abcdef]{2}', re.IGNORECASE)
         self._unicode_markers = [
@@ -51,7 +50,6 @@ class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
         :return: None
         """
         self._min_count = 3 if mode.is_strict else 10
-        self._ext_count = 2 * self._min_count
 
     def determinate(self, data: bytes) -> EncrVerdict:
         """
@@ -62,11 +60,7 @@ class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
         """
         found = re.findall(self._pattern, data)
         count = len(self._filter_unicode(found))
-        if count > self._ext_count:
-            return EncrVerdict.EXTREMELY_LIKELY
-        if count > self._min_count:
-            return EncrVerdict.LIKELY
-        return EncrVerdict.UNLIKELY
+        return EncrVerdict.DETECTED if count > self._min_count else EncrVerdict.NOT_DETECTED
 
     def _filter_unicode(self, found) -> list:
         """
