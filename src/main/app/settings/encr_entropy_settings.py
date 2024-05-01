@@ -5,23 +5,30 @@ class EncrDetEntropySettings:
     def __init__(self):
         pass
 
+    @property
     def mode(self) -> OperatingMode:
         pass
 
+    @property
     def window_encryption_border(self) -> float:
         pass
 
+    @property
     def unconditional_lower_bound_of_entropy(self) -> float:
         pass
 
+    @property
     def conditional_lower_bound_of_entropy(self) -> float:
         pass
 
+    @property
     def percent_of_entropy_vals_for_window(self) -> float:
         pass
 
+    @property
     def upper_bound_of_entropy_optimal(self) -> float:
         pass
 
+    @property
     def upper_bound_of_entropy_strict(self) -> float:
         pass

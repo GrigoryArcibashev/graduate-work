@@ -1,3 +1,4 @@
+from src.main.app.settings.encr_filter_settings import EncrFilterSettings
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.extractors.token import TokenType, Token
 from src.main.app.extractors.token_extractor import TokenExtractor
@@ -9,12 +10,12 @@ class EncryptionFilter:
     Находит и удаляет незашифрованную часть текста
     """
 
-    def __init__(self, word_dict_service: WordDictService):
+    def __init__(self, word_dict_service: WordDictService, settings: EncrFilterSettings):
         self._word_dict_service = word_dict_service
         self._token_extractor = TokenExtractor()
         self._word_extractor = WordExtractor()
-        self._encryption_boundary = 0.5
-        self._save_del_size = 0.5
+        self._encryption_boundary = settings.encryption_boundary
+        self._save_del_size = settings.save_del_size
 
     def filter(self, data: list[int]) -> list[int]:
         """

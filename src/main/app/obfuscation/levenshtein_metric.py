@@ -1,12 +1,14 @@
 from src.main.app.extractors.word import Word
+from src.main.app.settings.calculator_levenshtein_metric_settings import CalculatorLevenshteinMetricSettings
+from src.main.app.settings.searcher_levenshtein_metric_settings import SearcherLevenshteinMetricSettings
 from src.main.app.words_service.word_dict_service import WordDictService
 
 
 class CalculatorLevenshteinMetric:
-    def __init__(self):
-        self._insert_cost: int = 1
-        self._delete_cost: int = 1
-        self._replace_cost: int = 1
+    def __init__(self, settings: CalculatorLevenshteinMetricSettings):
+        self._insert_cost = settings.insert_cost
+        self._delete_cost = settings.delete_cost
+        self._replace_cost = settings.replace_cost
         if not self._is_costs_valid(self._insert_cost, self._delete_cost, self._replace_cost):
             raise ValueError("The costs must be non-negative")
 
@@ -51,10 +53,15 @@ class CalculatorLevenshteinMetric:
 
 
 class SearcherByLevenshteinMetric:
-    def __init__(self, word_dict_service: WordDictService):
+    def __init__(
+            self,
+            word_dict_service: WordDictService,
+            metric_calculator: CalculatorLevenshteinMetric,
+            settings: SearcherLevenshteinMetricSettings
+    ):
         self._word_dict_service = word_dict_service
-        self._metric_calculator = CalculatorLevenshteinMetric()
-        self._mult_for_max_lev_distance = 0.35
+        self._metric_calculator = metric_calculator
+        self._mult_for_max_lev_distance = settings.mult_for_max_lev_distance
 
     def search(self, word: Word) -> (Word, int):
         if self._word_dict_service.check_word(word):

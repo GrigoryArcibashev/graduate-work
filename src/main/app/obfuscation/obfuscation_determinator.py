@@ -6,6 +6,7 @@ from src.main.app.extractors.word_extractor import WordExtractor
 from src.main.app.obfuscation.levenshtein_metric import SearcherByLevenshteinMetric
 from src.main.app.obfuscation.name_processor import NameInfo, NameProcessor
 from src.main.app.obfuscation.searchers.searchers import ClassSearcher, FunctionSearcher, VariableSearcher
+from src.main.app.settings.obfuscation_determinator_settings import ObfuscationDetSettings
 from src.main.app.util.file_reader import read_file
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.words_service.word_loader import SimpleWordLoader
@@ -43,17 +44,18 @@ class ObfuscationDeterminator:
     def __init__(
             self,
             name_processor: NameProcessor,
-            searcher_by_levenshtein_metric: SearcherByLevenshteinMetric
+            searcher_by_levenshtein_metric: SearcherByLevenshteinMetric,
+            settings: ObfuscationDetSettings
     ):
         self._searcher_by_levenshtein_metric = searcher_by_levenshtein_metric
         self._name_processor = name_processor
-        self._obf_text_border = 0.5
-        self._obf_name_border = 0.4
-        self._max_non_obf_count_digits = 4
-        self._words: dict[Word, bool] = dict()
+        self._obf_text_border = settings.obf_text_border
+        self._obf_name_border = settings.obf_name_border
+        self._max_non_obf_count_digits = settings.max_non_obf_count_digits
+        self._is_obf_word: dict[Word, bool] = dict()
 
     def _clear_words(self) -> None:
-        self._words.clear()
+        self._is_obf_word.clear()
 
     def determinate(self, text: bytes) -> ObfuscationResult:
         self._clear_words()
@@ -68,16 +70,12 @@ class ObfuscationDeterminator:
         if name_info.digit_len > self._max_non_obf_count_digits:
             return True
         word_count = obf_word_count = 0
-        for word in name_info.words:
-            if len(word) < 2:
-                continue
+        for word in filter(lambda w: len(w) > 1, name_info.words):
+            if word not in self._is_obf_word:
+                searched_word, _ = self._searcher_by_levenshtein_metric.search(word)
+                self._is_obf_word[word] = not bool(searched_word)
+            obf_word_count += int(self._is_obf_word[word])
             word_count += 1
-            if word in self._words:
-                obf_word_count += int(self._words[word])
-                continue
-            result = self._searcher_by_levenshtein_metric.search(word)
-            obf_word_count += not bool(result)
-            self._words[word] = not bool(result)
         return not word_count or obf_word_count / word_count > self._obf_name_border
 
 

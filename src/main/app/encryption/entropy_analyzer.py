@@ -1,6 +1,8 @@
 import numpy as np
 from math import log2
 
+from src.main.app.settings.entropy_analyzer_settings import EntropyAnalyzerSettings
+
 
 class EntropyCalculator:
     """
@@ -59,12 +61,12 @@ class EntropyAnalyzer:
     Рассчитывает энтропию текста (в целом и методом "скользящего" окна)
     """
 
-    def __init__(self, entropy_calculator: EntropyCalculator):
+    def __init__(self, entropy_calculator: EntropyCalculator, settings: EntropyAnalyzerSettings):
         self._entropy_calculator = entropy_calculator
-        self._min_window_size = 100
-        self._min_hope = 1
-        self._divider_for_window = 120
-        self._divider_for_hop = 5
+        self._min_window_size = settings.min_window_size
+        self._min_hope = settings.min_hope
+        self._divider_for_window = settings.divider_for_window
+        self._divider_for_hop = settings.divider_for_hop
 
     def analyze(self, data: list[int]) -> float:
         """

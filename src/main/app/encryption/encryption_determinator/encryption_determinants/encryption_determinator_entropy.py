@@ -1,7 +1,8 @@
 from src.main.app.encryption.encryption_determinator.encryption_determinants.abstract_encryption_determinator import \
     AbstractEncryptionDeterminator
-from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode, EncrVerdict
+from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import EncrVerdict
 from src.main.app.encryption.entropy_analyzer import EntropyAnalyzer
+from src.main.app.settings.encr_entropy_settings import EncrDetEntropySettings
 
 
 class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
@@ -9,16 +10,16 @@ class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
     Обнаруживает шифр в тексте путём расчёта энтропии
     """
 
-    def __init__(self, entropy_analyzer: EntropyAnalyzer, mode: OperatingMode):
+    def __init__(self, entropy_analyzer: EntropyAnalyzer, settings: EncrDetEntropySettings):
         super().__init__()
         self._entropy_analyzer = entropy_analyzer
-        self._window_encryption_border = 60
-        self._unconditional_lower_bound_of_entropy = 70
-        self._conditional_lower_bound_of_entropy = 59
-        self._percent_of_entropy_vals_for_window = 5
-        self._upper_bound_of_entropy_optimal = 95
-        self._upper_bound_of_entropy_strict = float('+inf')
-        self.mode = mode
+        self._window_encryption_border = settings.window_encryption_border
+        self._unconditional_lower_bound_of_entropy = settings.unconditional_lower_bound_of_entropy
+        self._conditional_lower_bound_of_entropy = settings.conditional_lower_bound_of_entropy
+        self._percent_of_entropy_vals_for_window = settings.percent_of_entropy_vals_for_window
+        self._upper_bound_of_entropy_optimal = settings.upper_bound_of_entropy_optimal
+        self._upper_bound_of_entropy_strict = settings.upper_bound_of_entropy_strict
+        self.mode = settings.mode
 
     def determinate(self, data: list[int]) -> (EncrVerdict, float, float):
         """
@@ -35,7 +36,7 @@ class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
         return self._determinate(entropy, entropy_above_border), entropy, entropy_above_border
 
     @property
-    def _upper_bound_of_entropy(self) -> int:
+    def _upper_bound_of_entropy(self) -> float:
         """
         Устанавливает граничный параметр для обнаружения шифра,
         основываясь на режиме работы определителя

@@ -2,14 +2,18 @@ class EntropyAnalyzerSettings:
     def __init__(self):
         pass
 
-    def min_window_size(self) -> float:
+    @property
+    def min_window_size(self) -> int:
         pass
 
-    def min_hope(self) -> float:
+    @property
+    def min_hope(self) -> int:
         pass
 
-    def divider_for_window(self) -> float:
+    @property
+    def divider_for_window(self) -> int:
         pass
 
-    def divider_for_hop(self) -> float:
+    @property
+    def divider_for_hop(self) -> int:
         pass

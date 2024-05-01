@@ -11,23 +11,30 @@ class Settings:
     def __init__(self):
         pass
 
+    @property
     def encr_determinator_entropy_settings(self) -> EncrDetEntropySettings:
         pass
 
+    @property
     def encr_determinator_hex_settings(self) -> EncrDetHEXSettings:
         pass
 
+    @property
     def encr_filter_settings(self) -> EncrFilterSettings:
         pass
 
+    @property
     def entropy_analyzer_settings(self) -> EntropyAnalyzerSettings:
         pass
 
+    @property
     def obf_determinator_settings(self) -> ObfuscationDetSettings:
         pass
 
+    @property
     def calc_levenshtein_metric_settings(self) -> CalculatorLevenshteinMetricSettings:
         pass
 
+    @property
     def searcher_levenshtein_metric_settings(self) -> SearcherLevenshteinMetricSettings:
         pass

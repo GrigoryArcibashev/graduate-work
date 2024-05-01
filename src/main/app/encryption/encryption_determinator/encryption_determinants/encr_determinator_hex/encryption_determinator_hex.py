@@ -4,7 +4,8 @@ from src.main.app.encryption.encryption_determinator.encryption_determinants.abs
     AbstractEncryptionDeterminator
 from src.main.app.encryption.encryption_determinator.encryption_determinants.encr_determinator_hex.code_markers import \
     MARKERS
-from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode, EncrVerdict
+from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import EncrVerdict
+from src.main.app.settings.encr_hex_settings import EncrDetHEXSettings
 
 
 class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
@@ -12,11 +13,11 @@ class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
     Обнаруживает HEX в тексте
     """
 
-    def __init__(self, mode: OperatingMode):
+    def __init__(self, settings: EncrDetHEXSettings):
         super().__init__()
-        self._min_count_optimal = 3
-        self._min_count_strict = 10
-        self.mode = mode
+        self._min_count_optimal = settings.min_count_optimal
+        self._min_count_strict = settings.min_count_strict
+        self.mode = settings.mode
         self._pattern = re.compile(br'(?:\\x|0x|\\u)[0-9abcdef]{2}', re.IGNORECASE)
         self._markers = MARKERS
 
