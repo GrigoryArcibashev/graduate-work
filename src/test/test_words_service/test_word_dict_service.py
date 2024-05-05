@@ -1,6 +1,7 @@
 import pathlib
 import unittest
 
+from src.main.app.settings.word_loader_settings import WordLoaderSettings
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.words_service.word_loader import SimpleWordLoader
 from src.test.test_words_service.util import WordMakerForTests, write_word_dict
@@ -18,7 +19,8 @@ class TestWordDictService(unittest.TestCase):
         self._word_maker = WordMakerForTests()
         self._word_dict = self._word_maker.make_dict(self._words)
         write_word_dict(self._word_dict, path)
-        self._service = WordDictService(SimpleWordLoader(path))
+
+        self._service = WordDictService(SimpleWordLoader(WordLoaderSettings({'path_to_word_dict': path})))
 
     def test_get_min_len(self):
         self.assertEqual(min(self._word_dict), self._service.get_min_len())

@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from pathlib import Path
 
 from src.main.app.extractors.word import Word
 from src.main.app.settings.word_loader_settings import WordLoaderSettings
@@ -13,7 +12,7 @@ class AbstractWordLoader:
         self._path = settings.path_to_word_dict
 
     @property
-    def path(self) -> Path:
+    def path(self) -> str:
         """
         :return: путь до словаря слов
         """
@@ -31,4 +30,4 @@ class AbstractWordLoader:
 
 class SimpleWordLoader(AbstractWordLoader):
     def load(self) -> dict[int, set[Word]]:
-        return read_file_by_pickle(str(self.path))
+        return read_file_by_pickle(self.path)
