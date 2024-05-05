@@ -29,31 +29,30 @@ class Settings:
 
     @property
     def encr_filter_settings(self) -> EncrFilterSettings:
-        pass
+        return EncrFilterSettings(self._raw_settings['encryption']['encryption_filter'])
 
     @property
     def entropy_analyzer_settings(self) -> EntropyAnalyzerSettings:
-        pass
+        return EntropyAnalyzerSettings(self._raw_settings['encryption']['entropy_analyzer'])
 
     @property
     def obf_determinator_settings(self) -> ObfuscationDetSettings:
-        pass
+        return ObfuscationDetSettings(self._raw_settings['obfuscation']['obfuscation_determinator'])
 
     @property
     def calc_levenshtein_metric_settings(self) -> CalculatorLevenshteinMetricSettings:
-        pass
+        return CalculatorLevenshteinMetricSettings(self._raw_settings['obfuscation']['calculator_levenshtein_metric'])
 
     @property
     def searcher_levenshtein_metric_settings(self) -> SearcherLevenshteinMetricSettings:
-        pass
+        return SearcherLevenshteinMetricSettings(self._raw_settings['obfuscation']['searcher_by_levenshtein_metric'])
 
     @property
     def word_loader_settings(self) -> WordLoaderSettings:
-        pass
+        return WordLoaderSettings(self._raw_settings['word_loader'])
 
 
 if __name__ == '__main__':
     sts = Settings(read_json('../../settings.json'))
-    entr_ = sts.encr_determinator_entropy_settings
-    hex_ = sts.encr_determinator_hex_settings
+    settings = sts.calc_levenshtein_metric_settings
     print()
