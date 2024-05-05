@@ -8,6 +8,16 @@ class OperatingMode(Enum):
     OPTIMAL = 0
     STRICT = 1
 
+    @staticmethod
+    def make_from_str(mode: str):
+        _mode = mode.strip().upper()
+        if _mode == 'OPTIMAL':
+            return OperatingMode.OPTIMAL
+        elif _mode == 'STRICT':
+            return OperatingMode.STRICT
+        else:
+            raise TypeError(f'Non-existent mode of operation: {mode}')
+
     @property
     def is_strict(self) -> bool:
         return self == OperatingMode.STRICT

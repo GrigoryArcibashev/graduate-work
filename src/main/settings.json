@@ -14,6 +14,10 @@
         "mode": "opt",
         "min_count_optimal": 3,
         "min_count_strict": 10
+      },
+      "modes": {
+        "opt": "optimal",
+        "str": "strict"
       }
     },
     "encryption_filter": {
@@ -25,10 +29,6 @@
       "min_hope": 1,
       "divider_for_window": 120,
       "divider_for_hop": 5
-    },
-    "modes": {
-      "opt": "optimal",
-      "str": "strict"
     }
   },
   "obfuscation": {
