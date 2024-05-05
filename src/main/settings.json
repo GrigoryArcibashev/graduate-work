@@ -45,5 +45,8 @@
       "delete_cost": 1,
       "replace_cost": 1
     }
+  },
+  "word_loader": {
+    "path_to_word_dict": "../words_service/words_by_len.bin"
   }
 }

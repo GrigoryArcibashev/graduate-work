@@ -5,6 +5,7 @@ from src.main.app.settings.encr_hex_settings import EncrDetHEXSettings
 from src.main.app.settings.entropy_analyzer_settings import EntropyAnalyzerSettings
 from src.main.app.settings.obfuscation_determinator_settings import ObfuscationDetSettings
 from src.main.app.settings.searcher_levenshtein_metric_settings import SearcherLevenshteinMetricSettings
+from src.main.app.settings.word_loader_settings import WordLoaderSettings
 
 
 class Settings:
@@ -37,4 +38,8 @@ class Settings:
 
     @property
     def searcher_levenshtein_metric_settings(self) -> SearcherLevenshteinMetricSettings:
+        pass
+
+    @property
+    def word_loader_settings(self) -> WordLoaderSettings:
         pass

@@ -1,17 +1,19 @@
 from abc import abstractmethod
+from pathlib import Path
 
 from src.main.app.extractors.word import Word
+from src.main.app.settings.word_loader_settings import WordLoaderSettings
 from src.main.app.util.file_reader import read_file_by_pickle
 
 
 class AbstractWordLoader:
     """Загружает словарь слов в память"""
 
-    def __init__(self, path: str = None):
-        self._path = path
+    def __init__(self, settings: WordLoaderSettings):
+        self._path = settings.path_to_word_dict
 
     @property
-    def path(self) -> str:
+    def path(self) -> Path:
         """
         :return: путь до словаря слов
         """
@@ -29,4 +31,4 @@ class AbstractWordLoader:
 
 class SimpleWordLoader(AbstractWordLoader):
     def load(self) -> dict[int, set[Word]]:
-        return read_file_by_pickle(self.path)
+        return read_file_by_pickle(str(self.path))
