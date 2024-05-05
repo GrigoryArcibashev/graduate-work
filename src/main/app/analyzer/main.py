@@ -4,8 +4,8 @@ from os.path import isfile, join
 
 from src.main.app.analyzer.analysis_result import AnalysisResult
 from src.main.app.analyzer.analyzer import Analyzer
-from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode
-from src.main.app.util.file_reader import read_file
+from src.main.app.settings.settings import Settings
+from src.main.app.util.file_reader import read_file, read_json
 
 
 def get_filenames(paths: list[str]) -> list[str]:
@@ -47,8 +47,7 @@ def print_analyze_results(results: list[(str, AnalysisResult)], inp: bool = Fals
         print(result)
 
 
-def run_analyzer(filenames: list[str], path_to_dict: str) -> list[AnalysisResult]:
-    analyzer = Analyzer(path_to_dict, OperatingMode.OPTIMAL, OperatingMode.OPTIMAL)
+def run(filenames: list[str], analyzer: Analyzer) -> list[AnalysisResult]:
     for filename in filenames:
         yield analyzer.analyze(read_file(filename))
 
@@ -79,14 +78,14 @@ def main():
         '../../source/encr_non/other/img',
     ]
     filenames = get_filenames(paths)
-    path_to_dict = '../words_service/words_by_len.bin'
+    analyzer = Analyzer(Settings(read_json('../../settings.json')))
 
     results = list()
     processed = 0
     total = len(filenames)
     start = time.time()
     print_state(processed, total, start)
-    for result in run_analyzer(filenames, path_to_dict):
+    for result in run(filenames, analyzer):
         results.append((filenames[processed], result))
         processed += 1
         print_state(processed, total, start)

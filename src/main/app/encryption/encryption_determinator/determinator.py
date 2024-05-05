@@ -1,21 +1,35 @@
 from src.main.app.encryption.encryption_determinator.encr_analyze_result import EncrAnalyzeResult
-from src.main.app.encryption.encryption_determinator.encryption_determinants.encryption_determinator_entropy import \
-    EncryptionDeterminatorByEntropy
-from src.main.app.encryption.encryption_determinator.encryption_determinants.encr_determinator_hex.encryption_determinator_hex import \
-    EncryptionDeterminatorByHEX
+from src.main.app.encryption.encryption_determinator.encryption_determinants. \
+    encryption_determinator_entropy import EncryptionDeterminatorByEntropy
+from src.main.app.encryption.encryption_determinator.encryption_determinants.encr_determinator_hex. \
+    encryption_determinator_hex import EncryptionDeterminatorByHEX
 from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode
 from src.main.app.encryption.encryption_filter import EncryptionFilter
 from src.main.app.encryption.entropy_analyzer import EntropyAnalyzer, EntropyCalculator
+from src.main.app.settings.encr_entropy_settings import EncrDetEntropySettings
+from src.main.app.settings.encr_filter_settings import EncrFilterSettings
+from src.main.app.settings.encr_hex_settings import EncrDetHEXSettings
+from src.main.app.settings.entropy_analyzer_settings import EntropyAnalyzerSettings
 from src.main.app.words_service.word_dict_service import WordDictService
 
 
 class EncryptionDeterminator:
-    def __init__(self, word_dict_service: WordDictService, entr_mode: OperatingMode, hex_mode: OperatingMode):
-        self._det_hex = EncryptionDeterminatorByHEX(hex_mode)
-        self._det_ent = EncryptionDeterminatorByEntropy(EntropyAnalyzer(EntropyCalculator()), entr_mode)
-        self._filter = EncryptionFilter(word_dict_service)
-        self.hex_mode = hex_mode
-        self.entr_mode = entr_mode
+    def __init__(
+            self,
+            word_dict_service: WordDictService,
+            entropy_det_settings: EncrDetEntropySettings,
+            hex_det_settings: EncrDetHEXSettings,
+            entropy_analyzer_settings: EntropyAnalyzerSettings,
+            encr_filter_settings: EncrFilterSettings
+    ):
+        self._det_hex = EncryptionDeterminatorByHEX(hex_det_settings)
+        self._det_ent = EncryptionDeterminatorByEntropy(
+            EntropyAnalyzer(EntropyCalculator(), entropy_analyzer_settings),
+            entropy_det_settings
+        )
+        self._filter = EncryptionFilter(word_dict_service, encr_filter_settings)
+        self.hex_mode = entropy_det_settings.mode
+        self.entr_mode = hex_det_settings.mode
 
     @property
     def hex_mode(self) -> OperatingMode:
