@@ -33,7 +33,7 @@
   },
   "obfuscation": {
     "obfuscation_determinator": {
-      "obf_text_border": 0.5,
+      "obf_text_border": 0.4,
       "obf_name_border": 0.4,
       "max_non_obf_count_digits": 4
     },

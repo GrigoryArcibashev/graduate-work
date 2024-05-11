@@ -23,7 +23,7 @@ def sec_to_str_min_and_sec(sec: float) -> str:
 
 def print_time_results(all_time, total) -> None:
     print(f'\nВРЕМЯ: {sec_to_str_min_and_sec(all_time)}')
-    print(f'~{round(all_time / total, 2)} сек. на файл')
+    print(f'~{round(all_time / max(1, total), 2)} сек. на файл')
 
 
 def print_state(processed, total, start) -> None:
@@ -32,7 +32,7 @@ def print_state(processed, total, start) -> None:
         end = f', осталось ~ {sec_to_str_min_and_sec((total - processed) * velocity)}'
     else:
         end = ''
-    print(f'\r{round(100 * processed / total)}% ({processed}/{total})', end=end)
+    print(f'\r{round(100 * processed / max(1, total))}% ({processed}/{total})', end=end)
 
 
 def print_analyze_results(results: list[(str, AnalysisResult)], inp: bool = False) -> None:
