@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, create_engine
-from sqlalchemy.orm import DeclarativeBase, relationship
+from sqlalchemy.orm import DeclarativeBase, relationship, Session
 
 
 class Base(DeclarativeBase):
@@ -14,8 +14,8 @@ class ScanResult(Base):
     obf = Column(Boolean)
     suspy = Column(Boolean)
 
-    encr_result = relationship('EncrResult', back_populates='scan_result')
-    suspy_result = relationship('SuspyResult', back_populates='scan_result')
+    encr_result = relationship('EncrResult', back_populates='scan_result', cascade='all, delete-orphan')
+    suspy_result = relationship('SuspyResult', back_populates='scan_result', cascade='all, delete-orphan')
 
 
 class EncrResult(Base):
@@ -43,16 +43,31 @@ class SuspyResult(Base):
 def main():
     # engine = create_engine("sqlite:///../../database.db")
 
-    # строка подключения
     sqlite_database = "sqlite:///metanit.db"
-
-    # создаем движок SqlAlchemy
     engine = create_engine(sqlite_database)
-
     # создаем таблицы
     Base.metadata.create_all(bind=engine)
-
     print("База данных и таблица созданы")
+
+    with Session(autoflush=False, bind=engine) as db:
+        # sc_r1 = ScanResult(filename='file_1', encr=True, obf=True, suspy=True)
+        # en_r1 = EncrResult(filename='file_1', entropy=True, hex=True)
+        # su_r1 = SuspyResult(scan_id=1, filename='file_1', danger_lvl='DANGER', suspy_type='SUSPY', suspicious='CODE')
+        # sc_r1.encr_result = [en_r1]
+        # sc_r1.suspy_result = [su_r1]
+        # db.add(sc_r1)
+        #
+        # sc_r2 = ScanResult(filename='file_2', encr=False, obf=False, suspy=False)
+        # en_r2 = EncrResult(filename='file_2', entropy=False, hex=False)
+        # su_r2 = SuspyResult(scan_id=2, filename='file_1', danger_lvl='DANGER', suspy_type='SUSPY', suspicious='CODE')
+        # sc_r2.encr_result = [en_r2]
+        # sc_r2.suspy_result = [su_r2]
+        # db.add(sc_r2)
+
+        for sc_r in db.query(ScanResult).all():
+            db.delete(sc_r)
+
+        db.commit()
 
 
 if __name__ == '__main__':
