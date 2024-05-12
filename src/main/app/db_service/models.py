@@ -1,5 +1,7 @@
-from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, create_engine
+from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, create_engine, Enum
 from sqlalchemy.orm import DeclarativeBase, relationship, Session
+
+from src.main.app.suspicious.enums import SuspiciousType, DangerLevel
 
 
 class Base(DeclarativeBase):
@@ -33,8 +35,8 @@ class SuspyResult(Base):
     id = Column(Integer, primary_key=True, unique=True)
     scan_id = Column(Integer, ForeignKey('scan_results.id'))
     filename = Column(String, nullable=False)
-    danger_lvl = Column(String, nullable=False)
-    suspy_type = Column(String, nullable=False)
+    danger_lvl = Column(Enum(DangerLevel), nullable=False)
+    suspy_type = Column(Enum(SuspiciousType), nullable=False)
     suspicious = Column(String, nullable=False)
 
     scan_result = relationship('ScanResult', back_populates='suspy_result')
@@ -50,12 +52,13 @@ def main():
     print("База данных и таблица созданы")
 
     with Session(autoflush=False, bind=engine) as db:
-        # sc_r1 = ScanResult(filename='file_1', encr=True, obf=True, suspy=True)
-        # en_r1 = EncrResult(filename='file_1', entropy=True, hex=True)
-        # su_r1 = SuspyResult(scan_id=1, filename='file_1', danger_lvl='DANGER', suspy_type='SUSPY', suspicious='CODE')
-        # sc_r1.encr_result = [en_r1]
-        # sc_r1.suspy_result = [su_r1]
-        # db.add(sc_r1)
+        sc_r1 = ScanResult(filename='file_1', encr=True, obf=True, suspy=True)
+        en_r1 = EncrResult(id=sc_r1.id, filename='file_1', entropy=True, hex=True)
+        su_r1 = SuspyResult(scan_id=sc_r1.id, filename='file_1', danger_lvl=DangerLevel.DANGEROUS,
+                            suspy_type=SuspiciousType.FILES, suspicious='C')
+        sc_r1.encr_result = [en_r1]
+        sc_r1.suspy_result = [su_r1]
+        db.add(sc_r1)
         #
         # sc_r2 = ScanResult(filename='file_2', encr=False, obf=False, suspy=False)
         # en_r2 = EncrResult(filename='file_2', entropy=False, hex=False)
@@ -64,8 +67,8 @@ def main():
         # sc_r2.suspy_result = [su_r2]
         # db.add(sc_r2)
 
-        for sc_r in db.query(ScanResult).all():
-            db.delete(sc_r)
+        # for sc_r in db.query(ScanResult).all():
+        #     db.delete(sc_r)
 
         db.commit()
 

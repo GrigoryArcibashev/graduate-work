@@ -13,22 +13,26 @@ from src.main.app.words_service.word_loader import SimpleWordLoader
 
 
 class ObfuscationResult:
-    def __init__(self, prop_of_obf_names: Optional[float] = None, max_allow_prop: Optional[float] = None):
+    def __init__(
+            self,
+            is_obf: bool,
+            prop_of_obf_names: Optional[float] = None,
+            max_allow_prop: Optional[float] = None
+    ):
+        self._is_obf = is_obf
         self._prop_of_obf_names = round(prop_of_obf_names, 2) if prop_of_obf_names else prop_of_obf_names
         self._max_allow_prop = round(max_allow_prop, 2) if max_allow_prop else max_allow_prop
 
     @property
     def is_obf(self) -> bool:
-        if self._prop_of_obf_names and self._max_allow_prop:
-            return self._prop_of_obf_names > self._max_allow_prop
-        return False
+        return self._is_obf
 
     @property
-    def proportion_of_obf_names(self) -> float:
+    def proportion_of_obf_names(self) -> Optional[float]:
         return self._prop_of_obf_names
 
     @property
-    def max_allowable_proportion(self) -> float:
+    def max_allowable_proportion(self) -> Optional[float]:
         return self._max_allow_prop
 
     def to_str(self) -> str:
@@ -64,7 +68,8 @@ class ObfuscationDeterminator:
             count += 1
             if self.is_obfuscated_name(name_info):
                 obf_count += 1
-        return ObfuscationResult(obf_count / count if count else 0, self._obf_text_border)
+        prop_of_obf_names = obf_count / count if count else 0
+        return ObfuscationResult(prop_of_obf_names > self._obf_text_border, prop_of_obf_names, self._obf_text_border)
 
     def is_obfuscated_name(self, name_info: NameInfo) -> bool:
         if name_info.digit_len > self._max_non_obf_count_digits:

@@ -10,15 +10,19 @@ class EncrAnalyzeResult:
             self,
             hex_verdict: EncrVerdict,
             entr_verdict: EncrVerdict,
-            cut_out_in_percent: float,
-            entropy: float,
-            entropy_above_border: float
+            cut_out_in_percent: float = float('inf'),
+            entropy: float = float('inf'),
+            entropy_above_border: float = float('inf')
     ):
         self._hex_verdict = hex_verdict
         self._entr_verdict = entr_verdict
         self._cut_out = cut_out_in_percent
         self._entropy = entropy
         self._entropy_above_border = entropy_above_border
+
+    @property
+    def is_encr(self) -> bool:
+        return self._entr_verdict.is_encr or self._hex_verdict.is_encr
 
     @property
     def hex_verdict(self) -> EncrVerdict:

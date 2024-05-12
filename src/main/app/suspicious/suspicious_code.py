@@ -12,6 +12,10 @@ class SuspiciousCode:
         return self.__code
 
     @property
+    def code_as_str(self) -> str:
+        return self.code.decode()
+
+    @property
     def type(self) -> SuspiciousType:
         return self.__type
 
