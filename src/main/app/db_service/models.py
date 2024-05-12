@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, create_engine, Enum
-from sqlalchemy.orm import DeclarativeBase, relationship, Session
+from sqlalchemy.orm import DeclarativeBase, relationship, Session, sessionmaker
 
 from src.main.app.suspicious.enums import SuspiciousType, DangerLevel
 
@@ -51,26 +51,30 @@ def main():
     Base.metadata.create_all(bind=engine)
     print("База данных и таблица созданы")
 
-    with Session(autoflush=False, bind=engine) as db:
-        sc_r1 = ScanResult(filename='file_1', encr=True, obf=True, suspy=True)
-        en_r1 = EncrResult(id=sc_r1.id, filename='file_1', entropy=True, hex=True)
-        su_r1 = SuspyResult(scan_id=sc_r1.id, filename='file_1', danger_lvl=DangerLevel.DANGEROUS,
-                            suspy_type=SuspiciousType.FILES, suspicious='C')
-        sc_r1.encr_result = [en_r1]
-        sc_r1.suspy_result = [su_r1]
-        db.add(sc_r1)
-        #
-        # sc_r2 = ScanResult(filename='file_2', encr=False, obf=False, suspy=False)
-        # en_r2 = EncrResult(filename='file_2', entropy=False, hex=False)
-        # su_r2 = SuspyResult(scan_id=2, filename='file_1', danger_lvl='DANGER', suspy_type='SUSPY', suspicious='CODE')
-        # sc_r2.encr_result = [en_r2]
-        # sc_r2.suspy_result = [su_r2]
-        # db.add(sc_r2)
+    session = sessionmaker(autoflush=False, bind=engine)
 
-        # for sc_r in db.query(ScanResult).all():
-        #     db.delete(sc_r)
+    with session(autoflush=False, bind=engine) as db:
+        sc_r1 = method_name('file_1')
+        sc_r2 = method_name('file_2')
+        sc_r3 = method_name('file_3')
 
+        db.add_all([sc_r1, sc_r2, sc_r3])
         db.commit()
+
+    # with session(autoflush=False, bind=engine) as db:
+    #     for sc_r in db.query(ScanResult).all():
+    #         db.delete(sc_r)
+    #     db.commit()
+
+
+def method_name(filename: str):
+    sc_r1 = ScanResult(filename=filename, encr=True, obf=True, suspy=True)
+    en_r1 = EncrResult(id=sc_r1.id, filename=filename, entropy=True, hex=True)
+    su_r1 = SuspyResult(scan_id=sc_r1.id, filename=filename, danger_lvl=DangerLevel.DANGEROUS,
+                        suspy_type=SuspiciousType.FILES, suspicious=f'code {filename}')
+    sc_r1.encr_result = [en_r1]
+    sc_r1.suspy_result = [su_r1]
+    return sc_r1
 
 
 if __name__ == '__main__':
