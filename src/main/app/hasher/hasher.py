@@ -4,3 +4,6 @@ class HashResult:
 
     def hash(self) -> str:
         return self._hash
+
+    def __str__(self):
+        return str(self._hash)

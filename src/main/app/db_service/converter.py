@@ -42,11 +42,14 @@ class ResultOfFileAnalysis:
     def new_hash(self) -> Optional[HashResult]:
         return self._new_hash
 
+    def __str__(self):
+        return f'{self.filename}\nold_h: {self.old_hash}\nnew_h: {self.new_hash}\n{self.an_result}'
+
 
 class ConverterForDB:
     @staticmethod
     def convert_from_db_models(scan_result: ScanResult) -> ResultOfFileAnalysis:
-        encr_result: EncrResult = scan_result.encr_result
+        encr_result: EncrResult = scan_result.encr_result[0]
         suspy_result: list[SuspyResult] = scan_result.suspy_result
 
         an_result = AnalysisResult(
@@ -129,6 +132,11 @@ def create_main(engine, session):
         db.commit()
 
 
+def get_main(engine, session):
+    with session(autoflush=False, bind=engine) as db:
+        return list(map(ConverterForDB.convert_from_db_models, list(db.query(ScanResult).all())))
+
+
 def main():
     sqlite_database = "sqlite:///../../database.db"
     engine = create_engine(sqlite_database)
@@ -138,8 +146,10 @@ def main():
 
     session = sessionmaker(autoflush=False, bind=engine)
 
-    delete_main(engine, session)
-    create_main(engine, session)
+    # delete_main(engine, session)
+    # create_main(engine, session)
+    for res in get_main(engine, session):
+        print(res)
 
 
 def create_record_to_db(filename: str):
