@@ -1,11 +1,13 @@
+from typing import Union
+
 from src.main.app.suspicious.enums import DangerLevel, SuspiciousType
 
 
 class SuspiciousCode:
-    def __init__(self, code: bytes, danger_lvl: DangerLevel, code_type: SuspiciousType):
-        self.__code = code
+    def __init__(self, code: Union[str, bytes], danger_lvl: DangerLevel, suspy_type: SuspiciousType):
+        self.__code = code if isinstance(code, bytes) else code.encode()
         self.__lvl = danger_lvl
-        self.__type = code_type
+        self.__type = suspy_type
 
     @property
     def code(self) -> bytes:
