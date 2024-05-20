@@ -38,11 +38,11 @@ class SuspySearcher:
             DangerLevel.SUSPICIOUS: {
                 SuspiciousType.COMMAND: {
                     re.compile(
-                        br'\W([\"\'] *'
-                        + br'((?:ch|mk|rm)?dir|[cmr]d|openfiles|'
+                        br'([\"\']\s*'
+                        + br'(?:(?:ch|mk|rm)?dir|[cmr]d|openfiles|'
                         + br'pushd|robocopy|ipconfig|arp|awk|cp|grep|locate|ln|ls|'
                         + br'mv|nc|netstat|ps|pwd|rm|touch)'
-                        + br'(?:\s+(?:--?[ \w\'\"*!.:/<>|\-\\]*)*)?[\"\'])\W',
+                        + br'(?:\s+(?:--?[\s\w\'\"*!.:/<>|\-\\]*)*)?[\"\'])',
                         re.IGNORECASE
                     ),
                 },
@@ -87,7 +87,9 @@ class SuspySearcher:
                     re.compile(
                         br'(?:[^\w\'\"]|^)(file_?(?:read|write|exists|(?:ge|pu)t_contents|inode|size|type|\?))\s*\('),
                     re.compile(
-                        br'(?:[^\w\'\"]|^)(f(?:cntl|open|passthru|read|scanf|[lr]?seek|(?:data)?sync|stat|write))\s*\('),
+                        br'(?:[^\w\'\"]|^)'
+                        + br'(f(?:cntl|open|passthru|read|scanf|[lr]?seek|(?:data)?sync|stat|write))\s*\('
+                    ),
                     re.compile(br'(?:[^\w\'\"]|^)(dirname)\s*\('),
                     re.compile(
                         br'(?:[^\w\'\"]|^)(is_?(?:dir|executable|file|link|readable|uploaded_file|write?able))\s*\('),
@@ -99,7 +101,10 @@ class SuspySearcher:
                     re.compile(br'(?:[^\w\'\"]|^)(appendFile(?:Sync|))\s*\('),
                     re.compile(br'\.(fd)\W'),
                     re.compile(
-                        br'(?:[^\w\'\"]|^)(read(?:v|dir|[Ff]iles?|links?|[Ll]ines?|partial|ableWebStream)(?:Sync|))\s*\('),
+                        br'(?:[^\w\'\"]|^)'
+                        + br'(read(?:v|dir|[Ff]iles?|links?|[Ll]ines?|partial|ableWebStream)'
+                        + br'(?:Sync|))\s*\('
+                    ),
                     re.compile(br'(?:[^\w\'\"]|^)(write(?:v|[Ff]iles?|[Ll]ines?|links?)(?:Sync|))\s*\('),
                     re.compile(br'(?:[^\w\'\"]|^)(open(?:dir|AsBlob)(?:Sync|))\s*\('),
                     re.compile(br'(?:[^\w\'\"]|^)(removedirs)\s*\('),
@@ -156,7 +161,7 @@ class SuspySearcher:
         searched: set[SuspiciousCode] = set()
         for pc in self._get_next_pattern():
             found = set(pc.pattern.findall(text))
-            for fnd in set(found):
+            for fnd in found:
                 searched.add(SuspiciousCode(fnd, pc.danger_lvl, pc.type))
         return list(searched)
 

@@ -26,10 +26,11 @@ def print_time_results(all_time, total) -> None:
     print(f'~{round(all_time / max(1, total), 2)} сек. на файл')
 
 
-def print_state(processed, total, start) -> None:
+def print_state(processed, total, start, filename=None) -> None:
     if processed:
         velocity = (time.time() - start) / processed
         end = f', осталось ~ {sec_to_str_min_and_sec((total - processed) * velocity)}'
+        end += f' ({filename})' if filename else f''
     else:
         end = ''
     print(f'\r{round(100 * processed / max(1, total))}% ({processed}/{total})', end=end)
@@ -54,43 +55,43 @@ def run(filenames: list[str], analyzer: Analyzer) -> list[AnalysisResult]:
 
 def main():
     paths = [
-        '../../source/obf',
-        '../../source/obf_non',
-        '../../source/encr/base32',
-        '../../source/encr/base64',
-        '../../source/encr/base85',
-        '../../source/encr/base122',
-        '../../source/encr/rot13',
-        '../../source/encr/hex',
-        '../../source/encr/AES',
-        '../../source/encr/DES_triple',
-        '../../source/encr_non/php',
-        '../../source/encr_non/js',
-        '../../source/encr_non/python',
-        '../../source/encr_non/ruby',
-        '../../source/encr_non/sharp',
-        '../../source/encr_non/bash',
-        '../../source/encr_non/html',
-        '../../source/encr_non/css',
-        '../../source/encr_non/xml',
-        '../../source/encr_non/sql',
-        '../../source/encr_non/other/arch',
-        '../../source/encr_non/other/img',
+        '../source/obf',
+        '../source/obf_non',
+        '../source/encr/base32',
+        '../source/encr/base64',
+        '../source/encr/base85',
+        '../source/encr/base122',
+        '../source/encr/rot13',
+        '../source/encr/hex',
+        '../source/encr/AES',
+        '../source/encr/DES_triple',
+        '../source/encr_non/php',
+        '../source/encr_non/js',
+        '../source/encr_non/python',
+        '../source/encr_non/ruby',
+        '../source/encr_non/sharp',
+        '../source/encr_non/bash',
+        '../source/encr_non/html',
+        '../source/encr_non/css',
+        '../source/encr_non/xml',
+        '../source/encr_non/sql',
+        '../source/encr_non/other/arch',
+        '../source/encr_non/other/img',
     ]
     filenames = get_filenames(paths)
-    analyzer = Analyzer(Settings(read_json('../../settings.json')))
+    analyzer = Analyzer(Settings(read_json('../settings.json')))
 
     results = list()
     processed = 0
     total = len(filenames)
     start = time.time()
-    print_state(processed, total, start)
+    print_state(processed, total, start, filenames[processed])
     for result in run(filenames, analyzer):
         results.append((filenames[processed], result))
         processed += 1
-        print_state(processed, total, start)
+        print_state(processed, total, start, filename=filenames[processed] if processed < total else None)
     print_time_results(time.time() - start, total)
-    print_analyze_results(results, inp=True)
+    print_analyze_results(results, inp=False)
 
 
 if __name__ == '__main__':
