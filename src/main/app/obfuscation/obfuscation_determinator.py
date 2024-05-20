@@ -3,10 +3,13 @@ from typing import Optional
 from src.main.app.extractors.token_extractor import TokenExtractor
 from src.main.app.extractors.word import Word
 from src.main.app.extractors.word_extractor import WordExtractor
-from src.main.app.obfuscation.levenshtein_metric import SearcherByLevenshteinMetric
+from src.main.app.obfuscation.levenshtein_metric import SearcherByLevenshteinMetric, CalculatorLevenshteinMetric
 from src.main.app.obfuscation.name_processor import NameInfo, NameProcessor
 from src.main.app.obfuscation.searchers.searchers import ClassSearcher, FunctionSearcher, VariableSearcher
+from src.main.app.settings.calculator_levenshtein_metric_settings import CalculatorLevenshteinMetricSettings
 from src.main.app.settings.obfuscation_determinator_settings import ObfuscationDetSettings
+from src.main.app.settings.searcher_levenshtein_metric_settings import SearcherLevenshteinMetricSettings
+from src.main.app.settings.word_loader_settings import WordLoaderSettings
 from src.main.app.util.file_reader import read_file
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.words_service.word_loader import SimpleWordLoader
@@ -69,6 +72,7 @@ class ObfuscationDeterminator:
             if self.is_obfuscated_name(name_info):
                 obf_count += 1
         prop_of_obf_names = obf_count / count if count else 0
+        print(f'{obf_count}/{count} = {prop_of_obf_names}')
         return ObfuscationResult(prop_of_obf_names > self._obf_text_border, prop_of_obf_names, self._obf_text_border)
 
     def is_obfuscated_name(self, name_info: NameInfo) -> bool:
@@ -91,8 +95,38 @@ def main():
     class_searcher = ClassSearcher(tn_ext)
     name_processor = NameProcessor([var_searcher, func_searcher, class_searcher], WordExtractor())
 
-    word_dict_service = WordDictService(SimpleWordLoader('../words_service/words_by_len.bin'))
-    obf_det = ObfuscationDeterminator(name_processor, SearcherByLevenshteinMetric(word_dict_service))
+    settings = {
+        "obfuscation": {
+            "obfuscation_determinator": {
+                "obf_text_border": 0.4,
+                "obf_name_border": 0.4,
+                "max_non_obf_count_digits": 4
+            },
+            "searcher_by_levenshtein_metric": {
+                "mult_for_max_lev_distance": 0.35
+            },
+            "calculator_levenshtein_metric": {
+                "insert_cost": 1,
+                "delete_cost": 1,
+                "replace_cost": 1
+            }
+        },
+        "word_loader": {
+            "path_to_word_dict": "../words_service/words_by_len.bin"
+        }
+    }
+    word_dict_service = WordDictService(SimpleWordLoader(WordLoaderSettings(settings['word_loader'])))
+    obf_det = ObfuscationDeterminator(
+        name_processor,
+        SearcherByLevenshteinMetric(
+            word_dict_service,
+            CalculatorLevenshteinMetric(
+                CalculatorLevenshteinMetricSettings(settings['obfuscation']['calculator_levenshtein_metric'])
+            ),
+            SearcherLevenshteinMetricSettings(settings['obfuscation']['searcher_by_levenshtein_metric'])
+        ),
+        ObfuscationDetSettings(settings['obfuscation']['obfuscation_determinator'])
+    )
 
     result = obf_det.determinate(read_file('../../source/obf/obf_js.txt'))
     print(result)
