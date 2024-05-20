@@ -162,7 +162,7 @@ cython_debug/
 Notes.docx
 /~$Notes.docx
 
-/src/main/source/x.txt
+/src/main/source/FOR_TEST_X/x.txt
 
 /src/main/app/words_service/_word_update.py
 /src/main/app/words_service/raw_words.txt
@@ -174,3 +174,4 @@ Notes.docx
 /src/main/source/TEMP.py
 /src/main/source/b122.py
 /src/main/database.db-journal
+/src/main/source/FOR_TEST_X/

@@ -128,7 +128,7 @@ def main():
         ObfuscationDetSettings(settings['obfuscation']['obfuscation_determinator'])
     )
 
-    result = obf_det.determinate(read_file('../../source/obf/obf_js.txt'))
+    result = obf_det.determinate(read_file('../../source/FOR_TEST_X/x.txt'))
     print(result)
 
 

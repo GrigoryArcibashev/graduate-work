@@ -173,7 +173,7 @@ class SuspySearcher:
 
 
 def main():
-    text = read_file('../../source/x.txt')
+    text = read_file('../../source/FOR_TEST_X/x.txt')
     # text = input().encode()
     searched = SuspySearcher().search(text)
     for sr in searched:

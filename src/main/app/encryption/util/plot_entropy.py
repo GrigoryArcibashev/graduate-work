@@ -42,7 +42,7 @@ def main():
         WordDictService(SimpleWordLoader('../../words_service/words_by_len.bin')),
         OperatingMode.OPTIMAL,
     )
-    text = read_file(f'../../../source/x.txt')
+    text = read_file(f'../../../source/FOR_TEST_X/x.txt')
     # text = input().encode()
 
     result: EncrAnalyzeResult = determinator.determinate(text)

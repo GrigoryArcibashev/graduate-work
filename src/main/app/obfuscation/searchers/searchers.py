@@ -154,7 +154,7 @@ class ClassSearcher(AbstractSearcher):
 
 def main():
     variables = set()
-    text = read_file('../../../source/x.txt')
+    text = read_file('../../../source/FOR_TEST_X/x.txt')
     var_searcher = ClassSearcher(TokenExtractor())
     for var in var_searcher.get_name_iter(text):
         print('OLD' if var in variables else 'NEW', end=' VARIABLE\n')
