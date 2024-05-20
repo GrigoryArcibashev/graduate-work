@@ -3,6 +3,7 @@ from src.main.app.settings.encr_entropy_settings import EncrDetEntropySettings
 from src.main.app.settings.encr_filter_settings import EncrFilterSettings
 from src.main.app.settings.encr_hex_settings import EncrDetHEXSettings
 from src.main.app.settings.entropy_analyzer_settings import EntropyAnalyzerSettings
+from src.main.app.settings.hash_settings import HashSettings
 from src.main.app.settings.obfuscation_determinator_settings import ObfuscationDetSettings
 from src.main.app.settings.searcher_levenshtein_metric_settings import SearcherLevenshteinMetricSettings
 from src.main.app.settings.word_loader_settings import WordLoaderSettings
@@ -12,6 +13,10 @@ from src.main.app.util.file_reader import read_json
 class Settings:
     def __init__(self, raw_settings: dict):
         self._raw_settings = raw_settings
+
+    @property
+    def hasher_settings(self) -> HashSettings:
+        return HashSettings(self._raw_settings['hash'])
 
     @property
     def encr_determinator_entropy_settings(self) -> EncrDetEntropySettings:
@@ -54,5 +59,5 @@ class Settings:
 
 if __name__ == '__main__':
     sts = Settings(read_json('../../settings.json'))
-    settings = sts.calc_levenshtein_metric_settings
+    settings = sts.hasher_settings
     print()

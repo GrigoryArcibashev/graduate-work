@@ -1,4 +1,11 @@
 {
+  "hash": {
+    "alg": "sha256",
+    "algs": {
+      "sha256": "sha256",
+      "md5": "md5"
+    }
+  },
   "encryption": {
     "encryption_determinators": {
       "entropy": {
