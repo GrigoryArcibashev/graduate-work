@@ -4,11 +4,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from src.main.app.analyzer.analysis_result import AnalysisResult
-from src.main.app.hasher.hasher import HashResult
 from src.main.app.db_service.models import ScanResult, EncrResult, SuspyResult, Base
 from src.main.app.encryption.encryption_determinator.encr_analyze_result import EncrAnalyzeResult
 from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import EncrVerdict
+from src.main.app.hasher.hash_service import HashResult, Hasher
 from src.main.app.obfuscation.obfuscation_determinator import ObfuscationResult
+from src.main.app.settings.hash_settings import HashSettings
 from src.main.app.suspicious.enums import SuspiciousType, DangerLevel
 from src.main.app.suspicious.suspicious_code import SuspiciousCode
 
@@ -146,13 +147,14 @@ def main():
 
     session = sessionmaker(autoflush=False, bind=engine)
 
-    # delete_main(engine, session)
-    # create_main(engine, session)
+    delete_main(engine, session)
+    create_main(engine, session)
     for res in get_main(engine, session):
         print(res)
 
 
-def create_record_to_db(filename: str):
+def create_record_to_db(filename: str) -> ScanResult:
+    hasher = Hasher(HashSettings({'algs': {'sha256': 'sha256'}, 'alg': 'sha256'}))
     result_of_file_analysis = ResultOfFileAnalysis(
         filename=filename,
         an_result=AnalysisResult(
@@ -176,8 +178,8 @@ def create_record_to_db(filename: str):
                 )
             ]
         ),
-        old_hash=HashResult(f'old_hash_{filename[-1]}') if int(filename[-1]) % 2 == 0 else None,
-        new_hash=HashResult(f'new_hash_{filename[-1]}') if int(filename[-1]) % 2 == 1 else None,
+        old_hash=hasher.calc_hash(f'old_hash_{filename}'.encode()),
+        new_hash=hasher.calc_hash(f'new_hash_{filename}'.encode()),
     )
 
     return ConverterForDB.convert_to_db_models(result_of_file_analysis)
