@@ -54,6 +54,6 @@
     }
   },
   "word_loader": {
-    "path_to_word_dict": "words_service/words_by_len.bin"
+    "path_to_word_dict": "../words_service/words_by_len.bin"
   }
 }

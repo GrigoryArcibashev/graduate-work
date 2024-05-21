@@ -55,42 +55,42 @@ def run(filenames: list[str], analyzer: Analyzer) -> list[AnalysisResult]:
 
 def main():
     paths = [
-        '../source/FOR_TEST_X',
+        '../../source/FOR_TEST_X',
 
-        # '../source/obf/js',
-        # '../source/obf/php',
-        # '../source/obf/sharp',
-        # '../source/obf/python',
+        # '../../ource/obf/js',
+        # '../../ource/obf/php',
+        # '../../ource/obf/sharp',
+        # '../../ource/obf/python',
 
-        # '../source/obf_non/js',
-        # '../source/obf_non/php',
-        # '../source/obf_non/sharp',
-        # '../source/obf_non/python',
+        # '../../ource/obf_non/js',
+        # '../../ource/obf_non/php',
+        # '../../ource/obf_non/sharp',
+        # '../../ource/obf_non/python',
 
-        # '../source/encr/base32',
-        # '../source/encr/base64',
-        # '../source/encr/base85',
-        # '../source/encr/base122',
-        # '../source/encr/rot13',
-        # '../source/encr/hex',
-        # '../source/encr/AES',
-        # '../source/encr/DES_triple',
+        # '../../ource/encr/base32',
+        # '../../ource/encr/base64',
+        # '../../ource/encr/base85',
+        # '../../ource/encr/base122',
+        # '../../ource/encr/rot13',
+        # '../../ource/encr/hex',
+        # '../../ource/encr/AES',
+        # '../../ource/encr/DES_triple',
 
-        # '../source/encr_non/php',
-        # '../source/encr_non/js',
-        # '../source/encr_non/python',
-        # '../source/encr_non/ruby',
-        # '../source/encr_non/sharp',
-        # '../source/encr_non/bash',
-        # '../source/encr_non/html',
-        # '../source/encr_non/css',
-        # '../source/encr_non/xml',
-        # '../source/encr_non/sql',
-        # '../source/encr_non/other/arch',
-        # '../source/encr_non/other/img',
+        # '../../ource/encr_non/php',
+        # '../../ource/encr_non/js',
+        # '../../ource/encr_non/python',
+        # '../../ource/encr_non/ruby',
+        # '../../ource/encr_non/sharp',
+        # '../../ource/encr_non/bash',
+        # '../../ource/encr_non/html',
+        # '../../ource/encr_non/css',
+        # '../../ource/encr_non/xml',
+        # '../../ource/encr_non/sql',
+        # '../../ource/encr_non/other/arch',
+        # '../../ource/encr_non/other/img',
     ]
     filenames = get_filenames(paths)
-    analyzer = Analyzer(Settings(read_json('../settings.json')))
+    analyzer = Analyzer(Settings(read_json('../../settings.json')))
 
     results = list()
     processed = 0
