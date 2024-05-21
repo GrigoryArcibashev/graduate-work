@@ -1,4 +1,5 @@
 import re
+from typing import Iterator
 
 from src.main.app.encryption.encryption_determinator.encryption_determinants.abstract_encryption_determinator import \
     AbstractEncryptionDeterminator
@@ -21,6 +22,16 @@ class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
         self._pattern = re.compile(br'(?:\\x|0x|\\u)[0-9abcdef]{2}', re.IGNORECASE)
         self._markers = MARKERS
 
+    def determinate_by_iter(self, data_iter: Iterator[bytes]) -> EncrVerdict:
+        """
+        Определяет наличие шифра в тексте
+
+        :param data_iter: итератор по тексту
+        :return: вердикт (EncrVerdict)
+        """
+        count = sum([self._calc_number_of_pat_match(data) for data in data_iter])
+        return self._make_verdict(count)
+
     def determinate(self, data: bytes) -> EncrVerdict:
         """
         Определяет наличие шифра в тексте
@@ -28,9 +39,27 @@ class EncryptionDeterminatorByHEX(AbstractEncryptionDeterminator):
         :param data: текст
         :return: вердикт (EncrVerdict)
         """
-        found = re.findall(self._pattern, data)
-        count = len(self._filter_unicode(found))
+        count = self._calc_number_of_pat_match(data)
+        return self._make_verdict(count)
+
+    def _make_verdict(self, count: int) -> EncrVerdict:
+        """
+        Выносит вердикт
+
+        :param count: сколько раз встречается паттерн в data
+        :return: вердикт
+        """
         return EncrVerdict.DETECTED if count > self._min_count else EncrVerdict.NOT_DETECTED
+
+    def _calc_number_of_pat_match(self, data: bytes) -> int:
+        """
+        Считает, сколько раз встречается паттерн в data
+
+        :param data: текст
+        :return: сколько раз встречается паттерн в data
+        """
+        found = re.findall(self._pattern, data)
+        return len(self._filter_unicode(found))
 
     @property
     def _min_count(self) -> int:
