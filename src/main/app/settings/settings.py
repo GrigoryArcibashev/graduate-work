@@ -1,6 +1,6 @@
 from src.main.app.settings.analyzer_settings import AnalyzerSettings
 from src.main.app.settings.hash_settings import HashSettings
-from src.main.app.util.file_reader import read_json
+from src.main.app.file_service.file_reader import FileReader
 
 
 class Settings:
@@ -17,6 +17,6 @@ class Settings:
 
 
 if __name__ == '__main__':
-    sts = Settings(read_json('../../settings.json'))
+    sts = Settings(FileReader.read_json('../../settings.json'))
     settings = sts.analyzer_settings
     print()

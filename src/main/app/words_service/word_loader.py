@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from src.main.app.extractors.word import Word
 from src.main.app.settings.word_loader_settings import WordLoaderSettings
-from src.main.app.util.file_reader import read_file_by_pickle
+from src.main.app.file_service.file_reader import FileReader
 
 
 class AbstractWordLoader:
@@ -30,4 +30,4 @@ class AbstractWordLoader:
 
 class SimpleWordLoader(AbstractWordLoader):
     def load(self) -> dict[int, set[Word]]:
-        return read_file_by_pickle(self.path)
+        return FileReader.read_file_by_pickle(self.path)

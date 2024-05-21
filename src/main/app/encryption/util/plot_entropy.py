@@ -4,7 +4,7 @@ from scipy.signal import savgol_filter
 
 from src.main.app.encryption.encryption_determinator.determinator import EncryptionDeterminator, EncrAnalyzeResult
 from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode
-from src.main.app.util.file_reader import read_file
+from src.main.app.file_service.file_reader import FileReader
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.words_service.word_loader import SimpleWordLoader
 
@@ -42,7 +42,7 @@ def main():
         WordDictService(SimpleWordLoader('../../words_service/words_by_len.bin')),
         OperatingMode.OPTIMAL,
     )
-    text = read_file(f'../../../source/FOR_TEST_X/x.txt')
+    text = FileReader.read_file(f'../../../source/FOR_TEST_X/x.txt')
     # text = input().encode()
 
     result: EncrAnalyzeResult = determinator.determinate(text)

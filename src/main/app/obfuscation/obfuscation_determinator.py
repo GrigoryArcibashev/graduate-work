@@ -10,7 +10,7 @@ from src.main.app.settings.calculator_levenshtein_metric_settings import Calcula
 from src.main.app.settings.obfuscation_determinator_settings import ObfuscationDetSettings
 from src.main.app.settings.searcher_levenshtein_metric_settings import SearcherLevenshteinMetricSettings
 from src.main.app.settings.word_loader_settings import WordLoaderSettings
-from src.main.app.util.file_reader import read_file
+from src.main.app.file_service.file_reader import FileReader
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.words_service.word_loader import SimpleWordLoader
 
@@ -128,7 +128,7 @@ def main():
         ObfuscationDetSettings(settings['obfuscation']['obfuscation_determinator'])
     )
 
-    result = obf_det.determinate(read_file('../../source/FOR_TEST_X/x.txt'))
+    result = obf_det.determinate(FileReader.read_file('../../source/FOR_TEST_X/x.txt'))
     print(result)
 
 

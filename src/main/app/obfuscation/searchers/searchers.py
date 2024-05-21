@@ -6,7 +6,7 @@ from typing import Iterator
 from src.main.app.extractors.token import Token, TokenType
 from src.main.app.extractors.token_extractor import TokenExtractor
 from src.main.app.obfuscation.searchers.name import Name
-from src.main.app.util.file_reader import read_file
+from src.main.app.file_service.file_reader import FileReader
 
 
 class AbstractSearcher:
@@ -154,7 +154,7 @@ class ClassSearcher(AbstractSearcher):
 
 def main():
     variables = set()
-    text = read_file('../../../source/FOR_TEST_X/x.txt')
+    text = FileReader.read_file('../../../source/FOR_TEST_X/x.txt')
     var_searcher = ClassSearcher(TokenExtractor())
     for var in var_searcher.get_name_iter(text):
         print('OLD' if var in variables else 'NEW', end=' VARIABLE\n')

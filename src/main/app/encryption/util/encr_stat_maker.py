@@ -4,7 +4,7 @@ from os.path import isfile, join
 
 from src.main.app.encryption.encryption_determinator.determinator import EncryptionDeterminator, EncrAnalyzeResult
 from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode
-from src.main.app.util.file_reader import read_file
+from src.main.app.file_service.file_reader import FileReader
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.words_service.word_loader import SimpleWordLoader
 
@@ -43,7 +43,7 @@ def process_files(total_count, cur_count, determinator, filenames, file_stat):
     positive = negative = 0
     write_terminator_line(file_stat)
     for filename in filenames:
-        result: EncrAnalyzeResult = determinator.determinate(read_file(filename))
+        result: EncrAnalyzeResult = determinator.determinate(FileReader.read_file(filename))
         write_result(result, file_stat, filename)
         if result.entr_verdict.is_encr or result.hex_verdict.is_encr:
             positive += 1

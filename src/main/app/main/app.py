@@ -4,9 +4,10 @@ from os.path import isfile, join
 
 from src.main.app.analyzer.analysis_result import AnalysisResult
 from src.main.app.analyzer.analyzer import Analyzer
+from src.main.app.db_service.read_upd_service import DBService
 from src.main.app.hasher.hash_service import Hasher
 from src.main.app.settings.settings import Settings
-from src.main.app.util.file_reader import read_file, read_json
+from src.main.app.file_service.file_reader import FileReader
 
 
 def get_filenames(paths: list[str]) -> list[str]:
@@ -51,7 +52,7 @@ def print_analyze_results(results: list[(str, AnalysisResult)], inp: bool = Fals
 
 def run(filenames: list[str], analyzer: Analyzer) -> list[AnalysisResult]:
     for filename in filenames:
-        yield analyzer.analyze(read_file(filename))
+        yield analyzer.analyze(FileReader.read_file(filename))
 
 
 def main():
@@ -91,7 +92,7 @@ def main():
         # '../../ource/encr_non/other/img',
     ]
     filenames = get_filenames(paths)
-    analyzer = Analyzer(Settings(read_json('../../settings.json')).analyzer_settings)
+    analyzer = Analyzer(Settings(FileReader.read_json('../../settings.json')).analyzer_settings)
 
     results = list()
     processed = 0
@@ -107,12 +108,19 @@ def main():
 
 
 class App:
-    def __init__(self, settings: Settings, root_dir: str):
+    def __init__(self, settings: Settings, root_dir: str, path_to_db: str):
         self._root_dir = root_dir
+        self._path_to_db = path_to_db
         self._hasher = Hasher(settings.hasher_settings)
         self._analyzer = Analyzer(settings.analyzer_settings)
-    # def process_file(self, filename:str):
-    #     _hash = self._hasher.calc_hash_by_iter()
+        self._db_service = DBService(path_to_db)
+
+    def run(self):
+        # прочитать данные из БД (ЕСЛИ ЕСТЬ)
+        # проанализировать файлы
+        # сравнить результаты анализа
+        # обновить БД
+        pass
 
 
 if __name__ == '__main__':
