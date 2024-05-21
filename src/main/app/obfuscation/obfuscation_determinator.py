@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Iterator
 
 from src.main.app.extractors.token_extractor import TokenExtractor
 from src.main.app.extractors.word import Word
@@ -64,16 +64,28 @@ class ObfuscationDeterminator:
     def _clear_words(self) -> None:
         self._is_obf_word.clear()
 
+    def determinate_by_iter(self, text_iter: Iterator[bytes]) -> ObfuscationResult:
+        count = obf_count = 0
+        for text in text_iter:
+            add_obf_count, add_count = self._determine_number_of_unique_obf_names(text)
+            obf_count += add_obf_count
+            count += add_count
+        prop_of_obf_names = obf_count / count if count else 0
+        return ObfuscationResult(prop_of_obf_names > self._obf_text_border, prop_of_obf_names, self._obf_text_border)
+
     def determinate(self, text: bytes) -> ObfuscationResult:
+        obf_count, count = self._determine_number_of_unique_obf_names(text)
+        prop_of_obf_names = obf_count / count if count else 0
+        return ObfuscationResult(prop_of_obf_names > self._obf_text_border, prop_of_obf_names, self._obf_text_border)
+
+    def _determine_number_of_unique_obf_names(self, text: bytes) -> (int, int):
         self._clear_words()
         count = obf_count = 0
         for name_info in self._name_processor.get_next_name_info(text):
             count += 1
             if self.is_obfuscated_name(name_info):
                 obf_count += 1
-        prop_of_obf_names = obf_count / count if count else 0
-        print(f'{obf_count}/{count} = {prop_of_obf_names}')
-        return ObfuscationResult(prop_of_obf_names > self._obf_text_border, prop_of_obf_names, self._obf_text_border)
+        return obf_count, count
 
     def is_obfuscated_name(self, name_info: NameInfo) -> bool:
         if name_info.digit_len > self._max_non_obf_count_digits:

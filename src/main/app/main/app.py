@@ -122,6 +122,11 @@ class App:
         # обновить БД
         pass
 
+    def get_results_from_db(self):
+        # прочитать данные из БД (ЕСЛИ ЕСТЬ)
+        # вернуть результат
+        pass
+
 
 if __name__ == '__main__':
     main()
