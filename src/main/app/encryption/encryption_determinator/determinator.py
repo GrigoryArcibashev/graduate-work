@@ -83,6 +83,6 @@ class EncryptionDeterminator:
         len_before = len(num_data)
         filtered_data = self._filter.filter(num_data)
         entr_verdict, entropy, entropy_above_border = self._det_ent.determinate(filtered_data)
-        cut_out = round(100 * (len_before - len(filtered_data)) / len_before, 2)
+        cut_out = round(100 * (len_before - len(filtered_data)) / max(1, len_before), 2)
 
         return EncrAnalyzeResult(hex_verdict, entr_verdict, cut_out, entropy, entropy_above_border)

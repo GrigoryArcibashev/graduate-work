@@ -1,9 +1,11 @@
 import re
+from concurrent.futures import ThreadPoolExecutor
+from math import ceil
 from typing import Iterator
 
+from src.main.app.file_service.file_reader import FileReader
 from src.main.app.suspicious.enums import DangerLevel, SuspiciousType
 from src.main.app.suspicious.suspicious_code import SuspiciousCode
-from src.main.app.file_service.file_reader import FileReader
 
 
 class PatternContainer:
@@ -117,7 +119,8 @@ class SuspySearcher:
                 },
                 SuspiciousType.IMPORT: {
                     re.compile(
-                        br'(?:[^\w\'\"]|^)(require\s*\(\s*[\"\'](?:fs|multer|express-fileupload|socket\.io)[\"\']\s*\))'),
+                        br'(?:[^\w\'\"]|^)(require\s*\(\s*[\"\'](?:fs|multer|express-fileupload|socket\.io)[\"\']\s*\))'
+                    ),
                 },
                 SuspiciousType.NET: {
                     re.compile(br'(?:[^\w\'\"]|^)(\$_FILES(?:\s*\[.+?])+)'),
@@ -157,13 +160,44 @@ class SuspySearcher:
             },
         }
 
+    def search_by_iter(self, text_iter: Iterator[bytes]) -> list[SuspiciousCode]:
+        searched: set[SuspiciousCode] = set()
+        for text in text_iter:
+            searched.update(set(self.search(text)))
+        return list(searched)
+
     def search(self, text: bytes) -> list[SuspiciousCode]:
         searched: set[SuspiciousCode] = set()
-        for pc in self._get_next_pattern():
+        max_workers = 3
+        number_of_pats_per_worker = int(ceil(self._pattern_number / max_workers))
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [
+                executor.submit(self._search, text, pats)
+                for pats in self._get_patterns(number_of_pats_per_worker)
+            ]
+            for future in futures:
+                searched.update(future.result())
+        return list(searched)
+
+    @staticmethod
+    def _search(text: bytes, patterns: list[PatternContainer]) -> set[SuspiciousCode]:
+        searched: set[SuspiciousCode] = set()
+        for pc in patterns:
             found = set(pc.pattern.findall(text))
             for fnd in found:
                 searched.add(SuspiciousCode(fnd, pc.danger_lvl, pc.type))
-        return list(searched)
+        return searched
+
+    def _get_patterns(self, list_count: int) -> Iterator[list[PatternContainer]]:
+        pat_containers = list()
+        for pc in self._get_next_pattern():
+            if len(pat_containers) < list_count:
+                pat_containers.append(pc)
+            else:
+                yield pat_containers
+                pat_containers = [pc]
+        if pat_containers:
+            yield pat_containers
 
     def _get_next_pattern(self) -> Iterator[PatternContainer]:
         for lvl in self._patterns:
@@ -171,11 +205,27 @@ class SuspySearcher:
                 for pat in self._patterns[lvl][type_]:
                     yield PatternContainer(pat, lvl, type_)
 
+    @property
+    def _pattern_number(self) -> int:
+        number = 0
+        for lvl in self._patterns:
+            for type_ in self._patterns[lvl]:
+                number += len(self._patterns[lvl][type_])
+        return number
+
+
+def get_iter(text: bytes) -> Iterator[bytes]:
+    ind = 0
+    shift = len(text) // 10
+    while ind < len(text):
+        yield text[ind:ind + shift]
+        ind += shift
+
 
 def main():
     text = FileReader.read_file('../../source/FOR_TEST_X/x.txt')
-    # text = input().encode()
-    searched = SuspySearcher().search(text)
+    searcher = SuspySearcher()
+    searched = searcher.search_by_iter(get_iter(text))
     for sr in searched:
         print(sr)
 
