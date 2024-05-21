@@ -8,14 +8,14 @@ from src.main.app.obfuscation.levenshtein_metric import SearcherByLevenshteinMet
 from src.main.app.obfuscation.name_processor import NameProcessor
 from src.main.app.obfuscation.obfuscation_determinator import ObfuscationDeterminator
 from src.main.app.obfuscation.searchers.searchers import VariableSearcher, FunctionSearcher, ClassSearcher
-from src.main.app.settings.settings import Settings
+from src.main.app.settings.analyzer_settings import AnalyzerSettings
 from src.main.app.suspicious.searcher import SuspySearcher
 from src.main.app.words_service.word_dict_service import WordDictService
 from src.main.app.words_service.word_loader import SimpleWordLoader
 
 
 class Analyzer:
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: AnalyzerSettings):
         word_dict_service = WordDictService(SimpleWordLoader(settings.word_loader_settings))
         self._encr_determinator = EncryptionDeterminator(
             word_dict_service=word_dict_service,

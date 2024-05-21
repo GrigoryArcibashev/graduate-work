@@ -4,6 +4,7 @@ from os.path import isfile, join
 
 from src.main.app.analyzer.analysis_result import AnalysisResult
 from src.main.app.analyzer.analyzer import Analyzer
+from src.main.app.hasher.hash_service import Hasher
 from src.main.app.settings.settings import Settings
 from src.main.app.util.file_reader import read_file, read_json
 
@@ -90,7 +91,7 @@ def main():
         # '../../ource/encr_non/other/img',
     ]
     filenames = get_filenames(paths)
-    analyzer = Analyzer(Settings(read_json('../../settings.json')))
+    analyzer = Analyzer(Settings(read_json('../../settings.json')).analyzer_settings)
 
     results = list()
     processed = 0
@@ -103,6 +104,15 @@ def main():
         print_state(processed, total, start, filename=filenames[processed] if processed < total else None)
     print_time_results(time.time() - start, total)
     print_analyze_results(results, inp=False)
+
+
+class App:
+    def __init__(self, settings: Settings, root_dir: str):
+        self._root_dir = root_dir
+        self._hasher = Hasher(settings.hasher_settings)
+        self._analyzer = Analyzer(settings.analyzer_settings)
+    # def process_file(self, filename:str):
+    #     _hash = self._hasher.calc_hash_by_iter()
 
 
 if __name__ == '__main__':
