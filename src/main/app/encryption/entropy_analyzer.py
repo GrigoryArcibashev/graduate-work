@@ -1,3 +1,5 @@
+from typing import Iterator, Union
+
 import numpy as np
 from math import log2
 
@@ -12,30 +14,20 @@ class EntropyCalculator:
     def __init__(self):
         self._power = 256  # possible byte values (ASCII table power)
 
+    def calc_entropy_in_percent_by_iter(self, data_iter: Iterator[list[int]]) -> float:
+        return self._calc_entropy_in_percent(data_iter, self._calc_frequency_by_iter)
+
     def calc_entropy_in_percent(self, data: list[int]) -> float:
-        """
-        Рассчитывает энтропию текста в процентах
+        return self._calc_entropy_in_percent(data, self._calc_frequency)
 
-        :param data: текст в виде последовательности номеров байт
-
-        :return: значение энтропии в процентах с двумя знаками после запятой
-        """
-        if len(data) == 0:
-            return 0
-        entropy, number_of_unique = self._calc_entropy(data)
+    def _calc_entropy_in_percent(self, data: Union[Iterator[list[int]], list[int]], calc_frequency_func) -> float:
+        entropy, number_of_unique = self._calc_entropy(calc_frequency_func(data))
         if number_of_unique > 1:
             return round(100 * entropy / log2(self._power), 2)
         return entropy
 
-    def _calc_entropy(self, data: list[int]) -> (float, int):
-        """
-        Рассчитывает энтропию текста
-
-        :param data: текст в виде последовательности номеров байт
-
-        :return: значение энтропии и количество уникальных символов в тексте
-        """
-        frequency = self._calc_frequency(data)
+    @staticmethod
+    def _calc_entropy(frequency: dict[int, float]) -> (float, int):
         result = 0
         for symbol in frequency.keys():
             freq = frequency[symbol]
@@ -43,14 +35,21 @@ class EntropyCalculator:
         return result, len(frequency)
 
     @staticmethod
+    def _calc_frequency_by_iter(data_iter: Iterator[list[int]]) -> dict[int, float]:
+        data_length = 0
+        _dict_freq = dict()
+        for data in data_iter:
+            data_length += len(data)
+            unique, counts = np.unique(data, return_counts=True)
+            for i in range(len(unique)):
+                uniq = unique[i]
+                if uniq not in _dict_freq:
+                    _dict_freq[uniq] = 0
+                _dict_freq[uniq] += counts[i]
+        return {uniq: _dict_freq[uniq] / data_length for uniq in _dict_freq} if data_length else dict()
+
+    @staticmethod
     def _calc_frequency(data: list[int]) -> dict[int, float]:
-        """
-        Формирует словарь частотности символов
-
-        :param data: текст в виде последовательности номеров байт
-
-        :return: словарь частотности символов
-        """
         unique, counts = np.unique(data, return_counts=True)
         data_length = len(data)
         return {unique[i]: counts[i] / data_length for i in range(len(unique))}
@@ -68,23 +67,30 @@ class EntropyAnalyzer:
         self._divider_for_window = settings.divider_for_window
         self._divider_for_hop = settings.divider_for_hop
 
+    def analyze_by_iter(self, data_iter: Iterator[list[int]]) -> float:
+        """
+        Вычисление энтропии текста в целом в процентах
+        """
+        return self._entropy_calculator.calc_entropy_in_percent_by_iter(data_iter)
+
     def analyze(self, data: list[int]) -> float:
         """
         Вычисление энтропии текста в целом в процентах
-
-        :param data: текст в виде последовательности номеров байт
-
-        :return: энтропия текста в процентах с двумя знаками после запятой
         """
         return self._entropy_calculator.calc_entropy_in_percent(data)
+
+    def window_analyze_by_iter(self, data_iter: Iterator[list[int]]) -> list[float]:
+        """
+        Вычисление энтропии текста методом "скользящего" окна
+        """
+        entropies = list()
+        for data in data_iter:
+            entropies.extend(self.window_analyze(data))
+        return entropies
 
     def window_analyze(self, data: list[int]) -> list[float]:
         """
         Вычисление энтропии текста методом "скользящего" окна
-
-        :param data: текст в виде последовательности номеров байт
-
-        :return: энтропия текста в процентах с двумя знаками после запятой
         """
         window_size = self._calc_window_size(data)
         hop = self._calc_hop_size(window_size)

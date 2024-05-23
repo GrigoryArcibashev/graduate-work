@@ -1,3 +1,5 @@
+from typing import Iterator
+
 from src.main.app.encryption.encryption_determinator.encryption_determinants.abstract_encryption_determinator import \
     AbstractEncryptionDeterminator
 from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import EncrVerdict
@@ -21,6 +23,18 @@ class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
         self._upper_bound_of_entropy_strict = settings.upper_bound_of_entropy_strict
         self.mode = settings.mode
 
+    def determinate_by_iter(self, data_iter: Iterator[list[int]]) -> (EncrVerdict, float, float):
+        """
+        Рассчитывает энтропию текста, читая его поблочно, и выносит вердикт (зашифрован/не зашифрован)
+
+        :param data_iter: итератор по тексту, представленному в виде последовательности номеров байт
+
+        :return: (вердикт, энтропия в целом, процент "окон" с энтропией выше установленной границы)
+        """
+        entropy = self._entropy_analyzer.analyze_by_iter(data_iter)
+        entropies = self._entropy_analyzer.window_analyze_by_iter(data_iter)
+        return self._make_result(entropies, entropy)
+
     def determinate(self, data: list[int]) -> (EncrVerdict, float, float):
         """
         Рассчитывает энтропию текста и выносит вердикт (зашифрован/не зашифрован)
@@ -31,6 +45,9 @@ class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
         """
         entropy = self._entropy_analyzer.analyze(data)
         entropies = self._entropy_analyzer.window_analyze(data)
+        return self._make_result(entropies, entropy)
+
+    def _make_result(self, entropies: list[float], entropy: float) -> (EncrVerdict, float, float):
         count_above_border = len(list(filter(lambda entr: entr >= self._window_encryption_border, entropies)))
         entropy_above_border = round(100 * count_above_border / len(entropies))
         return self._determinate(entropy, entropy_above_border), entropy, entropy_above_border
