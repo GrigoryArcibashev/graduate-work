@@ -1,17 +1,12 @@
 from typing import Optional
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 from src.main.app.analyzer.analysis_result import AnalysisResult
-from src.main.app.db_service.models import ScanResult, EncrResult, SuspyResult, Base
+from src.main.app.db_service.models import ScanResult, EncrResult, SuspyResult
 from src.main.app.db_service.rw_service import ResultFromDB
 from src.main.app.encryption.encryption_determinator.encr_analyze_result import EncrAnalyzeResult
 from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import EncrVerdict
-from src.main.app.hasher.hash_service import HashResult, Hasher
+from src.main.app.hasher.hash_service import HashResult
 from src.main.app.obfuscation.obfuscation_determinator import ObfuscationResult
-from src.main.app.settings.hash_settings import HashSettings
-from src.main.app.suspicious.enums import SuspiciousType, DangerLevel
 from src.main.app.suspicious.suspicious_code import SuspiciousCode
 
 
@@ -125,75 +120,3 @@ class ConverterForDB:
         scan_res.suspy_result = suspy_res
 
         return scan_res
-
-
-def delete_main(engine, session):
-    with session(autoflush=False, bind=engine) as db:
-        for sc_r in db.query(ScanResult).all():
-            db.delete(sc_r)
-        db.commit()
-
-
-def create_main(engine, session):
-    with session(autoflush=False, bind=engine) as db:
-        sc_r1 = create_record_to_db('file_1')
-        sc_r2 = create_record_to_db('file_2')
-        sc_r3 = create_record_to_db('file_3')
-        db.add_all([sc_r1, sc_r2, sc_r3])
-        db.commit()
-
-
-def get_main(engine, session):
-    with session(autoflush=False, bind=engine) as db:
-        return list(map(ConverterForDB.convert_from_db_model, list(db.query(ScanResult).all())))
-
-
-def main():
-    sqlite_database = "sqlite:///../../database.db"
-    engine = create_engine(sqlite_database)
-    # создаем таблицы
-    Base.metadata.create_all(bind=engine)
-    print("База данных и таблица созданы")
-
-    session = sessionmaker(autoflush=False, bind=engine)
-
-    delete_main(engine, session)
-    create_main(engine, session)
-    for res in get_main(engine, session):
-        print(res)
-
-
-def create_record_to_db(filename: str) -> ScanResult:
-    hasher = Hasher(HashSettings({'algs': {'sha256': 'sha256'}, 'alg': 'sha256'}))
-    result_of_file_analysis = ResultOfFileAnalysis(
-        filename=filename,
-        an_result=AnalysisResult(
-            encr_res=EncrAnalyzeResult(
-                hex_verdict=EncrVerdict.NOT_DETECTED,
-                entr_verdict=EncrVerdict.DETECTED
-            ),
-            obf_res=ObfuscationResult(
-                is_obf=True
-            ),
-            suspy_res=[
-                SuspiciousCode(
-                    code=f'code_{filename}'.encode(),
-                    danger_lvl=DangerLevel.DANGEROUS,
-                    suspy_type=SuspiciousType.FILES
-                ),
-                SuspiciousCode(
-                    code=f'code_{filename}'.encode(),
-                    danger_lvl=DangerLevel.SUSPICIOUS,
-                    suspy_type=SuspiciousType.NET
-                )
-            ]
-        ),
-        old_hash=hasher.calc_hash(f'old_hash_{filename}'.encode()),
-        new_hash=hasher.calc_hash(f'new_hash_{filename}'.encode()),
-    )
-
-    return ConverterForDB.convert_to_db_model(result_of_file_analysis)
-
-
-if __name__ == '__main__':
-    main()
