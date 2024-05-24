@@ -21,6 +21,13 @@ class ScanResult(Base):
     encr_result = relationship('EncrResult', back_populates='scan_result', cascade='all, delete-orphan')
     suspy_result = relationship('SuspyResult', back_populates='scan_result', cascade='all, delete-orphan')
 
+    def __str__(self):
+        result = f'id = {self.id}, ' \
+                 f'filename = {self.filename}, ' \
+                 f'old_h(6) = {str(self.old_hash)[:6]}, ' \
+                 f'new_h(6) = {str(self.new_hash)[:6]}'
+        return result
+
 
 class EncrResult(Base):
     __tablename__ = 'encr_results'

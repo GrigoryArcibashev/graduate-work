@@ -1,13 +1,16 @@
 import time
 from os import listdir
 from os.path import isfile, join
+from typing import Optional
 
 from src.main.app.analyzer.analysis_result import AnalysisResult
 from src.main.app.analyzer.analyzer import Analyzer
-from src.main.app.db_service.read_upd_service import DBService
-from src.main.app.hasher.hash_service import Hasher
-from src.main.app.settings.settings import Settings
+from src.main.app.db_service.converter import ConverterForDB, ResultOfFileAnalysis
+from src.main.app.db_service.rw_service import DBService
+from src.main.app.file_service.file_explorer import FileExplorer
 from src.main.app.file_service.file_reader import FileReader
+from src.main.app.hasher.hash_service import Hasher, HashResult
+from src.main.app.settings.settings import Settings
 
 
 def get_filenames(paths: list[str]) -> list[str]:
@@ -92,7 +95,8 @@ def main():
         '../../source/encr_non/other/img',
     ]
     filenames = get_filenames(paths)
-    analyzer = Analyzer(Settings(FileReader.read_json('../../settings.json')).analyzer_settings)
+    settings = Settings(FileReader.read_json('../../settings.json'))
+    analyzer = Analyzer(settings.analyzer_settings)
 
     results = list()
     processed = 0
@@ -110,23 +114,78 @@ def main():
 class App:
     def __init__(self, settings: Settings, root_dir: str, path_to_db: str):
         self._root_dir = root_dir
-        self._path_to_db = path_to_db
         self._hasher = Hasher(settings.hasher_settings)
         self._analyzer = Analyzer(settings.analyzer_settings)
         self._db_service = DBService(path_to_db)
 
-    def run(self):
-        # прочитать данные из БД (ЕСЛИ ЕСТЬ)
-        # проанализировать файлы
-        # сравнить результаты анализа
-        # обновить БД
-        pass
+    def run(self) -> None:
+        results_from_db = self._make_dict_filename_to_result(self.get_results_from_db())
+        results_to_db: list[ResultOfFileAnalysis] = list()
+        for filename in FileExplorer.get_all_filenames(self._root_dir, recursive=True):
+            data = FileReader.read_file(filename)
+            _hash: HashResult = self._hasher.calc_hash(data)
+            db_result = results_from_db.get(filename)
+            results_to_db.append(self._make_new_result_for_db(filename, _hash, data, db_result))
+        self._db_service.write(ConverterForDB.convert_to_db_models(results_to_db))
 
-    def get_results_from_db(self):
-        # прочитать данные из БД (ЕСЛИ ЕСТЬ)
-        # вернуть результат
-        pass
+    def _make_new_result_for_db(
+            self,
+            filename: str,
+            _hash: HashResult,
+            data: bytes,
+            db_result: Optional[ResultOfFileAnalysis]
+    ) -> ResultOfFileAnalysis:
+        if db_result is None:
+            # файл новый, его в БД не было
+            result_of_file_analysis: ResultOfFileAnalysis = ResultOfFileAnalysis(
+                filename=filename,
+                an_result=self._analyzer.analyze(data),
+                old_hash=None,
+                new_hash=_hash
+            )
+        elif db_result.old_hash == _hash:
+            # файл не изменился, он всё еще доверенный
+            result_of_file_analysis: ResultOfFileAnalysis = ResultOfFileAnalysis(
+                filename=filename,
+                an_result=db_result.an_result if db_result.new_hash is None else self._analyzer.analyze(data),
+                old_hash=db_result.old_hash,
+                new_hash=None
+            )
+        elif db_result.new_hash == _hash:
+            # файл не изменился с последнего запуска, НО он НЕ доверенный
+            result_of_file_analysis: ResultOfFileAnalysis = ResultOfFileAnalysis(
+                filename=filename,
+                an_result=db_result.an_result,
+                old_hash=db_result.old_hash,
+                new_hash=db_result.new_hash
+            )
+        elif db_result.new_hash != _hash:
+            # файл изменился, он НЕ доверенный
+            result_of_file_analysis: ResultOfFileAnalysis = ResultOfFileAnalysis(
+                filename=filename,
+                an_result=self._analyzer.analyze(data),
+                old_hash=db_result.old_hash,
+                new_hash=_hash
+            )
+        else:
+            raise Exception()
+        return result_of_file_analysis
+
+    def get_results_from_db(self) -> list[ResultOfFileAnalysis]:
+        return ConverterForDB.convert_from_db_models(self._db_service.read())
+
+    @staticmethod
+    def _make_dict_filename_to_result(results: list[ResultOfFileAnalysis]) -> dict[str, ResultOfFileAnalysis]:
+        return {result.filename: result for result in results}
+
+
+def main_app():
+    settings = Settings(FileReader.read_json('../../settings.json'))
+    app = App(settings=settings, root_dir='../../source/', path_to_db='sqlite:///../../database.db')
+    for res in app.get_results_from_db():
+        print(res)
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    main_app()

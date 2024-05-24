@@ -19,8 +19,8 @@ class HashResult:
         return hash(self._hash)
 
     def __eq__(self, other):
-        if not isinstance(other, HashResult):
-            raise TypeError(f'Operand type: expected {type(self)}, but actual is {type(other)}')
+        if other is None or not isinstance(other, HashResult):
+            return False
         return self._hash == other._hash
 
 
@@ -53,6 +53,7 @@ def main():
     h2 = hasher.calc_hash_by_iter(message2())
     print(h1 == h2)
     print(HashAlg.SHA256.to_str_name())
+    print(h1 == None)
 
 
 if __name__ == '__main__':

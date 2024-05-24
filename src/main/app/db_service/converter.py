@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 from src.main.app.analyzer.analysis_result import AnalysisResult
 from src.main.app.db_service.models import ScanResult, EncrResult, SuspyResult, Base
+from src.main.app.db_service.rw_service import ResultFromDB
 from src.main.app.encryption.encryption_determinator.encr_analyze_result import EncrAnalyzeResult
 from src.main.app.encryption.encryption_determinator.encryption_determinants.enums import EncrVerdict
 from src.main.app.hasher.hash_service import HashResult, Hasher
@@ -49,9 +50,14 @@ class ResultOfFileAnalysis:
 
 class ConverterForDB:
     @staticmethod
-    def convert_from_db_models(scan_result: ScanResult) -> ResultOfFileAnalysis:
-        encr_result: EncrResult = scan_result.encr_result[0]
-        suspy_result: list[SuspyResult] = scan_result.suspy_result
+    def convert_from_db_models(scan_results: list[ResultFromDB]) -> list[ResultOfFileAnalysis]:
+        return list(map(ConverterForDB.convert_from_db_model, scan_results))
+
+    @staticmethod
+    def convert_from_db_model(result_from_db: ResultFromDB) -> ResultOfFileAnalysis:
+        scan_result: ScanResult = result_from_db.scan_result
+        encr_result: EncrResult = result_from_db.encr_result[0]
+        suspy_result: list[SuspyResult] = result_from_db.suspy_result
 
         an_result = AnalysisResult(
             encr_res=EncrAnalyzeResult(
@@ -79,7 +85,11 @@ class ConverterForDB:
         )
 
     @staticmethod
-    def convert_to_db_models(result: ResultOfFileAnalysis) -> ScanResult:
+    def convert_to_db_models(results: list[ResultOfFileAnalysis]) -> list[ScanResult]:
+        return list(map(ConverterForDB.convert_to_db_model, results))
+
+    @staticmethod
+    def convert_to_db_model(result: ResultOfFileAnalysis) -> ScanResult:
         filename = result.filename
         old_hash = result.old_hash.hash() if result.old_hash else None
         new_hash = result.new_hash.hash() if result.new_hash else None
@@ -135,7 +145,7 @@ def create_main(engine, session):
 
 def get_main(engine, session):
     with session(autoflush=False, bind=engine) as db:
-        return list(map(ConverterForDB.convert_from_db_models, list(db.query(ScanResult).all())))
+        return list(map(ConverterForDB.convert_from_db_model, list(db.query(ScanResult).all())))
 
 
 def main():
@@ -182,7 +192,7 @@ def create_record_to_db(filename: str) -> ScanResult:
         new_hash=hasher.calc_hash(f'new_hash_{filename}'.encode()),
     )
 
-    return ConverterForDB.convert_to_db_models(result_of_file_analysis)
+    return ConverterForDB.convert_to_db_model(result_of_file_analysis)
 
 
 if __name__ == '__main__':
