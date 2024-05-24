@@ -60,39 +60,39 @@ def run(filenames: list[str], analyzer: Analyzer) -> list[AnalysisResult]:
 
 def main():
     paths = [
-        # '../../source/FOR_TEST_X',
+        '../../source/FOR_TEST_X',
+        #
+        # '../../source/obf/js',
+        # '../../source/obf/php',
+        # '../../source/obf/sharp',
+        # '../../source/obf/python',
 
-        '../../source/obf/js',
-        '../../source/obf/php',
-        '../../source/obf/sharp',
-        '../../source/obf/python',
-        #
-        '../../source/obf_non/js',
-        '../../source/obf_non/php',
-        '../../source/obf_non/sharp',
-        '../../source/obf_non/python',
-        #
-        '../../source/encr/base32',
-        '../../source/encr/base64',
-        '../../source/encr/base85',
-        '../../source/encr/base122',
-        '../../source/encr/rot13',
-        '../../source/encr/hex',
-        '../../source/encr/AES',
-        '../../source/encr/DES_triple',
-        #
-        '../../source/encr_non/php',
-        '../../source/encr_non/js',
-        '../../source/encr_non/python',
-        '../../source/encr_non/ruby',
-        '../../source/encr_non/sharp',
-        '../../source/encr_non/bash',
-        '../../source/encr_non/html',
-        '../../source/encr_non/css',
-        '../../source/encr_non/xml',
-        '../../source/encr_non/sql',
-        '../../source/encr_non/other/arch',
-        '../../source/encr_non/other/img',
+        # '../../source/obf_non/js',
+        # '../../source/obf_non/php',
+        # '../../source/obf_non/sharp',
+        # '../../source/obf_non/python',
+
+        # '../../source/encr/base32',
+        # '../../source/encr/base64',
+        # '../../source/encr/base85',
+        # '../../source/encr/base122',
+        # '../../source/encr/rot13',
+        # '../../source/encr/hex',
+        # '../../source/encr/AES',
+        # '../../source/encr/DES_triple',
+
+        # '../../source/encr_non/php',
+        # '../../source/encr_non/js',
+        # '../../source/encr_non/python',
+        # '../../source/encr_non/ruby',
+        # '../../source/encr_non/sharp',
+        # '../../source/encr_non/bash',
+        # '../../source/encr_non/html',
+        # '../../source/encr_non/css',
+        # '../../source/encr_non/xml',
+        # '../../source/encr_non/sql',
+        # '../../source/encr_non/other/arch',
+        # '../../source/encr_non/other/img',
     ]
     filenames = get_filenames(paths)
     settings = Settings(FileReader.read_json('../../settings.json'))
@@ -118,6 +118,28 @@ class App:
         self._analyzer = Analyzer(settings.analyzer_settings)
         self._db_service = DBService(path_to_db)
 
+    def get_results_from_db(self) -> list[ResultOfFileAnalysis]:
+        return ConverterForDB.convert_from_db_models(self._db_service.read())
+
+    def mark_files_as_trusted(
+            self,
+            results_of_file_analysis: list[ResultOfFileAnalysis],
+            trusted_files: set[str]
+    ) -> None:
+        results_to_db: list[ResultOfFileAnalysis] = list()
+        for result in results_of_file_analysis:
+            if result.filename not in trusted_files:
+                results_to_db.append(result)
+                continue
+            new_result = ResultOfFileAnalysis(
+                filename=result.filename,
+                an_result=result.an_result,
+                old_hash=result.old_hash if result.new_hash is None else result.new_hash,
+                new_hash=None
+            )
+            results_to_db.append(new_result)
+        self._db_service.write(ConverterForDB.convert_to_db_models(results_to_db))
+
     def run(self) -> None:
         results_from_db = self._make_dict_filename_to_result(self.get_results_from_db())
         results_to_db: list[ResultOfFileAnalysis] = list()
@@ -137,42 +159,41 @@ class App:
     ) -> ResultOfFileAnalysis:
         if db_result is None:
             # файл новый, его в БД не было
-            result_of_file_analysis: ResultOfFileAnalysis = ResultOfFileAnalysis(
-                filename=filename,
-                an_result=self._analyzer.analyze(data),
-                old_hash=None,
-                new_hash=_hash
-            )
+            filename = filename
+            an_result = self._analyzer.analyze(data)
+            old_hash = None
+            new_hash = _hash
+            print(f'{filename} db_result is None')
         elif db_result.old_hash == _hash:
             # файл не изменился, он всё еще доверенный
-            result_of_file_analysis: ResultOfFileAnalysis = ResultOfFileAnalysis(
-                filename=filename,
-                an_result=db_result.an_result if db_result.new_hash is None else self._analyzer.analyze(data),
-                old_hash=db_result.old_hash,
-                new_hash=None
-            )
+            filename = filename
+            an_result = db_result.an_result if db_result.new_hash is None else self._analyzer.analyze(data)
+            old_hash = db_result.old_hash
+            new_hash = None
+            print(f'{filename} db_result.old_hash == _hash | {db_result.new_hash is None} = db_result.new_hash is None')
         elif db_result.new_hash == _hash:
             # файл не изменился с последнего запуска, НО он НЕ доверенный
-            result_of_file_analysis: ResultOfFileAnalysis = ResultOfFileAnalysis(
-                filename=filename,
-                an_result=db_result.an_result,
-                old_hash=db_result.old_hash,
-                new_hash=db_result.new_hash
-            )
+            filename = filename
+            an_result = db_result.an_result
+            old_hash = db_result.old_hash
+            new_hash = db_result.new_hash
+            print(f'{filename} db_result.new_hash == _hash')
         elif db_result.new_hash != _hash:
             # файл изменился, он НЕ доверенный
-            result_of_file_analysis: ResultOfFileAnalysis = ResultOfFileAnalysis(
-                filename=filename,
-                an_result=self._analyzer.analyze(data),
-                old_hash=db_result.old_hash,
-                new_hash=_hash
-            )
+            filename = filename
+            an_result = self._analyzer.analyze(data)
+            old_hash = db_result.old_hash
+            new_hash = _hash
+            print(f'{filename} db_result.new_hash != _hash')
         else:
+            print(f'{filename} {self.__class__}')
             raise Exception()
-        return result_of_file_analysis
-
-    def get_results_from_db(self) -> list[ResultOfFileAnalysis]:
-        return ConverterForDB.convert_from_db_models(self._db_service.read())
+        return ResultOfFileAnalysis(
+            filename=filename,
+            an_result=an_result,
+            old_hash=old_hash,
+            new_hash=new_hash
+        )
 
     @staticmethod
     def _make_dict_filename_to_result(results: list[ResultOfFileAnalysis]) -> dict[str, ResultOfFileAnalysis]:
@@ -181,9 +202,11 @@ class App:
 
 def main_app():
     settings = Settings(FileReader.read_json('../../settings.json'))
-    app = App(settings=settings, root_dir='../../source/', path_to_db='sqlite:///../../database.db')
+    app = App(settings=settings, root_dir='../../source/FOR_TEST_X', path_to_db='sqlite:///../../database.db')
+    app.run()
+    print('=' * 70)
     for res in app.get_results_from_db():
-        print(res)
+        print(res, end='\n\n')
 
 
 if __name__ == '__main__':
