@@ -111,7 +111,7 @@ def main():
     print_analyze_results(results, inp=False)
 
 
-class App:
+class MainService:
     def __init__(self, settings: Settings, root_dir: str, path_to_db: str):
         self._root_dir = root_dir
         self._hasher = Hasher(settings.hasher_settings)
@@ -202,9 +202,11 @@ class App:
 
 def main_app():
     settings = Settings(FileReader.read_json('../../settings.json'))
-    app = App(settings=settings, root_dir='../../source/FOR_TEST_X', path_to_db='sqlite:///../../database.db')
-    app.run()
-    print('=' * 70)
+    app = MainService(settings=settings, root_dir='../../source/FOR_TEST_X', path_to_db='sqlite:///../../database.db')
+    # app.run()
+    # print('=' * 70)
+    results = app.get_results_from_db()
+    app.mark_files_as_trusted(results, {res.filename for res in results})
     for res in app.get_results_from_db():
         print(res, end='\n\n')
 
