@@ -1,7 +1,7 @@
 import unittest
 
-from src.main.app.extractors.word import Word
-from src.main.app.extractors.word_extractor import WordExtractor
+from src.main.app.model.extractors import Word
+from src.main.app.model.extractors import WordExtractor
 
 
 class TestWordExtractor(unittest.TestCase):

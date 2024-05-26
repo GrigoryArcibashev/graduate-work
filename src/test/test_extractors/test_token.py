@@ -1,7 +1,7 @@
 import unittest
 from itertools import combinations
 
-from src.main.app.extractors.token import Token, TokenType
+from src.main.app.model.extractors import Token, TokenType
 
 
 class TestToken(unittest.TestCase):

@@ -1,8 +1,8 @@
 import pathlib
 import unittest
 
-from src.main.app.settings.word_loader_settings import WordLoaderSettings
-from src.main.app.words_service.word_loader import AbstractWordLoader, SimpleWordLoader
+from src.main.app.model.settings import WordLoaderSettings
+from src.main.app.model.words_service import AbstractWordLoader, SimpleWordLoader
 from src.test.test_words_service.util import WordMakerForTests, write_word_dict
 
 

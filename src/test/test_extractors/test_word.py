@@ -1,6 +1,6 @@
 import unittest
 
-from src.main.app.extractors.word import Word
+from src.main.app.model.extractors import Word
 
 
 class TestToken(unittest.TestCase):

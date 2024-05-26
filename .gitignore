@@ -163,10 +163,10 @@ Notes.docx
 /~$Notes.docx
 
 
-/src/main/app/words_service/_word_update.py
-/src/main/app/words_service/raw_words.txt
-/src/main/app/words_service/words2.txt
-/src/main/app/words_service/TEMP.py
+/src/main/app/model/words_service/_word_update.py
+/src/main/app/model/words_service/raw_words.txt
+/src/main/app/model/words_service/words2.txt
+/src/main/app/model/words_service/TEMP.py
 
 /src/test/source/TEMP.py
 /src/test/source/words.txt

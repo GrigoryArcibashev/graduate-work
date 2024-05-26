@@ -1,7 +1,7 @@
 import pathlib
 import pickle
 
-from src.main.app.extractors.word import Word
+from src.main.app.model.extractors import Word
 
 
 def write_word_dict(word_dict: dict[int, set[Word]], path_to_write: str):

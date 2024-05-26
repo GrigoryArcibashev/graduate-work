@@ -1,6 +1,6 @@
 import unittest
 
-from src.main.app.extractors.token_extractor import TokenExtractor, Token, TokenType
+from src.main.app.model.extractors import TokenExtractor, Token, TokenType
 
 
 class TestTokenExtractor(unittest.TestCase):
