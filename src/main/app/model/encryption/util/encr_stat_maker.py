@@ -3,18 +3,81 @@ from os import listdir
 from os.path import isfile, join
 
 from src.main.app.model.encryption.encryption_determinator.determinator import EncryptionDeterminator, EncrAnalyzeResult
-from src.main.app.model.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode
 from src.main.app.model.file_service.file_reader import FileReader
+from src.main.app.model.settings.settings import Settings
 from src.main.app.model.words_service.word_dict_service import WordDictService
 from src.main.app.model.words_service.word_loader import SimpleWordLoader
 
+SETTINGS_RAW = {
+    "hash": {
+        "alg": "sha256",
+        "algs": {
+            "sha256": "sha256",
+            "md5": "md5"
+        }
+    },
+    "encryption": {
+        "encryption_determinators": {
+            "entropy": {
+                "mode": "opt",
+                "window_encryption_border": 60,
+                "unconditional_lower_bound_of_entropy": 70,
+                "conditional_lower_bound_of_entropy": 59,
+                "percent_of_entropy_vals_for_window": 5,
+                "upper_bound_of_entropy_optimal": 95,
+                "upper_bound_of_entropy_strict": "+inf"
+            },
+            "hex": {
+                "mode": "opt",
+                "min_count_optimal": 3,
+                "min_count_strict": 10
+            },
+            "modes": {
+                "opt": "optimal",
+                "str": "strict"
+            }
+        },
+        "encryption_filter": {
+            "encryption_boundary": 0.5,
+            "save_del_size": 0.5
+        },
+        "entropy_analyzer": {
+            "min_window_size": 100,
+            "min_hope": 1,
+            "divider_for_window": 120,
+            "divider_for_hop": 5
+        }
+    },
+    "obfuscation": {
+        "obfuscation_determinator": {
+            "obf_text_border": 0.4,
+            "obf_name_border": 0.4,
+            "max_non_obf_count_digits": 4
+        },
+        "searcher_by_levenshtein_metric": {
+            "mult_for_max_lev_distance": 0.35
+        },
+        "calculator_levenshtein_metric": {
+            "insert_cost": 1,
+            "delete_cost": 1,
+            "replace_cost": 1
+        }
+    },
+    "word_loader": {
+        "path_to_word_dict": "../../words_service/words_by_len.bin"
+    }
+}
+
 
 def make_entropy_for_encr():
-    word_dict_service = WordDictService(SimpleWordLoader('../../words_service/words_by_len.bin'))
+    settings = Settings(SETTINGS_RAW)
+    word_dict_service = WordDictService(SimpleWordLoader(settings.analyzer_settings.word_loader_settings))
     determinator = EncryptionDeterminator(
         word_dict_service,
-        OperatingMode.OPTIMAL,
-        OperatingMode.OPTIMAL,
+        settings.analyzer_settings.encr_determinator_entropy_settings,
+        settings.analyzer_settings.encr_determinator_hex_settings,
+        settings.analyzer_settings.entropy_analyzer_settings,
+        settings.analyzer_settings.encr_filter_settings
     )
     encr_files, no_encr_files = get_files_for_stat()
     total_count = len(encr_files) + len(no_encr_files)
@@ -56,30 +119,28 @@ def process_files(total_count, cur_count, determinator, filenames, file_stat):
 
 def get_files_for_stat():
     path_to_encr = [
-        '../../../source/encr/base32',
-        '../../../source/encr/base64',
-        '../../../source/encr/base85',
-        '../../../source/encr/base122',
-        '../../../source/encr/rot13',
-        '../../../source/encr/hex',
-        '../../../source/encr/AES',
-        '../../../source/encr/DES_triple',
+        '../../../../source/encr/base32',
+        '../../../../source/encr/base64',
+        '../../../../source/encr/base85',
+        '../../../../source/encr/base122',
+        '../../../../source/encr/rot13',
+        '../../../../source/encr/hex',
+        '../../../../source/encr/AES',
+        '../../../../source/encr/DES_triple',
     ]
     path_to_non_encr = [
-        '../../../source/obf',
-        '../../../source/obf_non',
-        '../../../source/encr_non/php',
-        '../../../source/encr_non/js',
-        '../../../source/encr_non/python',
-        '../../../source/encr_non/ruby',
-        '../../../source/encr_non/sharp',
-        '../../../source/encr_non/bash',
-        '../../../source/encr_non/html',
-        '../../../source/encr_non/css',
-        '../../../source/encr_non/xml',
-        '../../../source/encr_non/sql',
-        '../../../source/encr_non/other/arch',
-        '../../../source/encr_non/other/img',
+        '../../../../source/encr_non/php',
+        '../../../../source/encr_non/js',
+        '../../../../source/encr_non/python',
+        '../../../../source/encr_non/ruby',
+        '../../../../source/encr_non/sharp',
+        '../../../../source/encr_non/bash',
+        '../../../../source/encr_non/html',
+        '../../../../source/encr_non/css',
+        '../../../../source/encr_non/xml',
+        '../../../../source/encr_non/sql',
+        '../../../../source/encr_non/other/arch',
+        '../../../../source/encr_non/other/img',
     ]
     encr_files = get_filenames_by_path(path_to_encr)
     no_encr_files = get_filenames_by_path(path_to_non_encr)
