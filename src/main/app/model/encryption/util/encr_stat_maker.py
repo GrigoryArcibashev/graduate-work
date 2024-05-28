@@ -9,13 +9,6 @@ from src.main.app.model.words_service.word_dict_service import WordDictService
 from src.main.app.model.words_service.word_loader import SimpleWordLoader
 
 SETTINGS_RAW = {
-    "hash": {
-        "alg": "sha256",
-        "algs": {
-            "sha256": "sha256",
-            "md5": "md5"
-        }
-    },
     "encryption": {
         "encryption_determinators": {
             "entropy": {
@@ -46,21 +39,6 @@ SETTINGS_RAW = {
             "min_hope": 1,
             "divider_for_window": 120,
             "divider_for_hop": 5
-        }
-    },
-    "obfuscation": {
-        "obfuscation_determinator": {
-            "obf_text_border": 0.4,
-            "obf_name_border": 0.4,
-            "max_non_obf_count_digits": 4
-        },
-        "searcher_by_levenshtein_metric": {
-            "mult_for_max_lev_distance": 0.35
-        },
-        "calculator_levenshtein_metric": {
-            "insert_cost": 1,
-            "delete_cost": 1,
-            "replace_cost": 1
         }
     },
     "word_loader": {
