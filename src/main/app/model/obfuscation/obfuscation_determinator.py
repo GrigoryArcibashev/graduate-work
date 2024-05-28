@@ -1,8 +1,9 @@
-from typing import Optional, Iterator
+from typing import Optional
 
 from src.main.app.model.extractors.token_extractor import TokenExtractor
 from src.main.app.model.extractors.word import Word
 from src.main.app.model.extractors.word_extractor import WordExtractor
+from src.main.app.model.file_service.file_reader import FileReader
 from src.main.app.model.obfuscation.levenshtein_metric import SearcherByLevenshteinMetric, CalculatorLevenshteinMetric
 from src.main.app.model.obfuscation.name_processor import NameInfo, NameProcessor
 from src.main.app.model.obfuscation.searchers.searchers import ClassSearcher, FunctionSearcher, VariableSearcher
@@ -10,7 +11,6 @@ from src.main.app.model.settings.calculator_levenshtein_metric_settings import C
 from src.main.app.model.settings.obfuscation_determinator_settings import ObfuscationDetSettings
 from src.main.app.model.settings.searcher_levenshtein_metric_settings import SearcherLevenshteinMetricSettings
 from src.main.app.model.settings.word_loader_settings import WordLoaderSettings
-from src.main.app.model.file_service.file_reader import FileReader
 from src.main.app.model.words_service.word_dict_service import WordDictService
 from src.main.app.model.words_service.word_loader import SimpleWordLoader
 
