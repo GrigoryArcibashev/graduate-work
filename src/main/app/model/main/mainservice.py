@@ -206,12 +206,12 @@ def main_app():
         settings=settings,
         root_dir='../../../source/FOR_TEST_X',
         path_to_db='sqlite:///../../../database.db')
-    # app.run()
+    app.run()
     # print('=' * 70)
-    results = app.get_results_from_db()
-    app.mark_files_as_trusted(results, {res.filename for res in results})
-    for res in app.get_results_from_db():
-        print(res, end='\n\n')
+    # results = app.get_results_from_db()
+    # app.mark_files_as_trusted(results, {res.filename for res in results})
+    # for res in app.get_results_from_db():
+    #     print(res, end='\n\n')
 
 
 if __name__ == '__main__':
