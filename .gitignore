@@ -177,3 +177,4 @@ Notes.docx
 
 src/main/database.db
 /src/main/app/ui/recompile_and_run.py
+/src/main/app/model/obfuscation/metrcis.py

@@ -1,0 +1,124 @@
+from collections import namedtuple
+from math import cos, log, pi, sin, sqrt
+
+import numpy as np
+from numpy import linalg as LA
+
+from my_code.five_semestr.auxiliary_things.graph_board import GraphBoard
+from my_code.five_semestr.auxiliary_things.point import Point
+from my_code.five_semestr.auxiliary_things.utils import calculate_equilibrium_point
+
+Input = namedtuple(
+        'Input',
+        ['param_b', 'intensity', 'q'])
+
+
+def get_input() -> Input:
+    param_b = 2
+    intensity = 0.01  # aka epsilon
+    q = sqrt(-log(0.05))
+    return Input(param_b, intensity, q)
+
+
+def get_sensitivity_matrix(point: Point) -> list[list[float]]:
+    """
+    W: [[w1, w2], [w2, w3]]
+
+    :param point: Point(x, y)
+    :return: W
+    """
+    x = point.x
+    y = point.y
+    w2 = -(2 * x * y - 0.5) * (x * y - 1) / \
+         ((2 * x * y - 1) * (x * x - x * y + 1.1))
+    w1 = -((x * x + 0.1) * w2 + 0.5) / (2 * x * y - 1)
+    w3 = (2 * x * y * w2 + 0.5) / (x * x + 0.1)
+    return [[w1, w2], [w2, w3]]
+
+
+def get_eigenvalues_of_sensitivity_matrix(matrix: list[list[float]]):
+    w, v = LA.eig(np.array(matrix))
+    return w
+
+
+def get_eigenvectors_of_sensitivity_matrix(matrix: list[list[float]]):
+    w, v = LA.eig(np.array(matrix))
+    return v
+
+
+def generate_points_of_scattering_ellipse(
+        param_b: float,
+        point: Point,
+        intensity: float,  # aka epsilon
+        q: float) -> list[Point]:
+    matrix = get_sensitivity_matrix(point)
+    vals = get_eigenvalues_of_sensitivity_matrix(matrix)
+    vecs = get_eigenvectors_of_sensitivity_matrix(matrix)
+    eq_point = calculate_equilibrium_point(param_b)
+    result = []
+    for angle in np.linspace(0, 2 * pi, 360 * 4):
+        z1 = intensity * q * sqrt(2 * vals[0]) * cos(angle)
+        z2 = intensity * q * sqrt(2 * vals[1]) * sin(angle)
+        x_fi = eq_point.x \
+               + (z1 * vecs[1][1] - z2 * vecs[0][1]) \
+               / (vecs[0][0] * vecs[1][1] - vecs[0][1] * vecs[1][0])
+        y_fi = eq_point.y \
+               + (z2 * vecs[0][0] - z1 * vecs[1][0]) \
+               / (vecs[0][0] * vecs[1][1] - vecs[0][1] * vecs[1][0])
+        result.append(Point(x_fi, y_fi))
+    return result
+
+
+def main():
+    inp = get_input()
+    point = calculate_equilibrium_point(inp.param_b)
+    points = generate_points_of_scattering_ellipse(
+            inp.param_b,
+            point,
+            inp.intensity,
+            inp.q)
+    graph_board = GraphBoard('x', 'y')
+    graph_board.add_graph(points)
+    graph_board.show()
+
+
+if __name__ == '__main__':
+    main()
+
+def get_first_root_of_char_eq(b: float) -> float:
+    result = 0.05 / (1 + 10 * b * b)
+    sqrt = complex(
+            81
+            - 2960 * b ** 2
+            - 3400 * b ** 4
+            - 56000 * b ** 6
+            + 10000 * b ** 8) ** 0.5
+    result *= (-11 + 80 * b ** 2 - 100 * b ** 4 - sqrt)
+    return result.real
+
+
+def get_second_root_of_char_eq(b: float) -> float:
+    result = 0.05 / (1 + 10 * b * b)
+    sqrt = complex(
+            81
+            - 2960 * b ** 2
+            - 3400 * b ** 4
+            - 56000 * b ** 6
+            + 10000 * b ** 8) ** 0.5
+    result *= (-11 + 80 * b ** 2 - 100 * b ** 4 + sqrt)
+    return result.real
+
+def f_x(x: float, y: float) -> float:
+    return -1 + 2 * x * y
+
+
+def f_y(x: float, y: float) -> float:
+    return 0.1 + x * x
+
+
+def g_x(x: float, y: float) -> float:
+    return -2 * x * y
+
+
+def g_y(x: float, y: float) -> float:
+    return -0.1 - x * x

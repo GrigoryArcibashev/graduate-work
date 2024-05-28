@@ -1,0 +1,176 @@
+﻿﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+using Mediator.Buttons;
+using Mediator.TextBoxes;
+
+namespace Mediator
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+
+            #region InitLabels
+
+            var titleLbl = new Label
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f),
+                Text = @"Title"
+            };
+            var textLbl = new Label
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f),
+                Text = @"Text"
+            };
+
+            #endregion
+
+            #region InitComponents
+
+            var taskList = new TaskList
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var addButton = new AddButton
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var deleteButton = new DeleteButton
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var saveButton = new SaveButton
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var title = new Title
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+            var text = new Text
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font(FontFamily.GenericSerif, 16f)
+            };
+
+            #endregion
+
+            RegisterComponents(new IComponent[] { taskList, addButton, deleteButton, saveButton, title, text });
+            Controls.Add(CreateMainTable(
+                CreateListBoxTable(taskList),
+                CreateListButtonTable(addButton, deleteButton),
+                CreateRedactorTable(titleLbl, title, textLbl, text),
+                CreateRedactorButtonTable(saveButton)));
+        }
+
+        private static TableLayoutPanel CreateMainTable(
+            Control listBoxTable,
+            Control listButtonTable,
+            Control redactorTable,
+            Control redactorButtonTable)
+        {
+            var mainTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            mainTable.RowStyles.Add(new RowStyle(SizeType.Percent, 90));
+            mainTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+
+            mainTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            mainTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+
+            mainTable.Controls.Add(listBoxTable, 0, 0);
+            mainTable.Controls.Add(listButtonTable, 0, 1);
+            mainTable.Controls.Add(redactorTable, 1, 0);
+            mainTable.Controls.Add(redactorButtonTable, 1, 1);
+            return mainTable;
+        }
+
+        private static TableLayoutPanel CreateRedactorButtonTable(Control saveButton)
+        {
+            var redactorButtonTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            redactorButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+            redactorButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
+            redactorButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+
+            redactorButtonTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+
+            redactorButtonTable.Controls.Add(new Panel(), 0, 0);
+            redactorButtonTable.Controls.Add(saveButton, 0, 1);
+            redactorButtonTable.Controls.Add(new Panel(), 0, 2);
+            return redactorButtonTable;
+        }
+
+        private static TableLayoutPanel CreateRedactorTable(
+            Control titleLbl,
+            Control title,
+            Control textLbl,
+            Control text)
+        {
+            var redactorTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 5));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 5));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 5));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 70));
+            redactorTable.RowStyles.Add(new RowStyle(SizeType.Percent, 3));
+
+            redactorTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+
+            redactorTable.Controls.Add(titleLbl, 0, 0);
+            redactorTable.Controls.Add(title, 0, 1);
+            redactorTable.Controls.Add(new Panel(), 0, 2);
+            redactorTable.Controls.Add(textLbl, 0, 3);
+            redactorTable.Controls.Add(text, 0, 4);
+            redactorTable.Controls.Add(new Panel(), 0, 5);
+            return redactorTable;
+        }
+
+        private static TableLayoutPanel CreateListButtonTable(Control addButton, Control deleteButton)
+        {
+            var listButtonTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            listButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+            listButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 80));
+            listButtonTable.RowStyles.Add(new RowStyle(SizeType.Percent, 10));
+
+            listButtonTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            listButtonTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+
+            listButtonTable.Controls.Add(new Panel(), 0, 0);
+            listButtonTable.Controls.Add(new Panel(), 1, 0);
+            listButtonTable.Controls.Add(addButton, 0, 1);
+            listButtonTable.Controls.Add(deleteButton, 1, 1);
+            listButtonTable.Controls.Add(new Panel(), 0, 2);
+            listButtonTable.Controls.Add(new Panel(), 1, 2);
+            return listButtonTable;
+        }
+
+        private static TableLayoutPanel CreateListBoxTable(Control taskList)
+        {
+            var listBoxTable = new TableLayoutPanel { Dock = DockStyle.Fill };
+
+            listBoxTable.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            listBoxTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            listBoxTable.Controls.Add(taskList, 0, 0);
+            return listBoxTable;
+        }
+
+        private static void RegisterComponents(IEnumerable<IComponent> components)
+        {
+            var taskPlanner = new TaskPlanner();
+            foreach (var component in components)
+                taskPlanner.RegisterComponent((Interfaces.IComponent)component);
+        }
+    }
+}
