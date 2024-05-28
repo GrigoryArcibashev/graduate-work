@@ -1,5 +1,3 @@
-from typing import Iterator
-
 from src.main.app.model.encryption.encryption_determinator.encryption_determinants.abstract_encryption_determinator import \
     AbstractEncryptionDeterminator
 from src.main.app.model.encryption.encryption_determinator.encryption_determinants.enums import EncrVerdict
@@ -22,18 +20,6 @@ class EncryptionDeterminatorByEntropy(AbstractEncryptionDeterminator):
         self._upper_bound_of_entropy_optimal = settings.upper_bound_of_entropy_optimal
         self._upper_bound_of_entropy_strict = settings.upper_bound_of_entropy_strict
         self.mode = settings.mode
-
-    def determinate_by_iter(self, data_iter: Iterator[list[int]]) -> (EncrVerdict, float, float):
-        """
-        Рассчитывает энтропию текста, читая его поблочно, и выносит вердикт (зашифрован/не зашифрован)
-
-        :param data_iter: итератор по тексту, представленному в виде последовательности номеров байт
-
-        :return: (вердикт, энтропия в целом, процент "окон" с энтропией выше установленной границы)
-        """
-        entropy = self._entropy_analyzer.analyze_by_iter(data_iter)
-        entropies = self._entropy_analyzer.window_analyze_by_iter(data_iter)
-        return self._make_result(entropies, entropy)
 
     def determinate(self, data: list[int]) -> (EncrVerdict, float, float):
         """

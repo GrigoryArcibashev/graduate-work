@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Union, Iterator
+from typing import Union
 
 from src.main.app.model.encryption.encryption_determinator.encryption_determinants.enums import OperatingMode
 
@@ -30,17 +30,6 @@ class AbstractEncryptionDeterminator:
         :return: None
         """
         self._mode = mode
-
-    @abstractmethod
-    def determinate_by_iter(self, data_iter: Iterator[Union[list[int], bytes]]):
-        """
-        Определяет наличие шифра в тексте, поблочно читая его
-
-        :param data_iter: итератор по тексту
-        
-        :return: см. реализацию
-        """
-        raise NotImplementedError()
 
     @abstractmethod
     def determinate(self, data: Union[list[int], bytes]):
