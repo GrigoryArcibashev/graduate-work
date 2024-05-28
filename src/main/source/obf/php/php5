@@ -1,0 +1,12 @@
+<?php $_SERVER['BASE_PAGE']='results.php';include __DIR__.'/include/prepend.inc';jeb19887f68a5('Search results',['noindex','current'=>'help','layout_span'=>12,],);echo '<h1>Search results</h1>';q8c81353672b6();c05a273c4f924();<?php $_SERVER['BASE_PAGE']='archive/2024.php';include_once __DIR__.'/../include/prepend.inc';include_once __DIR__.'/../include/pregen-news.inc';m7ff9af735404();jeb19887f68a5("News Archive - 2024");?>
+
+<h1>News Archive - 2024</h1>
+
+<p>
+ Here are the most important news items we have published in 2024 on PHP.net.
+</p>
+
+<hr>
+<?php $_SERVER['BASE_PAGE']='my.php';include_once __DIR__.'/include/prepend.inc';ke21cf98e19dc();$i5a05866850c2=$x33887336a6d0;$j93da65a9fd00=[];if(isset($_POST['my_lang'],$i5a05866850c2[$_POST['my_lang']])){$w0102dc68d3d0[0]=$_POST['my_lang'];$j93da65a9fd00[]='<option value="'.$_POST['my_lang'].'" selected>'.$i5a05866850c2[$_POST['my_lang']]."</option>\n";unset($i5a05866850c2[$_POST['my_lang']]);}elseif(isset($i5a05866850c2[ucda9eb87510a()])){$j93da65a9fd00[]='<option value="'.ucda9eb87510a().'" selected>'.$i5a05866850c2[ucda9eb87510a()]."</option>\n";unset($i5a05866850c2[ucda9eb87510a()]);}else{$j93da65a9fd00[]="<option value=\"not_set\" selected=\"selected\">Not Set</option>\n";}foreach($i5a05866850c2 as $kc13367945d5d=>$jb068931cc450){$j93da65a9fd00[]='<option value="'.$kc13367945d5d.'">'.$jb068931cc450."</option>\n";}$bfa208ee01928="<select id=\"form-my_lang\" name=\"my_lang\">\n".implode("",$j93da65a9fd00)."</select>\n";if(isset($_POST['urlsearch'])){lab2aeca4a026($_POST['urlsearch']);}if(isset($_POST["showug"])){x86f4af07accf($_POST["showug"]==="enable");}$z2d5caaa91e22=$h2121240b6e3f;$z2d5caaa91e22["NONE"]=[7=>MIRROR_OK];k4c2d82556f72();jeb19887f68a5("My PHP.net",["current"=>"community"]);?>
+
+<?php include_once $_SERVER['DOCUMENT_ROOT'].'/include/prepend.inc';k72ca8ee78c47('/downloads.php');?>
