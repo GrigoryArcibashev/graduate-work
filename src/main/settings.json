@@ -40,12 +40,12 @@
   },
   "obfuscation": {
     "obfuscation_determinator": {
-      "obf_text_border": 0.4,
-      "obf_name_border": 0.4,
+      "obf_text_border": 0.45,
+      "obf_name_border": 0.50,
       "max_non_obf_count_digits": 4
     },
     "searcher_by_levenshtein_metric": {
-      "mult_for_max_lev_distance": 0.35
+      "mult_for_max_lev_distance": 0.38
     },
     "calculator_levenshtein_metric": {
       "insert_cost": 1,

@@ -64,15 +64,6 @@ class ObfuscationDeterminator:
     def _clear_words(self) -> None:
         self._is_obf_word.clear()
 
-    def determinate_by_iter(self, text_iter: Iterator[bytes]) -> ObfuscationResult:
-        count = obf_count = 0
-        for text in text_iter:
-            add_obf_count, add_count = self._determine_number_of_unique_obf_names(text)
-            obf_count += add_obf_count
-            count += add_count
-        prop_of_obf_names = obf_count / count if count else 0
-        return ObfuscationResult(prop_of_obf_names > self._obf_text_border, prop_of_obf_names, self._obf_text_border)
-
     def determinate(self, text: bytes) -> ObfuscationResult:
         obf_count, count = self._determine_number_of_unique_obf_names(text)
         prop_of_obf_names = obf_count / count if count else 0

@@ -16,12 +16,12 @@ from src.main.app.model.words_service.word_loader import SimpleWordLoader
 SETTINGS_RAW = {
     "obfuscation": {
         "obfuscation_determinator": {
-            "obf_text_border": 0.4,
-            "obf_name_border": 0.4,
+            "obf_text_border": 0.45,
+            "obf_name_border": 0.50,
             "max_non_obf_count_digits": 4
         },
         "searcher_by_levenshtein_metric": {
-            "mult_for_max_lev_distance": 0.35
+            "mult_for_max_lev_distance": 0.38
         },
         "calculator_levenshtein_metric": {
             "insert_cost": 1,
@@ -51,7 +51,7 @@ def make_searcher_by_levenshtein_metric(settings: Settings, word_dict_service):
     )
 
 
-def make_entropy_for_encr():
+def main():
     settings = Settings(SETTINGS_RAW)
     word_dict_service = WordDictService(SimpleWordLoader(settings.analyzer_settings.word_loader_settings))
     determinator = ObfuscationDeterminator(
@@ -68,6 +68,7 @@ def make_entropy_for_encr():
     fp, tn, cur_count = process_files(total_count, 0, determinator, no_obf_files, file_stat)
     tp, fn, _ = process_files(total_count, cur_count, determinator, obf_files, file_stat)
     precision, recall, f_score = calc_metrics(fn, fp, tp)
+
     end = time.time()
 
     write_metrics(f_score, file_stat, fn, fp, precision, recall, tn, tp)
@@ -108,6 +109,23 @@ def get_files_for_stat():
         '../../../source/obf_non/js',
         '../../../source/obf_non/php',
         '../../../source/obf_non/python',
+
+        '../../../source/encr/base85',
+        '../../../source/encr/DES_triple',
+        '../../../source/encr/AES',
+        '../../../source/encr/hex',
+        '../../../source/encr/rot13',
+
+        '../../../source/encr_non/bash',
+        '../../../source/encr_non/css',
+        '../../../source/encr_non/html',
+        '../../../source/encr_non/js',
+        '../../../source/encr_non/php',
+        '../../../source/encr_non/python',
+        '../../../source/encr_non/ruby',
+        '../../../source/encr_non/sharp',
+        '../../../source/encr_non/sql',
+        '../../../source/encr_non/xml'
     ]
     obf_files = get_filenames_by_path(path_to_obf)
     no_obf_files = get_filenames_by_path(path_to_non_obf)
@@ -149,4 +167,4 @@ def write_result(result: ObfuscationResult, file_stat, filename):
 
 
 if __name__ == '__main__':
-    make_entropy_for_encr()
+    main()
