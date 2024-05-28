@@ -1,0 +1,162 @@
+import numpy as np #line:1:import numpy as np
+from auxiliary_things .graph_board import GraphBoard #line:2:from auxiliary_things.graph_board import GraphBoard
+from auxiliary_things .point import Point #line:3:from auxiliary_things.point import Point
+from auxiliary_things .utils import calculate_equilibrium_point #line:4:from auxiliary_things.utils import calculate_equilibrium_point
+from limit_cycle_builder import (Input ,build_trajectory_of_cycle ,find_start_point_of_cycle )#line:7:find_start_point_of_cycle)
+def find_min_and_max_points_by_x (O00O00OO00O0OO000 :list [Point ])->tuple [Point ,Point ]:#line:10:def find_min_and_max_points_by_x(points: list[Point]) -> tuple[Point, Point]:
+    O00000OOO0OO00OOO =Point (float ('+inf'),float ('+inf'))#line:11:min_point = Point(float('+inf'), float('+inf'))
+    OO000O0O00O000OOO =Point (float ('-inf'),float ('-inf'))#line:12:max_point = Point(float('-inf'), float('-inf'))
+    for O0000OO00OO0O0O00 in O00O00OO00O0OO000 :#line:13:for point in points:
+        if O0000OO00OO0O0O00 .x >OO000O0O00O000OOO .x :#line:14:if point.x > max_point.x:
+            OO000O0O00O000OOO =O0000OO00OO0O0O00 #line:15:max_point = point
+        if O0000OO00OO0O0O00 .x <O00000OOO0OO00OOO .x :#line:16:if point.x < min_point.x:
+            O00000OOO0OO00OOO =O0000OO00OO0O0O00 #line:17:min_point = point
+    return O00000OOO0OO00OOO ,OO000O0O00O000OOO #line:18:return min_point, max_point
+def find_min_and_max_points_by_y (OOO0OO000O0OO00O0 :list [Point ])->tuple [Point ,Point ]:#line:21:def find_min_and_max_points_by_y(points: list[Point]) -> tuple[Point, Point]:
+    OOOOO00OOOO0O0O0O =Point (float ('+inf'),float ('+inf'))#line:22:min_point = Point(float('+inf'), float('+inf'))
+    OOO0O00O0O00OOOO0 =Point (float ('-inf'),float ('-inf'))#line:23:max_point = Point(float('-inf'), float('-inf'))
+    for O000O0O0000O0OO00 in OOO0OO000O0OO00O0 :#line:24:for point in points:
+        if O000O0O0000O0OO00 .y >OOO0O00O0O00OOOO0 .y :#line:25:if point.y > max_point.y:
+            OOO0O00O0O00OOOO0 =O000O0O0000O0OO00 #line:26:max_point = point
+        if O000O0O0000O0OO00 .y <OOOOO00OOOO0O0O0O .y :#line:27:if point.y < min_point.y:
+            OOOOO00OOOO0O0O0O =O000O0O0000O0OO00 #line:28:min_point = point
+    return OOOOO00OOOO0O0O0O ,OOO0O00O0O00OOOO0 #line:29:return min_point, max_point
+def get_points_for_steady_graph (O0O00O000OO0000OO :float ,O0O0000O0OO0OO00O :float ,O00O0OO0O0OOO0O0O :int ):#line:32:def get_points_for_steady_graph(start: float, end: float, num: int):
+    O0OOOOOOOOOO00000 =[]#line:33:points_for_function_x = []
+    OOO00O0000OOOO0OO =[]#line:34:points_for_function_y = []
+    for O00000O0OOOOO00O0 in np .linspace (start =O0O00O000OO0000OO ,stop =O0O0000O0OO0OO00O ,num =O00O0OO0O0OOO0O0O ):#line:35:for b in np.linspace(start=start, stop=end, num=num):
+        O000O0O00O00O00OO =calculate_equilibrium_point (O00000O0OOOOO00O0 )#line:36:equilibrium = calculate_equilibrium_point(b)
+        O0OOOOOOOOOO00000 .append (Point (O00000O0OOOOO00O0 ,O000O0O00O00O00OO .x ))#line:37:points_for_function_x.append(Point(b, equilibrium.x))
+        OOO00O0000OOOO0OO .append (Point (O00000O0OOOOO00O0 ,O000O0O00O00O00OO .y ))#line:38:points_for_function_y.append(Point(b, equilibrium.y))
+    return O0OOOOOOOOOO00000 ,OOO00O0000OOOO0OO #line:39:return points_for_function_x, points_for_function_y
+def get_points_for_unsteady_graph (O0O0O000OO000000O :list ,OO0O0000OOOOO0OOO :list ,O0O00OO0O00O00O0O :float ,OOO000000OO000OO0 :float ,OO00O000000O0OO0O :int ,OOOO000O0OOOO0O0O :float ):#line:48:h: float):
+    O0OO00000000O0OOO =[]#line:49:points_for_function_x_unstable = []
+    O00000OOOO00OOOO0 =[]#line:50:points_for_function_x_min = []
+    OOO000000O0O00OO0 =[]#line:51:points_for_function_x_max = []
+    OO0OOOO0OO0OO0O00 =O0O0O000OO000000O [-1 ]#line:52:last_point_x = points_for_function_x[-1]
+    O0O0O0OO0000O0OOO =None #line:53:offset_x_min = None
+    O0O00OO0000000O0O =None #line:54:offset_x_max = None
+    O00O0000OO0O0O00O =[]#line:56:points_for_function_y_unstable = []
+    O0OO000O0OO000O0O =[]#line:57:points_for_function_y_min = []
+    O000OO0O00O00OO00 =[]#line:58:points_for_function_y_max = []
+    OOOO00O00OO0OO0OO =OO0O0000OOOOO0OOO [-1 ]#line:59:last_point_y = points_for_function_y[-1]
+    OO0O0O00O0O0OO0OO =None #line:60:offset_y_min = None
+    OOO000000O00OO0O0 =None #line:61:offset_y_max = None
+    O0O00O0O000OO0OO0 =None #line:63:start_point = None
+    OO0000OO0O00O000O =None #line:64:points_xy = None
+    O00OO00OOOOO000OO =10 **-7 #line:65:accuracy = 10 ** -7
+    for O0OOOO0O00OOO0OOO in np .linspace (start =O0O00OO0O00O00O0O ,stop =OOO000000OO000OO0 ,num =OO00O000000O0OO0O ):#line:66:for b in np.linspace(start=start, stop=end, num=num):
+        OOOOO0OOO000OOOO0 =Input (O0OOOO0O00OOO0OOO ,OOOO000O0OOOO0O0O ,O00OO00OOOOO000OO )#line:67:inp = Input(b, h, accuracy)
+        if O0O00O0O000OO0OO0 is None :#line:69:if start_point is None:
+            O0O00O0O000OO0OO0 =find_start_point_of_cycle (OOOOO0OOO000OOOO0 ,None )#line:70:start_point = find_start_point_of_cycle(inp, None)
+        else :#line:71:else:
+            O0O00O0O000OO0OO0 =OO0000OO0O00O000O [-1 ]#line:72:start_point = points_xy[-1]
+        OO0000OO0O00O000O =build_trajectory_of_cycle (O0O00O0O000OO0OO0 ,OOOOO0OOO000OOOO0 )#line:73:points_xy = build_trajectory_of_cycle(start_point, inp)
+        OOO00OO000000O00O ,O0O000O00OOOO0O00 =find_min_and_max_points_by_x (OO0000OO0O00O000O )#line:74:min_x, max_x = find_min_and_max_points_by_x(points_xy)
+        O000OOO000000O0OO ,OO0O00OOO0O0OO00O =find_min_and_max_points_by_y (OO0000OO0O00O000O )#line:75:min_y, max_y = find_min_and_max_points_by_y(points_xy)
+        if O0O0O0OO0000O0OOO is None :#line:76:if offset_x_min is None:
+            O0O0O0OO0000O0OOO =abs (OO0OOOO0OO0OO0O00 .x -OOO00OO000000O00O .x )#line:77:offset_x_min = abs(last_point_x.x - min_x.x)
+            O0O00OO0000000O0O =abs (OO0OOOO0OO0OO0O00 .x -O0O000O00OOOO0O00 .x )#line:78:offset_x_max = abs(last_point_x.x - max_x.x)
+            OO0O0O00O0O0OO0OO =abs (OOOO00O00OO0OO0OO .y -O000OOO000000O0OO .y )#line:79:offset_y_min = abs(last_point_y.y - min_y.y)
+            OOO000000O00OO0O0 =abs (OOOO00O00OO0OO0OO .y -OO0O00OOO0O0OO00O .y )#line:80:offset_y_max = abs(last_point_y.y - max_y.y)
+        O00000OOOO00OOOO0 .append (Point (O0OOOO0O00OOO0OOO ,OOO00OO000000O00O .x +O0O0O0OO0000O0OOO ))#line:81:points_for_function_x_min.append(Point(b, min_x.x + offset_x_min))
+        OOO000000O0O00OO0 .append (Point (O0OOOO0O00OOO0OOO ,O0O000O00OOOO0O00 .x -O0O00OO0000000O0O ))#line:82:points_for_function_x_max.append(Point(b, max_x.x - offset_x_max))
+        O0OO000O0OO000O0O .append (Point (O0OOOO0O00OOO0OOO ,O000OOO000000O0OO .y +OO0O0O00O0O0OO0OO ))#line:83:points_for_function_y_min.append(Point(b, min_y.y + offset_y_min))
+        O000OO0O00O00OO00 .append (Point (O0OOOO0O00OOO0OOO ,OO0O00OOO0O0OO00O .y -OOO000000O00OO0O0 ))#line:84:points_for_function_y_max.append(Point(b, max_y.y - offset_y_max))
+        O0OO0O0O0OOOOO00O =calculate_equilibrium_point (O0OOOO0O00OOO0OOO )#line:86:equilibrium = calculate_equilibrium_point(b)
+        O0OO00000000O0OOO .append (Point (O0OOOO0O00OOO0OOO ,O0OO0O0O0OOOOO00O .x ))#line:87:points_for_function_x_unstable.append(Point(b, equilibrium.x))
+        O00O0000OO0O0O00O .append (Point (O0OOOO0O00OOO0OOO ,O0OO0O0O0OOOOO00O .y ))#line:88:points_for_function_y_unstable.append(Point(b, equilibrium.y))
+    O0O0O000OO000000O =[O0OO00000000O0OOO [-1 ]]#line:90:points_for_function_x = [points_for_function_x_unstable[-1]]
+    O0O0O000OO000000O +=OOO000000O0O00OO0 [::-1 ]#line:91:points_for_function_x += points_for_function_x_max[::-1]
+    O0O0O000OO000000O +=O00000OOOO00OOOO0 #line:92:points_for_function_x += points_for_function_x_min
+    O0O0O000OO000000O +=[O0OO00000000O0OOO [-1 ]]#line:93:points_for_function_x += [points_for_function_x_unstable[-1]]
+    OO0O0000OOOOO0OOO =[O00O0000OO0O0O00O [-1 ]]#line:95:points_for_function_y = [points_for_function_y_unstable[-1]]
+    OO0O0000OOOOO0OOO +=O000OO0O00O00OO00 [::-1 ]#line:96:points_for_function_y += points_for_function_y_max[::-1]
+    OO0O0000OOOOO0OOO +=O0OO000O0OO000O0O #line:97:points_for_function_y += points_for_function_y_min
+    OO0O0000OOOOO0OOO +=[O00O0000OO0O0O00O [-1 ]]#line:98:points_for_function_y += [points_for_function_y_unstable[-1]]
+    return O0O0O000OO000000O ,OO0O0000OOOOO0OOO ,O0OO00000000O0OOO ,O00O0000OO0O0O00O #line:103:points_for_function_y_unstable
+def draw_bif_chart (OO0OOOOO0OO00OO0O ,O00OOOO0O0O0O000O ,O0O0O0OOOO0O0O000 ,OO00OO0O0O0O0000O =False ):#line:106:def draw_bif_chart(start_b, stop_b, h, define_boundaries_of_instability=False):
+    OO00O00000OOO00OO =0.42 #line:107:begin_of_unstable_focus = 0.42
+    OO000000O0O0000OO =0.79 #line:108:end_of_unstable_focus = 0.79
+    OOO0O0OOO0OO0OOOO =GraphBoard ('β','x')#line:109:graph_board_x = GraphBoard('β', 'x')
+    O0OO0OO0OO0O0O00O =GraphBoard ('β','y')#line:110:graph_board_y = GraphBoard('β', 'y')
+    if OO00OO0O0O0O0000O :#line:112:if define_boundaries_of_instability:
+        O000OOO0000O0O000 ={'x':OO00O00000OOO00OO ,'linestyle':'--','linewidth':0.4 ,'color':'red'}#line:118:}
+        OOO0OO0000OO0O0OO ={'x':OO000000O0O0000OO ,'linestyle':'--','linewidth':0.4 ,'color':'red'}#line:124:}
+        OOO0O0OOO0OO0OOOO .add_vertical_line (**O000OOO0000O0O000 )#line:125:graph_board_x.add_vertical_line(**kwargs1)
+        OOO0O0OOO0OO0OOOO .add_vertical_line (**OOO0OO0000OO0O0OO )#line:126:graph_board_x.add_vertical_line(**kwargs2)
+        O0OO0OO0OO0O0O00O .add_vertical_line (**O000OOO0000O0O000 )#line:127:graph_board_y.add_vertical_line(**kwargs1)
+        O0OO0OO0OO0O0O00O .add_vertical_line (**OOO0OO0000OO0O0OO )#line:128:graph_board_y.add_vertical_line(**kwargs2)
+    OO0000OOOO00O000O ,O00O0OOO0O0OO0OO0 =get_points_for_steady_graph (OO0OOOOO0OO00OO0O ,OO00O00000OOO00OO ,int ((OO00O00000OOO00OO -OO0OOOOO0OO00OO0O )/O0O0O0OOOO0O0O000 ))#line:134:)
+    OOO0O0OOO0OO0OOOO .add_graph (OO0000OOOO00O000O ,color ='black')#line:135:graph_board_x.add_graph(points_for_function_x, color='black')
+    O0OO0OO0OO0O0O00O .add_graph (O00O0OOO0O0OO0OO0 ,color ='black')#line:136:graph_board_y.add_graph(points_for_function_y, color='black')
+    OO0000OOOO00O000O ,O00O0OOO0O0OO0OO0 ,O00OOO0OOO0OOO0O0 ,O00OO00O0O00OO000 =get_points_for_unsteady_graph (OO0000OOOO00O000O ,O00O0OOO0O0OO0OO0 ,OO00O00000OOO00OO ,OO000000O0O0000OO ,int ((OO000000O0O0000OO -OO00O00000OOO00OO )/O0O0O0OOOO0O0O000 ),O0O0O0OOOO0O0O000 )#line:147:)
+    OOO0O0OOO0OO0OOOO .add_graph (OO0000OOOO00O000O ,color ='black')#line:148:graph_board_x.add_graph(points_for_function_x, color='black')
+    O0OO0OO0OO0O0O00O .add_graph (O00O0OOO0O0OO0OO0 ,color ='black')#line:149:graph_board_y.add_graph(points_for_function_y, color='black')
+    OOO0O0OOO0OO0OOOO .add_graph (O00OOO0OOO0OOO0O0 ,linestyle ='--',color ='black')#line:151:points_for_function_x_unstable, linestyle='--', color='black')
+    O0OO0OO0OO0O0O00O .add_graph (O00OO00O0O00OO000 ,linestyle ='--',color ='black')#line:153:points_for_function_y_unstable, linestyle='--', color='black')
+    OO0000OOOO00O000O ,O00O0OOO0O0OO0OO0 =get_points_for_steady_graph (OO000000O0O0000OO ,O00OOOO0O0O0O000O ,int ((O00OOOO0O0O0O000O -OO000000O0O0000OO )/O0O0O0OOOO0O0O000 ))#line:158:int((stop_b - end_of_unstable_focus) / h))
+    OOO0O0OOO0OO0OOOO .add_graph (OO0000OOOO00O000O ,color ='black')#line:159:graph_board_x.add_graph(points_for_function_x, color='black')
+    O0OO0OO0OO0O0O00O .add_graph (O00O0OOO0O0OO0OO0 ,color ='black')#line:160:graph_board_y.add_graph(points_for_function_y, color='black')
+    OOO0O0OOO0OO0OOOO .show ()#line:161:graph_board_x.show()
+    O0OO0OO0OO0O0O00O .show ()#line:162:graph_board_y.show()
+def main ():#line:165:def main():
+    O00O00O00O0000O0O =0 #line:166:start_b = 0
+    OO0O00O0OO0O00000 =3 #line:167:stop_b = 3
+    O000OOOO0000O0000 =0.01 #line:168:h = 0.01
+    draw_bif_chart (O00O00O00O0000O0O ,OO0O00O0OO0O00000 ,O000OOOO0000O0000 ,define_boundaries_of_instability =True )#line:169:draw_bif_chart(start_b, stop_b, h, define_boundaries_of_instability=True)
+from my_code .five_semestr .auxiliary_things .graph_board import GraphBoard #line:172:from my_code.five_semestr.auxiliary_things.graph_board import GraphBoard
+import numpy as np #line:173:import numpy as np
+from my_code .five_semestr .auxiliary_things .point import Point #line:175:from my_code.five_semestr.auxiliary_things.point import Point
+from my_code .five_semestr .auxiliary_things .roots_of_char_eq import get_first_root_of_char_eq ,get_second_root_of_char_eq #line:177:get_second_root_of_char_eq
+from my_code .five_semestr .cycle_stability__multiplier import gen_points_with_lambda #line:178:from my_code.five_semestr.cycle_stability__multiplier import gen_points_with_lambda
+def gen_points_for_solutions ()->tuple [list [Point ],list [Point ]]:#line:181:def gen_points_for_solutions() -> tuple[list[Point], list[Point]]:
+    OO0OO00O000O0O000 =[]#line:182:points_first = []
+    OOOOOO0OO0O000O0O =[]#line:183:points_second = []
+    for O0OOOO00O0O0OO000 in np .linspace (0 ,3 ,600 ):#line:184:for b in np.linspace(0, 3, 600):
+        OO0OO00O000O0O000 .append (Point (O0OOOO00O0O0OO000 ,get_first_root_of_char_eq (O0OOOO00O0O0OO000 )))#line:185:points_first.append(Point(b, get_first_root_of_char_eq(b)))
+        OOOOOO0OO0O000O0O .append (Point (O0OOOO00O0O0OO000 ,get_second_root_of_char_eq (O0OOOO00O0O0OO000 )))#line:186:points_second.append(Point(b, get_second_root_of_char_eq(b)))
+    return OO0OO00O000O0O000 ,OOOOOO0OO0O000O0O #line:187:return points_first, points_second
+def gen_points_for_stability ():#line:190:def gen_points_for_stability():
+    OO00O0O0OO000O0O0 =0.01 #line:191:h = 0.01  # float(input('Input step of the numerical scheme: '))
+    O00OO00000O00000O =10 **-7 #line:192:accuracy = 10 ** -7  # float(input('Input the accuracy of finding the cycle: '))
+    return gen_points_with_lambda (OO00O0O0OO000O0O0 ,O00OO00000O00000O ,Point (0.15 ,0.1 ))#line:193:return gen_points_with_lambda(h, accuracy, Point(0.15, 0.1))
+def main ()->None :#line:196:def main() -> None:
+    OOO00OO00OO000O0O =GraphBoard ('β','Reλ')#line:197:gb = GraphBoard('β', 'Reλ')
+    OO00O00O0OO00O000 ,OOOOO0OO00OO0OOOO =gen_points_for_solutions ()#line:198:points_first, points_second = gen_points_for_solutions()
+    OOO00OO00OO000O0O .add_graph (OO00O00O0OO00O000 )#line:199:gb.add_graph(points_first)
+    OOO00OO00OO000O0O .add_graph (OOOOO0OO00OO0OOOO )#line:200:gb.add_graph(points_second)
+    OOO00OO00OO000O0O .add_graph (gen_points_for_stability (),color ='red')#line:201:gb.add_graph(gen_points_for_stability(), color='red')
+    OOO00OO00OO000O0O .add_vertical_line (0.419992 ,color ="black",linestyle ="--")#line:202:gb.add_vertical_line(0.419992, color="black", linestyle="--")
+    OOO00OO00OO000O0O .add_vertical_line (0.7789688 ,color ="black",linestyle ="--")#line:203:gb.add_vertical_line(0.7789688, color="black", linestyle="--")
+    OOO00OO00OO000O0O .show ()#line:204:gb.show()
+if __name__ =='__main__':#line:207:if __name__ == '__main__':
+    main ()#line:208:main()
+from typing import Optional #line:210:from typing import Optional
+from my_code .five_semestr .auxiliary_things .funcs import f ,g #line:211:from my_code.five_semestr.auxiliary_things.funcs import f, g
+from my_code .five_semestr .auxiliary_things .point import Point #line:212:from my_code.five_semestr.auxiliary_things.point import Point
+def generate_points_by_Euler (OO00OO000O00O00OO :float ,O0000000000OO000O :Optional [Point ],O0O0000000OO0O0O0 :float )->Point :#line:218:h: float) -> Point:
+    O0OOOO00O00O0OOO0 =O0000000000OO000O #line:219:prev_point = start_point
+    while True :#line:220:while True:
+        yield O0OOOO00O00O0OOO0 #line:221:yield prev_point
+        O0OOO0O00OO0OOOO0 =O0OOOO00O00O0OOO0 .x +O0O0000000OO0O0O0 *f (O0OOOO00O00O0OOO0 .x ,O0OOOO00O00O0OOO0 .y )#line:222:next_x = prev_point.x + h * f(prev_point.x, prev_point.y)
+        OOO0O000O000OO000 =O0OOOO00O00O0OOO0 .y +O0O0000000OO0O0O0 *g (O0OOOO00O00O0OOO0 .x ,O0OOOO00O00O0OOO0 .y ,OO00OO000O00O00OO )#line:223:next_y = prev_point.y + h * g(prev_point.x, prev_point.y, param_b)
+        O0OOOO00O00O0OOO0 =Point (O0OOO0O00OO0OOOO0 ,OOO0O000O000OO000 )#line:224:prev_point = Point(next_x, next_y)
+def calc_numerical_scheme_RungeKutt (OOOOO0OO0OOOOOOO0 :float ,O0OO0OOOO0OOOO0OO :Optional [Point ],OO0000OO00O0O0000 :float )->tuple [float ,float ]:#line:230:h: float) -> tuple[float, float]:
+    OOOOOO00O0O0O0000 =OO0000OO00O0O0000 *f (O0OO0OOOO0OOOO0OO .x ,O0OO0OOOO0OOOO0OO .y )#line:231:K1 = h * f(point.x, point.y)
+    O0OOO00OO0OOO0O0O =OO0000OO00O0O0000 *g (O0OO0OOOO0OOOO0OO .x ,O0OO0OOOO0OOOO0OO .y ,OOOOO0OO0OOOOOOO0 )#line:232:L1 = h * g(point.x, point.y, param_b)
+    O0000O0OOO0OO0000 =OO0000OO00O0O0000 *f (O0OO0OOOO0OOOO0OO .x +OOOOOO00O0O0O0000 /2 ,O0OO0OOOO0OOOO0OO .y +O0OOO00OO0OOO0O0O /2 )#line:233:K2 = h * f(point.x + K1 / 2, point.y + L1 / 2)
+    OOO0O000000OOOOOO =OO0000OO00O0O0000 *g (O0OO0OOOO0OOOO0OO .x +OOOOOO00O0O0O0000 /2 ,O0OO0OOOO0OOOO0OO .y +O0OOO00OO0OOO0O0O /2 ,OOOOO0OO0OOOOOOO0 )#line:234:L2 = h * g(point.x + K1 / 2, point.y + L1 / 2, param_b)
+    O0O0000O0OO0O0O0O =OO0000OO00O0O0000 *f (O0OO0OOOO0OOOO0OO .x +O0000O0OOO0OO0000 /2 ,O0OO0OOOO0OOOO0OO .y +OOO0O000000OOOOOO /2 )#line:235:K3 = h * f(point.x + K2 / 2, point.y + L2 / 2)
+    O0000OOO00OOOO00O =OO0000OO00O0O0000 *g (O0OO0OOOO0OOOO0OO .x +O0000O0OOO0OO0000 /2 ,O0OO0OOOO0OOOO0OO .y +OOO0O000000OOOOOO /2 ,OOOOO0OO0OOOOOOO0 )#line:236:L3 = h * g(point.x + K2 / 2, point.y + L2 / 2, param_b)
+    OO000OOO0O0O0OO0O =OO0000OO00O0O0000 *f (O0OO0OOOO0OOOO0OO .x +O0O0000O0OO0O0O0O ,O0OO0OOOO0OOOO0OO .y +O0000OOO00OOOO00O )#line:237:K4 = h * f(point.x + K3, point.y + L3)
+    OOO00OO0O0O000O00 =OO0000OO00O0O0000 *g (O0OO0OOOO0OOOO0OO .x +O0O0000O0OO0O0O0O ,O0OO0OOOO0OOOO0OO .y +O0000OOO00OOOO00O ,OOOOO0OO0OOOOOOO0 )#line:238:L4 = h * g(point.x + K3, point.y + L3, param_b)
+    return (OOOOOO00O0O0O0000 +2 *O0000O0OOO0OO0000 +2 *O0O0000O0OO0O0O0O +OO000OOO0O0O0OO0O )/6 ,(O0OOO00OO0OOO0O0O +2 *OOO0O000000OOOOOO +2 *O0000OOO00OOOO00O +OOO00OO0O0O000O00 )/6 #line:240:(L1 + 2 * L2 + 2 * L3 + L4) / 6
+def generate_points_by_RungeKutt (O0OO00000OO00O00O :float ,OO00O0O00O00O0OO0 :Optional [Point ],OO0O000000000O00O :float )->Point :#line:246:h: float) -> Point:
+    OO0O000OO0O0OOO0O =OO00O0O00O00O0OO0 #line:247:prev_point = start_point
+    while True :#line:248:while True:
+        yield OO0O000OO0O0OOO0O #line:249:yield prev_point
+        O00O0O0OO0OO000O0 ,O00OOOOOOOOO00OOO =calc_numerical_scheme_RungeKutt (O0OO00000OO00O00O ,OO0O000OO0O0OOO0O ,OO0O000000000O00O )#line:250:x_add, y_add = calc_numerical_scheme_RungeKutt(param_b, prev_point, h)
+        O00OO000O00OO0OOO =OO0O000OO0O0OOO0O .x +O00O0O0OO0OO000O0 #line:251:next_x = prev_point.x + x_add
+        OOO0OOO0000OOOO00 =OO0O000OO0O0OOO0O .y +O00OOOOOOOOO00OOO #line:252:next_y = prev_point.y + y_add
+        OO0O000OO0O0OOO0O =Point (O00OO000O00OO0OOO ,OOO0OOO0000OOOO00 )

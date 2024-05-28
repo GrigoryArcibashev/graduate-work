@@ -1,209 +1,173 @@
-import socket
-from argparse import ArgumentParser
-from typing import Optional
-
-from cacher import Cacher
-from dns_message_parser import DNSMessageParser
-
-DNS_PORT = 53
-AUXILIARY_PORT = 4
-HTTP_PORT = 80
-GOOGLE_DNS_SERVER_IP = '8.8.8.8'
-REQUEST_SIZE = 1024
+import numpy as np
+from auxiliary_things.graph_board import GraphBoard
+from auxiliary_things.point import Point
+from auxiliary_things.utils import calculate_equilibrium_point
+from limit_cycle_builder import (
+    Input, build_trajectory_of_cycle,
+    find_start_point_of_cycle)
 
 
-class DNSServer:
-    def __init__(self, cache: Cacher, dns_ip: str = GOOGLE_DNS_SERVER_IP):
-        self._cache = cache
-        self._dns_ip = dns_ip
-        self._host_ip = get_host_ip()  # '192.168.1.72'
-
-    def start(self) -> None:
-        while True:
-            self._handle_request()
-            self._cache.cache()
-            print('\n***\n')
-
-    def _handle_request(self) -> None:
-        with socket.socket(
-                socket.AF_INET, socket.SOCK_DGRAM) as dns_sock:
-            dns_sock.bind((self._host_ip, DNS_PORT))
-            data, client_address = dns_sock.recvfrom(REQUEST_SIZE)
-            request = DNSMessageParser(data)
-            answer = self._get_answer_from_cache(request)
-            if answer is None:
-                answer = self._get_answer(data)
-                self._add_data_in_cache(answer)
-            dns_sock.sendto(answer, client_address)
-
-    def _get_answer(self, data: bytes) -> bytes:
-        with socket.socket(
-                socket.AF_INET, socket.SOCK_DGRAM) as aux_sock:
-            aux_sock.bind((self._host_ip, AUXILIARY_PORT))
-            aux_sock.sendto(data, (self._dns_ip, DNS_PORT))
-            answer = aux_sock.recvfrom(REQUEST_SIZE)[0]
-        return answer
-
-    def _get_answer_from_cache(self, request: DNSMessageParser) \
-            -> Optional[bytes]:
-        answer_from_cache = self._cache.get_record(
-            (request.name, request.q_type))
-        if answer_from_cache is None:
-            return None
-        value = answer_from_cache[0]
-        ttl = answer_from_cache[2]
-        return request.make_answer(ttl, value)
-
-    def _add_data_in_cache(self, data: bytes) -> None:
-        parsed_answer = DNSMessageParser(data)
-        for info in parsed_answer.info:
-            self._cache.add_record(*info)
+def find_min_and_max_points_by_x(points: list[Point]) -> tuple[Point, Point]:
+    min_point = Point(float('+inf'), float('+inf'))
+    max_point = Point(float('-inf'), float('-inf'))
+    for point in points:
+        if point.x > max_point.x:
+            max_point = point
+        if point.x < min_point.x:
+            min_point = point
+    return min_point, max_point
 
 
-def get_host_ip() -> str:
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-        sock.connect((GOOGLE_DNS_SERVER_IP, HTTP_PORT))
-        return sock.getsockname()[0]
+def find_min_and_max_points_by_y(points: list[Point]) -> tuple[Point, Point]:
+    min_point = Point(float('+inf'), float('+inf'))
+    max_point = Point(float('-inf'), float('-inf'))
+    for point in points:
+        if point.y > max_point.y:
+            max_point = point
+        if point.y < min_point.y:
+            min_point = point
+    return min_point, max_point
 
 
-def make_argparser() -> ArgumentParser:
-    parser = ArgumentParser()
-    parser.add_argument('-d', '--dns', type=str, help='ip of dns')
-    return parser
+def get_points_for_steady_graph(start: float, end: float, num: int):
+    points_for_function_x = []
+    points_for_function_y = []
+    for b in np.linspace(start=start, stop=end, num=num):
+        equilibrium = calculate_equilibrium_point(b)
+        points_for_function_x.append(Point(b, equilibrium.x))
+        points_for_function_y.append(Point(b, equilibrium.y))
+    return points_for_function_x, points_for_function_y
 
 
-def main() -> None:
-    args = make_argparser().parse_args()
-    if args.dns:
-        DNSServer(Cacher(), args.dns).start()
-    else:
-        DNSServer(Cacher()).start()
+def get_points_for_unsteady_graph(
+        points_for_function_x: list,
+        points_for_function_y: list,
+        start: float,
+        end: float,
+        num: int,
+        h: float):
+    points_for_function_x_unstable = []
+    points_for_function_x_min = []
+    points_for_function_x_max = []
+    last_point_x = points_for_function_x[-1]
+    offset_x_min = None
+    offset_x_max = None
 
-import struct
-from enum import Enum, unique
+    points_for_function_y_unstable = []
+    points_for_function_y_min = []
+    points_for_function_y_max = []
+    last_point_y = points_for_function_y[-1]
+    offset_y_min = None
+    offset_y_max = None
 
-
-@unique
-class Types(Enum):
-    A = 1
-    NS = 2
-
-
-class DNSMessageParser:
-    def __init__(self, data):
-        self._data = data
-        self._header = self._parse_header()
-        int_flags = bin(self._header[1])
-        self._flags = '0' * (16 - len(int_flags) + 2) + str(int_flags)[2:]
-        self._is_answer = self._flags[0]
-        self.name, self.q_type, position = self._parse_question()
-        self._question_len = position
-        self.info = self._parse_body(position) if self._is_answer else None
-
-    def make_answer(self, ttl, value):
-        header = list(self._header[:12])
-        header[1] = 2 ** 15
-        header[3] = 1
-        question = self._data[12: self._question_len]
-        name = self._data[12: self._question_len - 4]
-        if self.q_type == Types.A:
-            item = struct.pack('!4B', *value)
-            length = 4
-        elif self.q_type == Types.NS:
-            octets = (name.decode()).split('.')
-            result = []
-            for octet in octets:
-                result.append(len(octet))
-                for b in octet:
-                    result.append(ord(b))
-            result.append(0)
-            item = struct.pack('!' + str(len(result)) + 'B', *result)
-            length = len(item)
+    start_point = None
+    points_xy = None
+    accuracy = 10 ** -7
+    for b in np.linspace(start=start, stop=end, num=num):
+        inp = Input(b, h, accuracy)
+        # start_point = find_start_point_of_cycle(inp, None)
+        if start_point is None:
+            start_point = find_start_point_of_cycle(inp, None)
         else:
-            raise Exception(
-                f'DNSServer can only handle requests of types '
-                f'{Types.A.name}={Types.A.value} and '
-                f'{Types.NS.name}={Types.NS.value}, '
-                f'but the type of this request is {self.q_type}')
+            start_point = points_xy[-1]
+        points_xy = build_trajectory_of_cycle(start_point, inp)
+        min_x, max_x = find_min_and_max_points_by_x(points_xy)
+        min_y, max_y = find_min_and_max_points_by_y(points_xy)
+        if offset_x_min is None:
+            offset_x_min = abs(last_point_x.x - min_x.x)
+            offset_x_max = abs(last_point_x.x - max_x.x)
+            offset_y_min = abs(last_point_y.y - min_y.y)
+            offset_y_max = abs(last_point_y.y - max_y.y)
+        points_for_function_x_min.append(Point(b, min_x.x + offset_x_min))
+        points_for_function_x_max.append(Point(b, max_x.x - offset_x_max))
+        points_for_function_y_min.append(Point(b, min_y.y + offset_y_min))
+        points_for_function_y_max.append(Point(b, max_y.y - offset_y_max))
 
-        tail = struct.pack('!HHIH', self.q_type, 1, ttl, length)
-        answer = struct.pack('!6H', *header) + question + name + tail + item
-        return answer
+        equilibrium = calculate_equilibrium_point(b)
+        points_for_function_x_unstable.append(Point(b, equilibrium.x))
+        points_for_function_y_unstable.append(Point(b, equilibrium.y))
 
-    def _parse_header(self):
-        header = struct.unpack('!6H', self._data[0:12])
-        return header
+    points_for_function_x = [points_for_function_x_unstable[-1]]
+    points_for_function_x += points_for_function_x_max[::-1]
+    points_for_function_x += points_for_function_x_min
+    points_for_function_x += [points_for_function_x_unstable[-1]]
 
-    def _parse_question(self):
-        name, end = self._parse_name(12)
-        qr_type, qr_class = struct.unpack('!HH', self._data[end: end + 4])
-        information = f'Queries: name {name}, type {qr_type}, class {qr_class}'
-        print(information)
-        return name, qr_type, end + 4
+    points_for_function_y = [points_for_function_y_unstable[-1]]
+    points_for_function_y += points_for_function_y_max[::-1]
+    points_for_function_y += points_for_function_y_min
+    points_for_function_y += [points_for_function_y_unstable[-1]]
 
-    def _parse_name(self, start):
-        name_list = []
-        position = start
-        end = start
-        flag = False
-        while True:
-            if self._data[position] > 63:
-                if not flag:
-                    end = position + 2
-                    flag = True
-                position = ((self._data[position] - 192) << 8) \
-                    + self._data[position + 1]
-                continue
-            else:
-                length = self._data[position]
-                if length == 0:
-                    if not flag:
-                        end = position + 1
-                    break
-                position += 1
-                name_list.append(self._data[position: position + length])
-                position += length
-        name = '.'.join([i.decode('ascii') for i in name_list])
-        return name, end
+    return points_for_function_x, \
+           points_for_function_y, \
+           points_for_function_x_unstable, \
+           points_for_function_y_unstable
 
-    def _parse_body(self, start):
-        answer_list, end1 = self._parse_record(start, 3)
-        authority_list, end2 = self._parse_record(end1, 4)
-        additional_list, end3 = self._parse_record(end2, 5)
-        if len(answer_list) != 0:
-            for it in answer_list:
-                self._print_record(it[0], it[1], it[3])
-        if len(authority_list) != 0:
-            for it in authority_list:
-                self._print_record(it[0], it[1], it[3])
-        if len(additional_list) != 0:
-            for it in additional_list:
-                self._print_record(it[0], it[1], it[3])
-        return answer_list + authority_list + additional_list
 
-    @staticmethod
-    def _print_record(name, _type, value):
-        information = f'\tname {name}, type {_type},  value{value}'
-        print(information)
+def draw_bif_chart(start_b, stop_b, h, define_boundaries_of_instability=False):
+    begin_of_unstable_focus = 0.42
+    end_of_unstable_focus = 0.79
+    graph_board_x = GraphBoard('β', 'x')
+    graph_board_y = GraphBoard('β', 'y')
 
-    def _parse_record(self, start, number):
-        offset = start
-        rr_list = []
-        for i in range(self._header[number]):
-            name, end = self._parse_name(offset)
-            offset = end
-            r_type, r_class, r_ttl, rd_length = struct.unpack(
-                '!2HIH', self._data[offset: offset + 10])
-            offset += 10
-            if r_type == 1:
-                ip = struct.unpack('!4B', self._data[offset: offset + 4])
-                offset += 4
-                rr_list.append((name, r_type, r_ttl, ip))
-            elif r_type == 2:
-                dns_server_name, dns_name_end = self._parse_name(offset)
-                offset = dns_name_end
-                rr_list.append((name, r_type, r_ttl, dns_server_name))
-            else:
-                offset += rd_length
+    if define_boundaries_of_instability:
+        kwargs1 = {
+            'x': begin_of_unstable_focus,
+            'linestyle': '--',
+            'linewidth': 0.4,
+            'color': 'red'
+            }
+        kwargs2 = {
+            'x': end_of_unstable_focus,
+            'linestyle': '--',
+            'linewidth': 0.4,
+            'color': 'red'
+            }
+        graph_board_x.add_vertical_line(**kwargs1)
+        graph_board_x.add_vertical_line(**kwargs2)
+        graph_board_y.add_vertical_line(**kwargs1)
+        graph_board_y.add_vertical_line(**kwargs2)
 
-        return rr_list, offset
+    points_for_function_x, points_for_function_y = get_points_for_steady_graph(
+            start_b,
+            begin_of_unstable_focus,
+            int((begin_of_unstable_focus - start_b) / h)
+            )
+    graph_board_x.add_graph(points_for_function_x, color='black')
+    graph_board_y.add_graph(points_for_function_y, color='black')
+    points_for_function_x, \
+    points_for_function_y, \
+    points_for_function_x_unstable, \
+    points_for_function_y_unstable = get_points_for_unsteady_graph(
+            points_for_function_x,
+            points_for_function_y,
+            begin_of_unstable_focus,
+            end_of_unstable_focus,
+            int((end_of_unstable_focus - begin_of_unstable_focus) / h),
+            h
+            )
+    graph_board_x.add_graph(points_for_function_x, color='black')
+    graph_board_y.add_graph(points_for_function_y, color='black')
+    graph_board_x.add_graph(
+            points_for_function_x_unstable, linestyle='--', color='black')
+    graph_board_y.add_graph(
+            points_for_function_y_unstable, linestyle='--', color='black')
+    points_for_function_x, \
+    points_for_function_y = get_points_for_steady_graph(
+            end_of_unstable_focus,
+            stop_b,
+            int((stop_b - end_of_unstable_focus) / h))
+    graph_board_x.add_graph(points_for_function_x, color='black')
+    graph_board_y.add_graph(points_for_function_y, color='black')
+    graph_board_x.show()
+    graph_board_y.show()
+
+
+def main():
+    start_b = 0
+    stop_b = 3
+    h = 0.01
+    draw_bif_chart(start_b, stop_b, h, define_boundaries_of_instability=True)
+
+
+if __name__ == '__main__':
+    main()

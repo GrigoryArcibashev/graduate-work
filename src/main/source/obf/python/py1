@@ -1,0 +1,109 @@
+import numpy as np #line:1
+from auxiliary_things .graph_board import GraphBoard #line:2
+from auxiliary_things .point import Point #line:3
+from auxiliary_things .utils import calculate_equilibrium_point #line:4
+from limit_cycle_builder import (Input ,build_trajectory_of_cycle ,find_start_point_of_cycle )#line:7
+def find_min_and_max_points_by_x (points :list [Point ])->tuple [Point ,Point ]:#line:10
+    OOOOOOO0O0OO00OO0 =Point (float ('+inf'),float ('+inf'))#line:11
+    OO00O0OOO00OO0OO0 =Point (float ('-inf'),float ('-inf'))#line:12
+    for O00OO0OOOO0OOO0O0 in points :#line:13
+        if O00OO0OOOO0OOO0O0 .x >OO00O0OOO00OO0OO0 .x :#line:14
+            OO00O0OOO00OO0OO0 =O00OO0OOOO0OOO0O0 #line:15
+        if O00OO0OOOO0OOO0O0 .x <OOOOOOO0O0OO00OO0 .x :#line:16
+            OOOOOOO0O0OO00OO0 =O00OO0OOOO0OOO0O0 #line:17
+    return OOOOOOO0O0OO00OO0 ,OO00O0OOO00OO0OO0 #line:18
+def find_min_and_max_points_by_y (points :list [Point ])->tuple [Point ,Point ]:#line:21
+    O00OO0O0O00OOO000 =Point (float ('+inf'),float ('+inf'))#line:22
+    O000O000OO0OO0000 =Point (float ('-inf'),float ('-inf'))#line:23
+    for OO00OOOOOO0OOOO00 in points :#line:24
+        if OO00OOOOOO0OOOO00 .y >O000O000OO0OO0000 .y :#line:25
+            O000O000OO0OO0000 =OO00OOOOOO0OOOO00 #line:26
+        if OO00OOOOOO0OOOO00 .y <O00OO0O0O00OOO000 .y :#line:27
+            O00OO0O0O00OOO000 =OO00OOOOOO0OOOO00 #line:28
+    return O00OO0O0O00OOO000 ,O000O000OO0OO0000 #line:29
+def get_points_for_steady_graph (start :float ,end :float ,num :int ):#line:32
+    OOO0OOOOO000000O0 =[]#line:33
+    O0OO0000OOO00O000 =[]#line:34
+    for O0000OOOO000OO00O in np .linspace (start =start ,stop =end ,num =num ):#line:35
+        O0O000O0O00OOO000 =calculate_equilibrium_point (O0000OOOO000OO00O )#line:36
+        OOO0OOOOO000000O0 .append (Point (O0000OOOO000OO00O ,O0O000O0O00OOO000 .x ))#line:37
+        O0OO0000OOO00O000 .append (Point (O0000OOOO000OO00O ,O0O000O0O00OOO000 .y ))#line:38
+    return OOO0OOOOO000000O0 ,O0OO0000OOO00O000 #line:39
+def get_points_for_unsteady_graph (points_for_function_x :list ,points_for_function_y :list ,start :float ,end :float ,num :int ,h :float ):#line:48
+    OOO0OOO0OO0000O00 =[]#line:49
+    O0O0O00OO0O0O00OO =[]#line:50
+    O00OO0OOO0O0O00O0 =[]#line:51
+    O00O00OO000OO00O0 =points_for_function_x [-1 ]#line:52
+    OO00000OOOOOO0O0O =None #line:53
+    O000OOOO0OO0OO0OO =None #line:54
+    O0O0OOOO0OOOO00OO =[]#line:56
+    OOOO0OOO0OOOO000O =[]#line:57
+    O0OO0OO0000O0OOO0 =[]#line:58
+    OO0OO0O0000O0OO0O =points_for_function_y [-1 ]#line:59
+    O00O0OOOO0OOO0O0O =None #line:60
+    O0O0000OOO0O000OO =None #line:61
+    OOO0O0O000000000O =None #line:63
+    OO000OOO0O00OOO0O =None #line:64
+    O00000O0000OO0OOO =10 **-7 #line:65
+    for OOOO0O0OOO0O0O000 in np .linspace (start =start ,stop =end ,num =num ):#line:66
+        OO00OO0O0OO0OO00O =Input (OOOO0O0OOO0O0O000 ,h ,O00000O0000OO0OOO )#line:67
+        if OOO0O0O000000000O is None :#line:69
+            OOO0O0O000000000O =find_start_point_of_cycle (OO00OO0O0OO0OO00O ,None )#line:70
+        else :#line:71
+            OOO0O0O000000000O =OO000OOO0O00OOO0O [-1 ]#line:72
+        OO000OOO0O00OOO0O =build_trajectory_of_cycle (OOO0O0O000000000O ,OO00OO0O0OO0OO00O )#line:73
+        O0OOO0OOO0O00OO0O ,OO0OOOO0000O0OOOO =find_min_and_max_points_by_x (OO000OOO0O00OOO0O )#line:74
+        O0O00O000O0OO00OO ,O0O0O00O0OO00O0OO =find_min_and_max_points_by_y (OO000OOO0O00OOO0O )#line:75
+        if OO00000OOOOOO0O0O is None :#line:76
+            OO00000OOOOOO0O0O =abs (O00O00OO000OO00O0 .x -O0OOO0OOO0O00OO0O .x )#line:77
+            O000OOOO0OO0OO0OO =abs (O00O00OO000OO00O0 .x -OO0OOOO0000O0OOOO .x )#line:78
+            O00O0OOOO0OOO0O0O =abs (OO0OO0O0000O0OO0O .y -O0O00O000O0OO00OO .y )#line:79
+            O0O0000OOO0O000OO =abs (OO0OO0O0000O0OO0O .y -O0O0O00O0OO00O0OO .y )#line:80
+        O0O0O00OO0O0O00OO .append (Point (OOOO0O0OOO0O0O000 ,O0OOO0OOO0O00OO0O .x +OO00000OOOOOO0O0O ))#line:81
+        O00OO0OOO0O0O00O0 .append (Point (OOOO0O0OOO0O0O000 ,OO0OOOO0000O0OOOO .x -O000OOOO0OO0OO0OO ))#line:82
+        OOOO0OOO0OOOO000O .append (Point (OOOO0O0OOO0O0O000 ,O0O00O000O0OO00OO .y +O00O0OOOO0OOO0O0O ))#line:83
+        O0OO0OO0000O0OOO0 .append (Point (OOOO0O0OOO0O0O000 ,O0O0O00O0OO00O0OO .y -O0O0000OOO0O000OO ))#line:84
+        O000OOOOO00OOOOO0 =calculate_equilibrium_point (OOOO0O0OOO0O0O000 )#line:86
+        OOO0OOO0OO0000O00 .append (Point (OOOO0O0OOO0O0O000 ,O000OOOOO00OOOOO0 .x ))#line:87
+        O0O0OOOO0OOOO00OO .append (Point (OOOO0O0OOO0O0O000 ,O000OOOOO00OOOOO0 .y ))#line:88
+    points_for_function_x =[OOO0OOO0OO0000O00 [-1 ]]#line:90
+    points_for_function_x +=O00OO0OOO0O0O00O0 [::-1 ]#line:91
+    points_for_function_x +=O0O0O00OO0O0O00OO #line:92
+    points_for_function_x +=[OOO0OOO0OO0000O00 [-1 ]]#line:93
+    points_for_function_y =[O0O0OOOO0OOOO00OO [-1 ]]#line:95
+    points_for_function_y +=O0OO0OO0000O0OOO0 [::-1 ]#line:96
+    points_for_function_y +=OOOO0OOO0OOOO000O #line:97
+    points_for_function_y +=[O0O0OOOO0OOOO00OO [-1 ]]#line:98
+    return points_for_function_x ,points_for_function_y ,OOO0OOO0OO0000O00 ,O0O0OOOO0OOOO00OO #line:103
+def draw_bif_chart (start_b ,stop_b ,h ,define_boundaries_of_instability =False ):#line:106
+    OOOOO00000O0OO0OO =0.42 #line:107
+    OOO0OO0OO00O0O0O0 =0.79 #line:108
+    O000O0O0OOOOOO00O =GraphBoard ('β','x')#line:109
+    OOO00OOOO0OOO0O00 =GraphBoard ('β','y')#line:110
+    if define_boundaries_of_instability :#line:112
+        OOOO00O0OOO0O00OO ={'x':OOOOO00000O0OO0OO ,'linestyle':'--','linewidth':0.4 ,'color':'red'}#line:118
+        OOOOO00O0OO0O0O00 ={'x':OOO0OO0OO00O0O0O0 ,'linestyle':'--','linewidth':0.4 ,'color':'red'}#line:124
+        O000O0O0OOOOOO00O .add_vertical_line (**OOOO00O0OOO0O00OO )#line:125
+        O000O0O0OOOOOO00O .add_vertical_line (**OOOOO00O0OO0O0O00 )#line:126
+        OOO00OOOO0OOO0O00 .add_vertical_line (**OOOO00O0OOO0O00OO )#line:127
+        OOO00OOOO0OOO0O00 .add_vertical_line (**OOOOO00O0OO0O0O00 )#line:128
+    O0OO0000O0O00OO0O ,OOOO00O00OO0OOO00 =get_points_for_steady_graph (start_b ,OOOOO00000O0OO0OO ,int ((OOOOO00000O0OO0OO -start_b )/h ))#line:134
+    O000O0O0OOOOOO00O .add_graph (O0OO0000O0O00OO0O ,color ='black')#line:135
+    OOO00OOOO0OOO0O00 .add_graph (OOOO00O00OO0OOO00 ,color ='black')#line:136
+    O0OO0000O0O00OO0O ,OOOO00O00OO0OOO00 ,OO000O00OO0O000O0 ,OO0000OO00OO00O00 =get_points_for_unsteady_graph (O0OO0000O0O00OO0O ,OOOO00O00OO0OOO00 ,OOOOO00000O0OO0OO ,OOO0OO0OO00O0O0O0 ,int ((OOO0OO0OO00O0O0O0 -OOOOO00000O0OO0OO )/h ),h )#line:147
+    O000O0O0OOOOOO00O .add_graph (O0OO0000O0O00OO0O ,color ='black')#line:148
+    OOO00OOOO0OOO0O00 .add_graph (OOOO00O00OO0OOO00 ,color ='black')#line:149
+    O000O0O0OOOOOO00O .add_graph (OO000O00OO0O000O0 ,linestyle ='--',color ='black')#line:151
+    OOO00OOOO0OOO0O00 .add_graph (OO0000OO00OO00O00 ,linestyle ='--',color ='black')#line:153
+    O0OO0000O0O00OO0O ,OOOO00O00OO0OOO00 =get_points_for_steady_graph (OOO0OO0OO00O0O0O0 ,stop_b ,int ((stop_b -OOO0OO0OO00O0O0O0 )/h ))#line:158
+    O000O0O0OOOOOO00O .add_graph (O0OO0000O0O00OO0O ,color ='black')#line:159
+    OOO00OOOO0OOO0O00 .add_graph (OOOO00O00OO0OOO00 ,color ='black')#line:160
+    O000O0O0OOOOOO00O .show ()#line:161
+    OOO00OOOO0OOO0O00 .show ()#line:162
+def main ():#line:165
+    O00OOO0OO0OOO0OO0 =0 #line:166
+    OOOO00O0O00OOOO00 =3 #line:167
+    OO0OOO0O00O00O000 =0.01 #line:168
+    draw_bif_chart (O00OOO0OO0OOO0OO0 ,OOOO00O0O00OOOO00 ,OO0OOO0O00O00O000 ,define_boundaries_of_instability =True )#line:169
+if __name__ =='__main__':#line:172
+    main ()

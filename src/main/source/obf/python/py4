@@ -1,0 +1,209 @@
+import phil as t #line:2
+from urllib .request import urlopen #line:3
+from urllib .parse import quote #line:4
+from urllib .error import URLError ,HTTPError #line:5
+import unittest #line:6
+PHIL ='Философия'#line:8
+def _OO0O00O0000000OOO (OOOOOOOOOOO0O0OO0 ,OO0O0O0O00OOOOOOO ):#line:11
+    try :#line:12
+        with urlopen ('http://ru.wikipedia.org/wiki/'+quote (OOOOOOOOOOO0O0OO0 ))as OOO00OO0O0OOO0O00 :#line:13
+            O0O00O00000OOO000 =OOO00OO0O0OOO0O00 .read ().decode ('utf-8',errors ='ignore')#line:14
+    except (URLError ,HTTPError ):#line:15
+        return False #line:16
+    OO00O00O000OO0O0O =quote (OO0O0O0O00OOOOOOO ,safe ='()_,-/')#line:18
+    return (OO00O00O000OO0O0O in O0O00O00000OOO000 or OO00O00O000OO0O0O .replace ('/','%2F')in O0O00O00000OOO000 )#line:20
+class TestLinksExtractor (unittest .TestCase ):#line:23
+    TEXT ='<a href="/wiki/A">t</a>text<a href="/wiki/B">t</a>'#line:24
+    def _check_with_bound (O000O00OOOO000OO0 ,OOO0OO00OO000O00O ,O0OO0OOO0000O0000 ,OOOO0O0O0OO000O00 ,links =None ):#line:26
+        if links is None :#line:27
+            links =set ()#line:28
+        O000O00OOOO000OO0 .assertSetEqual (set (t .extract_links (OOO0OO00OO000O00O ,O0OO0OOO0000O0000 ,OOOO0O0O0OO000O00 )),links )#line:30
+    def _check (OOO0O0OOOOOO0OO0O ,O000O00O0O000O0O0 ,links =None ):#line:32
+        OOO0O0OOOOOO0OO0O ._check_with_bound (O000O00O0O000O0O0 ,0 ,len (O000O00O0O000O0O0 ),links )#line:33
+    def test_category (OOO000OO0O0OO000O ):#line:35
+        OOO000OO0O0OO000O ._check ('<a href="/wiki/category:unknown%2ecategory">text</a>')#line:36
+    def test_anchors (OOOOOO00O00OOO0O0 ):#line:38
+        OOOOOO00O00OOO0O0 ._check ('<a href="/wiki/Link#tt">text</a>')#line:39
+        OOOOOO00O00OOO0O0 ._check ('<a href="#qq">text</a>')#line:40
+    def test_another_link (O000O000O0000000O ):#line:42
+        O000O000O0000000O ._check ('<a href="/w/index.php?title=tt">tt</a>')#line:43
+    def test_simple_link (O00OO0OOOOOOO00O0 ):#line:45
+        O00OO0OOOOOOO00O0 ._check ('<a href="/wiki/Link_one">qq</a>',{'Link_one'})#line:46
+    def test_tag_case_insensitivity (OOOOOOO0OO000OOOO ):#line:48
+        OOOOOOO0OO000OOOO ._check ('<A Href="/wiki/Link_one">qq</A>',{'Link_one'})#line:49
+    def test_tag_spaces (OO0OO0O0OO000O0O0 ):#line:51
+        OO0OO0O0OO000O0O0 ._check ("<a  href='/wiki/Link_one'>qq</a",{'Link_one'})#line:52
+    def test_russian_letters (O00OOOOO000OOO0O0 ):#line:54
+        O00OOOOO000OOO0O0 ._check ('<a href="/wiki/46_%D0%B3%D0%BE" title="qq">x</a>',{'46_го'})#line:56
+    def test_link_case_sensitivity (O000O0OOOO0OO0OOO ):#line:58
+        O000O0OOOO0OO0OOO ._check ('<a href="/wiki/L">t1</a><a href="/wiki/l">t2</a>',{'L','l'})#line:60
+        O000O0OOOO0OO0OOO ._check ('<a href="/wiki/L">t1</a><a href="/wiki/L">t2</a>',{'L'})#line:62
+    def test_multiple_links (O0OO0000O00OO0OO0 ):#line:64
+        O0OO0000O00OO0OO0 ._check ("""<a href="/wiki/L">t1</a><a href='/wiki/l'>t2</a>""" """<a href='/wiki/L'>t3</a>""",{'L','l'})#line:66
+        O0OO0000O00OO0OO0 ._check (O0OO0000O00OO0OO0 .TEXT ,{'A','B'})#line:67
+    def test_multiline (OOO00O0O00000O00O ):#line:69
+        OOO00O0O00000O00O ._check ("""<a href="/wiki/L">t1</a>
+<a href='/wiki/l'>t2</a><a href='/wiki/L'>t3</a>""",{'L','l'})#line:71
+    def test_general (OO00O00OO0000O0OO ):#line:73
+        OO00O00OO0000O0OO ._check ("""<a href='/wiki/C:x'>link</a><span>Some text
+</span><a  href="/wiki/Link_one">link</a><a href="/wiki/Link_one#tt"></a><div>
+<a href='#qq'><span>qq</span></a> <a href="/w/index.php?title=tt"></a></div>
+<a href='/wiki/1946_%D0%B3%D0%BE%D0%B4' title="1946 год">1946</a>
+<a href=''""",{'Link_one','1946_год'})#line:78
+    def test_left_border (OOO0O0OO0O0O00000 ):#line:80
+        OOO0O0OO0O0O00000 ._check_with_bound (OOO0O0OO0O0O00000 .TEXT ,10 ,len (OOO0O0OO0O0O00000 .TEXT ),{'B'})#line:81
+    def test_right_border (OOO00000O00OO0O0O ):#line:83
+        OOO00000O00OO0O0O ._check_with_bound (OOO00000O00OO0O0O .TEXT ,0 ,len (OOO00000O00OO0O0O .TEXT )-10 ,{'A'})#line:84
+    def test_left_right_border (O00000O0OO0OOOO0O ):#line:86
+        O00000O0OO0OOOO0O ._check_with_bound (O00000O0OO0OOOO0O .TEXT ,10 ,len (O00000O0OO0OOOO0O .TEXT )-10 )#line:87
+class TestChainFinder (unittest .TestCase ):#line:90
+    def assertIsEmptyChain (O0OOO0O00O00OO00O ,O000O00O0OO0OOO00 ):#line:91
+        O0OOO0O00O00OO00O .assertIsNone (O000O00O0OO0OOO00 )#line:92
+    def assertIsChain (OO0OOOOO00OOO000O ,O0O0O00O0O0O0OO0O ,O00OOOOOOOOOOO000 ):#line:94
+        OO0OOOOO00OOO000O .assertIsNotNone (O0O0O00O0O0O0OO0O )#line:95
+        OO0OOOOO00OOO000O .assertIs (type (O0O0O00O0O0O0OO0O ),list )#line:96
+        OO0OOOOO00OOO000O .assertEqual (O0O0O00O0O0O0OO0O [0 ],O00OOOOOOOOOOO000 )#line:97
+        OO0OOOOO00OOO000O .assertEqual (O0O0O00O0O0O0OO0O [-1 ],PHIL )#line:98
+        for (OO0OO000000OO0O0O ,OO000OOOO00OO000O )in enumerate (O0O0O00O0O0O0OO0O ):#line:100
+            if OO0OO000000OO0O0O +1 <len (O0O0O00O0O0O0OO0O ):#line:101
+                OO0OOOOO00OOO000O .assertTrue (_OO0O00O0000000OOO (OO000OOOO00OO000O ,O0O0O00O0O0O0OO0O [OO0OO000000OO0O0O +1 ]))#line:102
+    def _check (OOO00OO0O00OO0000 ,OOOO0O0000OO00OO0 ,end =PHIL ,result =True ):#line:104
+        with OOO00OO0O00OO0000 .subTest (OOOO0O0000OO00OO0 ):#line:105
+            if result :#line:106
+                OOO00OO0O00OO0000 .assertIsChain (t .find_chain (OOOO0O0000OO00OO0 ,end ),OOOO0O0000OO00OO0 )#line:107
+            else :#line:108
+                OOO00OO0O00OO0000 .assertIsEmptyChain (t .find_chain (OOOO0O0000OO00OO0 ,end ))#line:109
+    def test_simple_chain (O00O0OO0000O00OOO ):#line:111
+        O00O0OO0000O00OOO ._check (PHIL )#line:112
+    def test_wrong_word (OOOO0O0OOOO00000O ):#line:114
+        OOOO0O0OOOO00000O ._check ('фвыавыафывавыавыфа',result =False )#line:115
+    def test_start_case_insensitivity (OO000O000OOOO00O0 ):#line:117
+        OO000O000OOOO00O0 ._check ('Математика')#line:118
+        OO000O000OOOO00O0 ._check ('математика')#line:119
+    def test_something (O00O0O00O00OO0000 ):#line:121
+        O00O0O00O00OO0000 ._check ('Архимед')#line:122
+        O00O0O00O00OO0000 ._check ('Религия')#line:123
+        O00O0O00O00OO0000 ._check ('Бумага')#line:124
+        O00O0O00O00OO0000 ._check ('Компьютер')#line:125
+    def test_special_symbols (OO0OO0O0O0OO000OO ):#line:127
+        OO0OO0O0O0OO000OO ._check ('музыка')#line:128
+        OO0OO0O0O0OO000OO ._check ('Музыка_(значения)')#line:129
+    def test_russian_yo_ye (O0O0O000O00OOOOOO ):#line:131
+        O0O0O000O00OOOOOO ._check ('Самолет')#line:132
+        O0O0O000O00OOOOOO ._check ('Самолёт')#line:133
+def make_suite ():#line:136
+    OOO0O0OO00O00O000 =unittest .TestSuite ()#line:137
+    for OOO00OOOO00O00O00 in (TestLinksExtractor ,TestChainFinder ):#line:138
+        OOO0O0OO00O00O000 .addTests (unittest .defaultTestLoader .loadTestsFromTestCase (OOO00OOOO00O00O00 ))#line:139
+    return OOO0O0OO00O00O000 #line:140
+import argparse #line:144
+import os .path #line:145
+import struct #line:146
+import sys #line:147
+from pathlib import Path #line:148
+from typing import NamedTuple #line:149
+class TarParser :#line:152
+    _HEADER_FMT1 ='100s8s8s8s12s12s8sc100s255s'#line:153
+    _HEADER_FMT2 ='6s2s32s32s8s8s155s12s'#line:154
+    _HEADER_FMT3 ='6s2s32s32s8s8s12s12s112s31x'#line:155
+    _READ_BLOCK =16 *2 **20 #line:156
+    _RECORD_SIZE =512 #line:157
+    _FILE_TYPES ={b'0':'Regular file',b'1':'Hard link',b'2':'Symbolic link',b'3':'Character device node',b'4':'Block device node',b'5':'Directory',b'6':'FIFO node',b'7':'Reserved',b'D':'Directory entry',b'K':'Long linkname',b'L':'Long pathname',b'M':'Continue of last file',b'N':'Rename/symlink command',b'S':"`sparse' regular file",b'V':"`name' is tape/volume header name"}#line:175
+    def __init__ (O0000O0O00OOO0O00 ,O000OOOOO000OOOO0 ):#line:177
+        ""#line:181
+        O0000O0O00OOO0O00 ._archive_name =O000OOOOO000OOOO0 #line:182
+        O0000O0O00OOO0O00 ._files_stat =dict ()#line:183
+        with open (O000OOOOO000OOOO0 ,'rb')as O0000OO0O00O0OOO0 :#line:184
+            OOOOO000O0OOOOO00 =O0000OO0O00O0OOO0 .read (O0000O0O00OOO0O00 ._RECORD_SIZE )#line:185
+            while O0000O0O00OOO0O00 ._decode (OOOOO000O0OOOOO00 ):#line:186
+                OOOOOO0O00000O0OO =O0000O0O00OOO0O00 ._get_full_header (OOOOO000O0OOOOO00 )#line:187
+                if O0000O0O00OOO0O00 ._FILE_TYPES [OOOOOO0O00000O0OO [7 ]]=='Regular file':#line:188
+                    O0000O0O00OOO0O00 ._files_stat [O0000O0O00OOO0O00 ._decode (OOOOOO0O00000O0OO [0 ])]=OOOOOO0O00000O0OO #line:189
+                OO0OO0O00O00O0O00 =convert_to_dec_from_oct (O0000O0O00OOO0O00 ._decode (OOOOOO0O00000O0OO [4 ]))#line:190
+                if OO0OO0O00O00O0O00 %O0000O0O00OOO0O00 ._RECORD_SIZE !=0 :#line:191
+                    OO0OO0O00O00O0O00 +=O0000O0O00OOO0O00 ._RECORD_SIZE -OO0OO0O00O00O0O00 %O0000O0O00OOO0O00 ._RECORD_SIZE #line:193
+                O0000OO0O00O0OOO0 .seek (OO0OO0O00O00O0O00 ,1 )#line:194
+                OOOOO000O0OOOOO00 =O0000OO0O00O0OOO0 .read (O0000O0O00OOO0O00 ._RECORD_SIZE )#line:195
+    def extract (OOO00000O00O000OO ,dest =os .getcwd ()):#line:197
+        ""#line:200
+        with open (OOO00000O00O000OO ._archive_name ,'rb')as OOO0O0000OO0OOOOO :#line:202
+            O0OO00O0000OO00O0 =OOO0O0000OO0OOOOO .read (OOO00000O00O000OO ._RECORD_SIZE )#line:203
+            while OOO00000O00O000OO ._decode (O0OO00O0000OO00O0 ):#line:204
+                OOO00OO00000O0000 =OOO00000O00O000OO ._get_full_header (O0OO00O0000OO00O0 )#line:205
+                OOOO00OOOO0000OOO =OOO00000O00O000OO ._decode (OOO00OO00000O0000 [0 ])#line:206
+                O00O0O0OO0OO00OOO =convert_to_dec_from_oct (OOO00000O00O000OO ._decode (OOO00OO00000O0000 [4 ]))#line:207
+                O00O0O00000OO0OO0 =Path (dest +'\\'+OOOO00OOOO0000OOO )#line:208
+                if OOO00000O00O000OO ._FILE_TYPES [OOO00OO00000O0000 [7 ]]=='Directory':#line:209
+                    Path .mkdir (O00O0O00000OO0OO0 )#line:210
+                    OOO0O0000OO0OOOOO .seek (O00O0O0OO0OO00OOO ,1 )#line:211
+                else :#line:212
+                    with open (O00O0O00000OO0OO0 ,'wb')as O00OOOOO0OO0000OO :#line:213
+                        OOOO0OO000O0OO000 =OOO0O0000OO0OOOOO .read (O00O0O0OO0OO00OOO )#line:214
+                        O00OOOOO0OO0000OO .write (OOOO0OO000O0OO000 .strip (b''))#line:215
+                if O00O0O0OO0OO00OOO %OOO00000O00O000OO ._RECORD_SIZE !=0 :#line:216
+                    OOO0O0000OO0OOOOO .seek (OOO00000O00O000OO ._RECORD_SIZE -O00O0O0OO0OO00OOO %OOO00000O00O000OO ._RECORD_SIZE ,1 )#line:219
+                O0OO00O0000OO00O0 =OOO0O0000OO0OOOOO .read (OOO00000O00O000OO ._RECORD_SIZE )#line:220
+    def files (OO0O00OO0OOOO0O00 ):#line:222
+        ""#line:225
+        for OOO000O0O00O0OO0O in OO0O00OO0OOOO0O00 ._files_stat .keys ():#line:226
+            yield OOO000O0O00O0OO0O #line:227
+    def file_stat (O0O0OOOOOOO00OO00 ,O0O0O00O0OO0000O0 ):#line:229
+        ""#line:247
+        if O0O0O00O0OO0000O0 not in O0O0OOOOOOO00OO00 .files ():#line:248
+            raise ValueError (O0O0O00O0OO0000O0 )#line:249
+        OOOOOOO0OO000OOO0 =[('Filename',O0O0O00O0OO0000O0 )]#line:251
+        return OOOOOOO0OO000OOO0 #line:254
+    def _get_full_header (OOOO0000O0O0OOO00 ,O0OO0O00O0OOOO000 ):#line:256
+        O0OO0O00O0OOOO000 =struct .unpack (OOOO0000O0O0OOO00 ._HEADER_FMT1 ,O0OO0O00O0OOOO000 )#line:257
+        OO0O00OO00OO00OO0 =O0OO0O00O0OOOO000 [-1 ]#line:258
+        if OO0O00OO00OO00OO0 .startswith (b'ustar'):#line:259
+            OO0O00OO00OO00OO0 =struct .unpack (OOOO0000O0O0OOO00 ._HEADER_FMT2 ,OO0O00OO00OO00OO0 )#line:260
+        elif OO0O00OO00OO00OO0 .startswith (b'ustar '):#line:261
+            OO0O00OO00OO00OO0 =struct .unpack (OOOO0000O0O0OOO00 ._HEADER_FMT3 ,OO0O00OO00OO00OO0 )#line:262
+        else :#line:263
+            return O0OO0O00O0OOOO000 [:-1 ]#line:264
+        return O0OO0O00O0OOOO000 [:-1 ]+OO0O00OO00OO00OO0 #line:265
+    @staticmethod #line:267
+    def _decode (OO0000O0OOOO00O0O ):#line:268
+        return OO0000O0OOOO00O0O .strip (b'').decode ()#line:269
+class TarHeader (NamedTuple ):#line:272
+    file_name :str #line:273
+    file_mode :str #line:274
+    UID :str #line:275
+    GID :str #line:276
+    file_size :str #line:277
+    last_modification_time :str #line:278
+    checksum :str #line:279
+    link_indicator :str #line:280
+    name_of_linked_file :str #line:281
+    extends :str #line:282
+def convert_to_dec_from_oct (O0O0000OOOO00O0O0 :str ):#line:285
+    if O0O0000OOOO00O0O0 .startswith ('0o'):#line:286
+        return int (O0O0000OOOO00O0O0 ,8 )#line:287
+    return int ('0o'+O0O0000OOOO00O0O0 ,8 )#line:288
+def print_file_info (O00O0OOO00O0OOOOO ,f =sys .stdout ):#line:291
+    OOOO00OO0000O0OO0 =max (map (lambda OOOO0O0O0OO00O000 :len (OOOO0O0O0OO00O000 [0 ]),O00O0OOO00O0OOOOO ))#line:292
+    for O00O0000OOOO000O0 in O00O0OOO00O0OOOOO :#line:293
+        print ("{{:>{}}} : {{}}".format (OOOO00OO0000O0OO0 ).format (*O00O0000OOOO000O0 ),file =f )#line:294
+def main ():#line:297
+    O0O000OOOO00OO0O0 =argparse .ArgumentParser (usage ='{} [OPTIONS] FILE'.format (os .path .basename (sys .argv [0 ])),description ='Tar extractor')#line:300
+    O0O000OOOO00OO0O0 .add_argument ('-l','--list',action ='store_true',dest ='ls',help ='list the contents of an archive')#line:303
+    O0O000OOOO00OO0O0 .add_argument ('-x','--extract',action ='store_true',dest ='extract',help ='extract files from an archive')#line:306
+    O0O000OOOO00OO0O0 .add_argument ('-i','--info',action ='store_true',dest ='info',help ='get information about files in an archive')#line:309
+    O0O000OOOO00OO0O0 .add_argument ('fn',metavar ='FILE',help ='name of an archive')#line:312
+    OOOO0OOO00O0OO0O0 =O0O000OOOO00OO0O0 .parse_args ()#line:314
+    if not (OOOO0OOO00O0OO0O0 .ls or OOOO0OOO00O0OO0O0 .extract or OOOO0OOO00O0OO0O0 .info ):#line:315
+        sys .exit ("Error: action must be specified")#line:316
+    try :#line:318
+        O00OOO0OOO000O0OO =TarParser (OOOO0OOO00O0OO0O0 .fn )#line:319
+        if OOOO0OOO00O0OO0O0 .info :#line:321
+            for O0000OO00OO0000O0 in sorted (O00OOO0OOO000O0OO .files ()):#line:322
+                print_file_info (O00OOO0OOO000O0OO .file_stat (O0000OO00OO0000O0 ))#line:323
+                print ()#line:324
+        elif OOOO0OOO00O0OO0O0 .ls :#line:325
+            for O0000OO00OO0000O0 in sorted (O00OOO0OOO000O0OO .files ()):#line:326
+                print (O0000OO00OO0000O0 )#line:327
+        if OOOO0OOO00O0OO0O0 .extract :#line:329
+            O00OOO0OOO000O0OO .extract ()#line:330
+    except Exception as O0000O0OOOO0OO0OO :#line:331
+        sys .exit (O0000O0OOOO0OO0OO )#line:332
