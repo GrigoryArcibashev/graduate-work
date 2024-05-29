@@ -160,12 +160,6 @@ class SuspySearcher:
             },
         }
 
-    def search_by_iter(self, text_iter: Iterator[bytes]) -> list[SuspiciousCode]:
-        searched: set[SuspiciousCode] = set()
-        for text in text_iter:
-            searched.update(set(self.search(text)))
-        return list(searched)
-
     def search(self, text: bytes) -> list[SuspiciousCode]:
         searched: set[SuspiciousCode] = set()
         max_workers = 3
@@ -212,23 +206,3 @@ class SuspySearcher:
             for type_ in self._patterns[lvl]:
                 number += len(self._patterns[lvl][type_])
         return number
-
-
-def get_iter(text: bytes) -> Iterator[bytes]:
-    ind = 0
-    shift = len(text) // 10
-    while ind < len(text):
-        yield text[ind:ind + shift]
-        ind += shift
-
-
-def main():
-    text = FileReader.read_file('../../source/FOR_TEST_X/x.txt')
-    searcher = SuspySearcher()
-    searched = searcher.search_by_iter(get_iter(text))
-    for sr in searched:
-        print(sr)
-
-
-if __name__ == '__main__':
-    main()
