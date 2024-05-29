@@ -110,22 +110,22 @@ def get_files_for_stat():
         '../../../source/obf_non/php',
         '../../../source/obf_non/python',
 
-        '../../../source/encr/base85',
-        '../../../source/encr/DES_triple',
-        '../../../source/encr/AES',
-        '../../../source/encr/hex',
-        '../../../source/encr/rot13',
-
-        '../../../source/encr_non/bash',
-        '../../../source/encr_non/css',
-        '../../../source/encr_non/html',
-        '../../../source/encr_non/js',
-        '../../../source/encr_non/php',
-        '../../../source/encr_non/python',
-        '../../../source/encr_non/ruby',
-        '../../../source/encr_non/sharp',
-        '../../../source/encr_non/sql',
-        '../../../source/encr_non/xml'
+        # '../../../source/encr/base85',
+        # '../../../source/encr/DES_triple',
+        # '../../../source/encr/AES',
+        # '../../../source/encr/hex',
+        # '../../../source/encr/rot13',
+        #
+        # '../../../source/encr_non/bash',
+        # '../../../source/encr_non/css',
+        # '../../../source/encr_non/html',
+        # '../../../source/encr_non/js',
+        # '../../../source/encr_non/php',
+        # '../../../source/encr_non/python',
+        # '../../../source/encr_non/ruby',
+        # '../../../source/encr_non/sharp',
+        # '../../../source/encr_non/sql',
+        # '../../../source/encr_non/xml'
     ]
     obf_files = get_filenames_by_path(path_to_obf)
     no_obf_files = get_filenames_by_path(path_to_non_obf)
