@@ -140,7 +140,7 @@ def write_metrics(f_score, file_stat, fn, fp, precision, recall, tn, tp):
     file_stat.write(f'Вер. срабатывание: {tp} (TP)\n')
     file_stat.write(f'Лож. срабатывание: {fp} (FP)\n')
     file_stat.write(f'Вер. пропуск:      {tn} (TN)\n')
-    file_stat.write(f'Лож. пропуск:      {fn} (FN))\n')
+    file_stat.write(f'Лож. пропуск:      {fn} (FN)\n')
     file_stat.write(f'Точность = {round(100 * precision)}%\n')
     file_stat.write(f'Полнота = {round(100 * recall)}%\n')
     file_stat.write(f'F-score = {round(100 * f_score)}%\n')
