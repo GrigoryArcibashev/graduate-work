@@ -8,11 +8,11 @@ class DangerLevel(Enum):
 
 
 class SuspiciousType(Enum):
-    GENERAL = 0  # 'Подозрительная лексема'
-    COMMAND = 1  # 'Команды bash/cmd'
-    ENCRYPT = 2  # '[Де]шифрование'
-    EXECUTION = 3  # 'Вычисление переданного выражения'
-    FILES = 4  # 'Взаимодействие с файлами'
-    IMPORT = 5  # 'Подключение внешних скриптов/библиотек'
-    NET = 6  # 'Загрузка/отправка файлов по сети'
-    OS = 7  # 'Взаимодействие с функциями ОС'
+    GENERAL = 0
+    COMMAND = 1
+    ENCRYPT = 2
+    EXECUTION = 3
+    FILES = 4
+    IMPORT = 5
+    NET = 6
+    OS = 7
