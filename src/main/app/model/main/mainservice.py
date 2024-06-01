@@ -119,6 +119,14 @@ class MainService:
         self._analyzer = Analyzer(settings.analyzer_settings)
         self._db_service = DBService(path_to_db)
 
+    @property
+    def root_dir(self) -> str:
+        return self._root_dir
+
+    @root_dir.setter
+    def root_dir(self, new_value: str) -> None:
+        self._root_dir = new_value
+
     def get_results_from_db(self) -> list[ResultOfFileAnalysis]:
         return ConverterForDB.convert_from_db_models(self._db_service.read())
 
