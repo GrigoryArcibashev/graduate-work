@@ -5,7 +5,8 @@ from typing import Optional
 
 from src.main.app.model.analyzer.analysis_result import AnalysisResult
 from src.main.app.model.analyzer.analyzer import Analyzer
-from src.main.app.model.db_service.converter import ConverterForDB, ResultOfFileAnalysis
+from src.main.app.model.db_service.converter import ConverterForDB
+from src.main.app.model.db_service.result_of_file_analysis import ResultOfFileAnalysis
 from src.main.app.model.db_service.rw_service import DBService
 from src.main.app.model.file_service.file_explorer import FileExplorer
 from src.main.app.model.file_service.file_reader import FileReader
@@ -163,7 +164,7 @@ class MainService:
             an_result = self._analyzer.analyze(data)
             old_hash = None
             new_hash = _hash
-            print(f'{filename} db_result is None')
+            print(f'{filename} db_result is None\thash={_hash.hash()[:6]}')
         elif db_result.old_hash == _hash:
             # файл не изменился, он всё еще доверенный
             filename = filename
@@ -204,14 +205,15 @@ def main_app():
     settings = Settings(FileReader.read_json('../../../settings.json'))
     app = MainService(
         settings=settings,
-        root_dir='../../../source/FOR_TEST_X',
+        root_dir='../../../source/obf/',
         path_to_db='sqlite:///../../../database.db')
     app.run()
-    # print('=' * 70)
-    # results = app.get_results_from_db()
+    print('=' * 70)
+    results = app.get_results_from_db()
     # app.mark_files_as_trusted(results, {res.filename for res in results})
-    # for res in app.get_results_from_db():
-    #     print(res, end='\n\n')
+    for res in app.get_results_from_db():
+        print(f'{res.filename} - {res.status}')
+        # print(res, end='\n\n')
 
 
 if __name__ == '__main__':

@@ -1,46 +1,12 @@
-from typing import Optional
-
 from src.main.app.model.analyzer.analysis_result import AnalysisResult
 from src.main.app.model.db_service.models import ScanResult, EncrResult, SuspyResult
+from src.main.app.model.db_service.result_of_file_analysis import ResultOfFileAnalysis
 from src.main.app.model.db_service.rw_service import ResultFromDB
 from src.main.app.model.encryption.encryption_determinator.encr_analyze_result import EncrAnalyzeResult
 from src.main.app.model.encryption.encryption_determinator.encryption_determinants.enums import EncrVerdict
 from src.main.app.model.hasher.hash_service import HashResult
 from src.main.app.model.obfuscation.obfuscation_determinator import ObfuscationResult
 from src.main.app.model.suspicious.suspicious_code import SuspiciousCode
-
-
-class ResultOfFileAnalysis:
-    def __init__(
-            self,
-            filename: str,
-            an_result: AnalysisResult,
-            old_hash: Optional[HashResult],
-            new_hash: Optional[HashResult]
-    ):
-        self._filename = filename
-        self._an_result = an_result
-        self._old_hash = old_hash
-        self._new_hash = new_hash
-
-    @property
-    def filename(self) -> str:
-        return self._filename
-
-    @property
-    def an_result(self) -> AnalysisResult:
-        return self._an_result
-
-    @property
-    def old_hash(self) -> Optional[HashResult]:
-        return self._old_hash
-
-    @property
-    def new_hash(self) -> Optional[HashResult]:
-        return self._new_hash
-
-    def __str__(self):
-        return f'{self.filename}\nold_h: {self.old_hash}\nnew_h: {self.new_hash}\n{self.an_result}'
 
 
 class ConverterForDB:
