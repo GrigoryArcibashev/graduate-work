@@ -1,7 +1,7 @@
 # graduate-work
 
 ### Запуск
-_src/main/ui/main.py_
+_src/main/app/ui/main.py_
 
 ### Используемые внешние модули
 - pyqt5
