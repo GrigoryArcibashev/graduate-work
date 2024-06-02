@@ -1,13 +1,12 @@
 from enum import Enum
-from typing import Optional
 
 from src.main.app.model.analyzer.analysis_result import AnalysisResult
 from src.main.app.model.hasher.hash_service import HashResult
 
 
 class FileModStatus(Enum):
-    UNTRUSTED_NEW = 0
-    UNTRUSTED_MODIFIED = 1
+    UNTRUSTED = 0
+    MODIFIED = 1
     TRUSTED = 2
 
 
@@ -16,13 +15,13 @@ class ResultOfFileAnalysis:
             self,
             filename: str,
             an_result: AnalysisResult,
-            old_hash: Optional[HashResult],
-            new_hash: Optional[HashResult]
+            _hash: HashResult,
+            status: FileModStatus
     ):
         self._filename = filename
         self._an_result = an_result
-        self._old_hash = old_hash
-        self._new_hash = new_hash
+        self._hash = _hash
+        self._status = status
 
     @property
     def filename(self) -> str:
@@ -33,23 +32,12 @@ class ResultOfFileAnalysis:
         return self._an_result
 
     @property
-    def old_hash(self) -> Optional[HashResult]:
-        return self._old_hash
-
-    @property
-    def new_hash(self) -> Optional[HashResult]:
-        return self._new_hash
+    def hash(self) -> HashResult:
+        return self._hash
 
     @property
     def status(self) -> FileModStatus:
-        if self.old_hash is None:
-            if self.new_hash is None:
-                raise Exception('old and new hashes are None')
-            return FileModStatus.UNTRUSTED_NEW
-        if self.new_hash is None:
-            return FileModStatus.TRUSTED
-        return FileModStatus.UNTRUSTED_MODIFIED
+        return self._status
 
     def __str__(self):
-        return f'{self.filename}\nold_h: {self.old_hash}\nnew_h: {self.new_hash}\n{self.an_result}'
-
+        return f'{self.filename}\nhash: {self.hash}\nstatus: {self.status}\n{self.an_result}'

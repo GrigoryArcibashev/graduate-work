@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Enum
 from sqlalchemy.orm import DeclarativeBase, relationship
 
+from src.main.app.model.db_service.result_of_file_analysis import FileModStatus
 from src.main.app.model.suspicious.enums import SuspiciousType, DangerLevel
 
 
@@ -12,8 +13,8 @@ class ScanResult(Base):
     __tablename__ = 'scan_results'
     id = Column(Integer, primary_key=True, autoincrement=True)
     filename = Column(String, nullable=False, unique=True)
-    old_hash = Column(String)
-    new_hash = Column(String)
+    hash = Column(String)
+    status = Column(Enum(FileModStatus), nullable=False)
     encr = Column(Boolean)
     obf = Column(Boolean)
     suspy = Column(Boolean)
@@ -24,8 +25,8 @@ class ScanResult(Base):
     def __str__(self):
         result = f'id = {self.id}, ' \
                  f'filename = {self.filename}, ' \
-                 f'old_h(6) = {str(self.old_hash)[:6]}, ' \
-                 f'new_h(6) = {str(self.new_hash)[:6]}'
+                 f'hash(6) = {str(self.hash)[:6]}' \
+                 f'status = {str(self.status)}'
         return result
 
 

@@ -41,8 +41,8 @@ class ConverterForDB:
         return ResultOfFileAnalysis(
             filename=scan_result.filename,
             an_result=an_result,
-            old_hash=HashResult(scan_result.old_hash) if scan_result.old_hash else None,
-            new_hash=HashResult(scan_result.new_hash) if scan_result.new_hash else None,
+            _hash=HashResult(scan_result.hash),
+            status=scan_result.status
         )
 
     @staticmethod
@@ -52,16 +52,16 @@ class ConverterForDB:
     @staticmethod
     def convert_to_db_model(result: ResultOfFileAnalysis) -> ScanResult:
         filename = result.filename
-        old_hash = result.old_hash.hash() if result.old_hash else None
-        new_hash = result.new_hash.hash() if result.new_hash else None
+        _hash = result.hash.hash()
+        status = result.status
         encr = result.an_result.encr_res
         obf = result.an_result.obf_res
         suspy = result.an_result.suspy_res
 
         scan_res = ScanResult(
             filename=filename,
-            old_hash=old_hash,
-            new_hash=new_hash,
+            hash=_hash,
+            status=status,
             encr=encr.is_encr,
             obf=obf.is_obf,
             suspy=bool(suspy)

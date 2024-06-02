@@ -1,115 +1,13 @@
-import time
-from os import listdir
-from os.path import isfile, join
 from typing import Optional
 
-from src.main.app.model.analyzer.analysis_result import AnalysisResult
 from src.main.app.model.analyzer.analyzer import Analyzer
 from src.main.app.model.db_service.converter import ConverterForDB
-from src.main.app.model.db_service.result_of_file_analysis import ResultOfFileAnalysis
+from src.main.app.model.db_service.result_of_file_analysis import ResultOfFileAnalysis, FileModStatus
 from src.main.app.model.db_service.rw_service import DBService
 from src.main.app.model.file_service.file_explorer import FileExplorer
 from src.main.app.model.file_service.file_reader import FileReader
 from src.main.app.model.hasher.hash_service import Hasher, HashResult
 from src.main.app.model.settings.settings import Settings
-
-
-def get_filenames(paths: list[str]) -> list[str]:
-    filenames = list()
-    for path in paths:
-        filenames.extend(filter(isfile, (map(lambda f: join(path, f), listdir(path)))))
-    return filenames
-
-
-def sec_to_str_min_and_sec(sec: float) -> str:
-    if sec < 60:
-        return f'{int(sec)} сек.'
-    return f'{int(sec // 60)} мин. {int(sec % 60)} сек.'
-
-
-def print_time_results(all_time, total) -> None:
-    print(f'\nВРЕМЯ: {sec_to_str_min_and_sec(all_time)}')
-    print(f'~{round(all_time / max(1, total), 2)} сек. на файл')
-
-
-def print_state(processed, total, start, filename=None) -> None:
-    if processed:
-        velocity = (time.time() - start) / processed
-        end = f', осталось ~ {sec_to_str_min_and_sec((total - processed) * velocity)}'
-        end += f' ({filename})' if filename else f''
-    else:
-        end = ''
-    print(f'\r{round(100 * processed / max(1, total))}% ({processed}/{total})', end=end)
-
-
-def print_analyze_results(results: list[(str, AnalysisResult)], inp: bool = False) -> None:
-    for filename, result in results:
-        # if not result.obf_res.is_obf:
-        #     continue
-        if inp:
-            input('\n<<ДАЛЕЕ (Enter)>>')
-        else:
-            print('=' * 40)
-        print(f'ИМЯ: {filename}')
-        print(result)
-
-
-def run(filenames: list[str], analyzer: Analyzer) -> list[AnalysisResult]:
-    for filename in filenames:
-        yield analyzer.analyze(FileReader.read_file(filename))
-
-
-def main():
-    paths = [
-        '../../source/FOR_TEST_X',
-        #
-        # '../../source/obf/js',
-        # '../../source/obf/php',
-        # '../../source/obf/sharp',
-        # '../../source/obf/python',
-
-        # '../../source/obf_non/js',
-        # '../../source/obf_non/php',
-        # '../../source/obf_non/sharp',
-        # '../../source/obf_non/python',
-
-        # '../../source/encr/base32',
-        # '../../source/encr/base64',
-        # '../../source/encr/base85',
-        # '../../source/encr/base122',
-        # '../../source/encr/rot13',
-        # '../../source/encr/hex',
-        # '../../source/encr/AES',
-        # '../../source/encr/DES_triple',
-
-        # '../../source/encr_non/php',
-        # '../../source/encr_non/js',
-        # '../../source/encr_non/python',
-        # '../../source/encr_non/ruby',
-        # '../../source/encr_non/sharp',
-        # '../../source/encr_non/bash',
-        # '../../source/encr_non/html',
-        # '../../source/encr_non/css',
-        # '../../source/encr_non/xml',
-        # '../../source/encr_non/sql',
-        # '../../source/encr_non/other/arch',
-        # '../../source/encr_non/other/img',
-    ]
-    filenames = get_filenames(paths)
-    settings = Settings(FileReader.read_json('../../settings.json'))
-    analyzer = Analyzer(settings.analyzer_settings)
-
-    results = list()
-    processed = 0
-    total = len(filenames)
-    start = time.time()
-    print_state(processed, total, start, filenames[processed])
-    for result in run(filenames, analyzer):
-        results.append((filenames[processed], result))
-        processed += 1
-        print_state(processed, total, start, filename=filenames[processed] if processed < total else None)
-    print_time_results(time.time() - start, total)
-    print_analyze_results(results, inp=False)
 
 
 class MainService:
@@ -138,14 +36,10 @@ class MainService:
         results_to_db: list[ResultOfFileAnalysis] = list()
         for result in results_of_file_analysis:
             if result.filename in trusted_files:
-                new_hash, old_hash = None, result.old_hash if result.new_hash is None else result.new_hash
-            elif result.old_hash == result.new_hash:
-                old_hash = None
-                new_hash = result.new_hash
+                status = FileModStatus.TRUSTED
             else:
-                old_hash, new_hash = result.old_hash, result.old_hash if result.new_hash is None else result.new_hash
-
-            new_result = ResultOfFileAnalysis(result.filename, result.an_result, old_hash, new_hash)
+                status = FileModStatus.MODIFIED if result.status == FileModStatus.MODIFIED else FileModStatus.UNTRUSTED
+            new_result = ResultOfFileAnalysis(result.filename, result.an_result, result.hash, status)
             results_to_db.append(new_result)
         self._db_service.write(ConverterForDB.convert_to_db_models(results_to_db))
 
@@ -170,38 +64,31 @@ class MainService:
             # файл новый, его в БД не было
             filename = filename
             an_result = self._analyzer.analyze(data)
-            old_hash = None
-            new_hash = _hash
-            print(f'{filename} db_result is None\thash={_hash.hash()[:6]}')
-        elif db_result.old_hash == _hash:
-            # файл не изменился, он всё еще доверенный
-            filename = filename
-            an_result = db_result.an_result if db_result.new_hash is None else self._analyzer.analyze(data)
-            old_hash = db_result.old_hash
-            new_hash = None
-            print(f'{filename} db_result.old_hash == _hash | {db_result.new_hash is None} = db_result.new_hash is None')
-        elif db_result.new_hash == _hash:
-            # файл не изменился с последнего запуска, НО он НЕ доверенный
+            hash_fin = _hash
+            status = FileModStatus.UNTRUSTED
+            print(f'{filename} db_result is None')
+        elif db_result.hash == _hash:
+            # файл не изменился, сохраняем статус
             filename = filename
             an_result = db_result.an_result
-            old_hash = db_result.old_hash
-            new_hash = db_result.new_hash
-            print(f'{filename} db_result.new_hash == _hash')
-        elif db_result.new_hash != _hash:
-            # файл изменился, он НЕ доверенный
+            hash_fin = db_result.hash
+            status = db_result.status
+            print(f'{filename} db_result.hash == _hash')
+        elif db_result.hash != _hash:
+            # файл изменился, устанавливаем новый статус
             filename = filename
             an_result = self._analyzer.analyze(data)
-            old_hash = db_result.old_hash
-            new_hash = _hash
-            print(f'{filename} db_result.new_hash != _hash')
+            hash_fin = _hash
+            status = FileModStatus.MODIFIED
+            print(f'{filename} db_result.hash != _hash')
         else:
             print(f'{filename} {self.__class__}')
             raise Exception()
         return ResultOfFileAnalysis(
             filename=filename,
             an_result=an_result,
-            old_hash=old_hash,
-            new_hash=new_hash
+            _hash=hash_fin,
+            status=status
         )
 
     @staticmethod
@@ -218,7 +105,7 @@ def main_app():
     app.run()
     print('=' * 70)
     results = app.get_results_from_db()
-    # app.mark_files_as_trusted(results, {res.filename for res in results})
+    app.mark_files_as_trusted(results, {res.filename for res in results})
     for res in app.get_results_from_db():
         print(f'{res.filename} - {res.status}')
         # print(res, end='\n\n')
