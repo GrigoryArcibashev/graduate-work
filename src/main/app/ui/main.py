@@ -13,16 +13,10 @@ from src.main.app.model.settings.settings import Settings
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self,main_service: MainService):
         super().__init__()
-        self._main_service = None
-        self._setup_ui()
-
-    def _set_main_service(self, main_service: MainService):
         self._main_service = main_service
-
-    def _check_main_service(self) -> bool:
-        return self._main_service is not None
+        self._setup_ui()
 
     def _setup_ui(self):
         self.ui = Ui_MainWindow()
@@ -35,8 +29,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self._set_text_to_label_site_dir()
 
     def _trust(self) -> None:
-        if not self._check_main_service():
-            return
         filenames = set()
         for row_ind in range(self.ui.table.rowCount()):
             check_box = self.ui.table.cellWidget(row_ind, 0)
@@ -49,8 +41,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self._show_last_result()
 
     def _set_root_dir(self) -> None:
-        if not self._check_main_service():
-            return
         root_dir = QFileDialog.getExistingDirectory(self, 'Выбрать директорию', '.')
         root_dir = root_dir if root_dir else ''
         self._set_text_to_label_site_dir(root_dir)
@@ -58,14 +48,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self._main_service.root_dir = root_dir
 
     def _start_scan(self) -> None:
-        if not self._check_main_service():
-            return
         self._main_service.run()
         self._show_last_result()
 
     def _show_last_result(self) -> None:
-        if not self._check_main_service():
-            return
         results = self._main_service.get_results_from_db()
         statutes = {res.filename: res.status for res in results}
         items = list()
@@ -164,11 +150,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
 def main():
     settings = Settings(FileReader.read_json('../../settings.json'))
+    # settings = Settings(FileReader.read_json('settings_in_ui.json'))
     main_service = MainService(settings=settings, root_dir='.')
 
     app = QtWidgets.QApplication([])
-    application = MainWindow()
-    application._set_main_service(main_service)
+    application = MainWindow(main_service)
     application.show()
 
     sys.exit(app.exec())

@@ -178,3 +178,7 @@ Notes.docx
 src/main/database.db
 /src/main/app/ui/recompile_and_run.py
 /src/main/app/model/obfuscation/metrcis.py
+/src/main/app/ui/main.exe
+/src/main/main.exe
+/src/main/settings_in_ui.json
+/src/main/words_by_len__.bin

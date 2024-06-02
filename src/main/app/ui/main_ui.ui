@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1553</width>
-    <height>904</height>
+    <height>856</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -118,43 +118,6 @@
     </property>
     <property name="text">
      <string>Каталог сайта:</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btn_settings_dir">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>820</y>
-      <width>111</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Установить
-новый</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lbl_settings_dir">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>780</y>
-      <width>901</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Путь к настройкам:</string>
     </property>
    </widget>
   </widget>
