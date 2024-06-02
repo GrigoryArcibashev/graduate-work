@@ -1,11 +1,12 @@
 import sys
+from typing import Union
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QFileDialog
+from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QFileDialog, QCheckBox
 
 from main_ui import Ui_MainWindow
-from src.main.app.model.db_service.result_of_file_analysis import ResultOfFileAnalysis
+from src.main.app.model.db_service.result_of_file_analysis import ResultOfFileAnalysis, FileModStatus
 from src.main.app.model.file_service.file_reader import FileReader
 from src.main.app.model.main.mainservice import MainService
 from src.main.app.model.settings.settings import Settings
@@ -16,7 +17,6 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
         self._main_service = main_service
         self._setup_ui()
-        self._show_last_result()
 
     def _setup_ui(self):
         self.ui = Ui_MainWindow()
@@ -25,11 +25,25 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.btn_show_res.clicked.connect(self._show_last_result)
         self.ui.btn_start_scan.clicked.connect(self._start_scan)
         self.ui.btn_root_dir.clicked.connect(self._set_root_dir)
+        self.ui.btn_trust.clicked.connect(self._trust)
+
+    def _trust(self) -> None:
+        filenames = set()
+        for row_ind in range(self.ui.table.rowCount()):
+            check_box = self.ui.table.cellWidget(row_ind, 0)
+            if isinstance(check_box, QCheckBox) and check_box.isChecked():
+                filenames.add(self.ui.table.item(row_ind, 1).text())
+        self._main_service.mark_files_as_trusted(
+            results_of_file_analysis=self._main_service.get_results_from_db(),
+            trusted_files=filenames
+        )
+        self._show_last_result()
 
     def _set_root_dir(self) -> None:
         root_dir = QFileDialog.getExistingDirectory(self, 'Выбрать директорию', '.')
-        print('OK')
-        self._main_service.root_dir = root_dir
+        if root_dir:
+            print('CHANGE ROOT')
+            self._main_service.root_dir = root_dir
 
     def _start_scan(self) -> None:
         self._main_service.run()
@@ -37,21 +51,36 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _show_last_result(self) -> None:
         results = self._main_service.get_results_from_db()
+        statutes = {res.filename: res.status for res in results}
         items = list()
         for result in results:
-            ext = self._make_items_for_result(result)
-            items.extend(ext)
+            items.extend(self._make_items_for_result(result))
         row_count = len(items)
         self._prepare_table(row_count)
-        for row_ind in range(row_count):
-            items_for_row = items[row_ind]
-            for item_ind in range(len(items_for_row)):
-                self.ui.table.setItem(row_ind, item_ind, self._make_table_item_read_only(items_for_row[item_ind]))
+        self._fill_table(statutes, items, row_count)
 
         print('OK')
 
+    def _fill_table(
+            self,
+            statutes: dict[str, FileModStatus],
+            items: list[list[Union[QTableWidgetItem, QCheckBox]]],
+            row_count: int
+    ) -> None:
+        for row_ind in range(row_count):
+            items_for_row = items[row_ind]
+            for item_ind in range(len(items_for_row)):
+                item = items_for_row[item_ind]
+                if isinstance(item, QCheckBox):
+                    self.ui.table.setCellWidget(row_ind, item_ind, item)
+                    filename = items_for_row[1].text()
+                    if statutes[filename] == FileModStatus.TRUSTED:
+                        self.ui.table.cellWidget(row_ind, item_ind).setChecked(True)
+                else:
+                    self.ui.table.setItem(row_ind, item_ind, self._make_table_item_read_only(item))
+
     @staticmethod
-    def _make_items_for_result(result: ResultOfFileAnalysis) -> list[list[QTableWidgetItem]]:
+    def _make_items_for_result(result: ResultOfFileAnalysis) -> list[list[Union[QTableWidgetItem, QCheckBox]]]:
         filename = QTableWidgetItem(result.filename)
         status = QTableWidgetItem(str(result.status))
         is_encr = QTableWidgetItem('есть' if result.an_result.encr_res.is_encr else 'нет')
@@ -60,6 +89,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         items = [
             [
+                QCheckBox(),
+
                 filename,
                 status,
                 is_encr,
@@ -67,9 +98,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 QTableWidgetItem(str(suspy_results[0].code_as_str if suspy_results else '')),
                 QTableWidgetItem(str(suspy_results[0].danger_lvl if suspy_results else '')),
-                QTableWidgetItem(str(suspy_results[0].type if suspy_results else '')),
-
-                QTableWidgetItem('')
+                QTableWidgetItem(str(suspy_results[0].type if suspy_results else ''))
             ]
         ]
 
@@ -79,12 +108,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 QTableWidgetItem(''),
                 QTableWidgetItem(''),
                 QTableWidgetItem(''),
+                QTableWidgetItem(''),
 
                 QTableWidgetItem(str(suspy_results[i + 1].code_as_str)),
                 QTableWidgetItem(str(suspy_results[i + 1].danger_lvl)),
                 QTableWidgetItem(str(suspy_results[i + 1].type)),
-
-                QTableWidgetItem(''),
             ]
             items.append(new_item)
 
@@ -92,6 +120,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _prepare_table(self, row_count: int) -> None:
         headers = (
+            'Доверенный',
             'Имя',
             'Статус',
             'Преобразование',
@@ -99,7 +128,6 @@ class MainWindow(QtWidgets.QMainWindow):
             'Подозрительный\nфрагмент',
             'Уровень опасности\nфрагмента',
             'Тип фрагмента',
-            'Доверенный'
         )
         column_count = len(headers)
         self.ui.table.setRowCount(row_count)
@@ -120,7 +148,7 @@ def main():
     settings = Settings(FileReader.read_json('../../settings.json'))
     main_service = MainService(
         settings=settings,
-        root_dir='../../source/encr/base85',
+        root_dir='../../source/obf',
         path_to_db='sqlite:///../../database.db')
 
     app = QtWidgets.QApplication([])

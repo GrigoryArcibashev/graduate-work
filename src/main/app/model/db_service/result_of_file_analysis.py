@@ -5,7 +5,7 @@ from src.main.app.model.analyzer.analysis_result import AnalysisResult
 from src.main.app.model.hasher.hash_service import HashResult
 
 
-class Status(Enum):
+class FileModStatus(Enum):
     UNTRUSTED_NEW = 0
     UNTRUSTED_MODIFIED = 1
     TRUSTED = 2
@@ -41,14 +41,14 @@ class ResultOfFileAnalysis:
         return self._new_hash
 
     @property
-    def status(self) -> Status:
+    def status(self) -> FileModStatus:
         if self.old_hash is None:
             if self.new_hash is None:
                 raise Exception('old and new hashes are None')
-            return Status.UNTRUSTED_NEW
+            return FileModStatus.UNTRUSTED_NEW
         if self.new_hash is None:
-            return Status.TRUSTED
-        return Status.UNTRUSTED_MODIFIED
+            return FileModStatus.TRUSTED
+        return FileModStatus.UNTRUSTED_MODIFIED
 
     def __str__(self):
         return f'{self.filename}\nold_h: {self.old_hash}\nnew_h: {self.new_hash}\n{self.an_result}'

@@ -137,15 +137,15 @@ class MainService:
     ) -> None:
         results_to_db: list[ResultOfFileAnalysis] = list()
         for result in results_of_file_analysis:
-            if result.filename not in trusted_files:
-                results_to_db.append(result)
-                continue
-            new_result = ResultOfFileAnalysis(
-                filename=result.filename,
-                an_result=result.an_result,
-                old_hash=result.old_hash if result.new_hash is None else result.new_hash,
-                new_hash=None
-            )
+            if result.filename in trusted_files:
+                new_hash, old_hash = None, result.old_hash if result.new_hash is None else result.new_hash
+            elif result.old_hash == result.new_hash:
+                old_hash = None
+                new_hash = result.new_hash
+            else:
+                old_hash, new_hash = result.old_hash, result.old_hash if result.new_hash is None else result.new_hash
+
+            new_result = ResultOfFileAnalysis(result.filename, result.an_result, old_hash, new_hash)
             results_to_db.append(new_result)
         self._db_service.write(ConverterForDB.convert_to_db_models(results_to_db))
 

@@ -32,7 +32,7 @@
    <widget class="QPushButton" name="btn_show_res">
     <property name="geometry">
      <rect>
-      <x>620</x>
+      <x>510</x>
       <y>710</y>
       <width>91</width>
       <height>51</height>
@@ -50,7 +50,7 @@
    <widget class="QPushButton" name="btn_start_scan">
     <property name="geometry">
      <rect>
-      <x>720</x>
+      <x>610</x>
       <y>710</y>
       <width>111</width>
       <height>51</height>
@@ -68,7 +68,7 @@
    <widget class="QPushButton" name="btn_root_dir">
     <property name="geometry">
      <rect>
-      <x>840</x>
+      <x>730</x>
       <y>710</y>
       <width>111</width>
       <height>51</height>
@@ -81,6 +81,24 @@
     </property>
     <property name="text">
      <string>ROOT</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_trust">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>710</y>
+      <width>171</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Сохранить отметки</string>
     </property>
    </widget>
   </widget>
