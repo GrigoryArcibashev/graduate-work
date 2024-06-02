@@ -9,6 +9,17 @@ class FileModStatus(Enum):
     MODIFIED = 1
     TRUSTED = 2
 
+    def to_str(self) -> str:
+        if self == FileModStatus.UNTRUSTED:
+            return 'недоверенный'
+        if self == FileModStatus.MODIFIED:
+            return 'изменённый'
+        if self == FileModStatus.TRUSTED:
+            return 'доверенный'
+
+    def __str__(self):
+        return self.to_str()
+
 
 class ResultOfFileAnalysis:
     def __init__(

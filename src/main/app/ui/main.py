@@ -45,7 +45,6 @@ class MainWindow(QtWidgets.QMainWindow):
         root_dir = root_dir if root_dir else ''
         self._set_text_to_label_site_dir(root_dir)
         if root_dir:
-            print('CHANGE ROOT')
             self._main_service.root_dir = root_dir
 
     def _start_scan(self) -> None:
@@ -61,8 +60,6 @@ class MainWindow(QtWidgets.QMainWindow):
         row_count = len(items)
         self._prepare_table(row_count)
         self._fill_table(statutes, items, row_count)
-
-        print('OK')
 
     def _fill_table(
             self,
@@ -85,7 +82,7 @@ class MainWindow(QtWidgets.QMainWindow):
     @staticmethod
     def _make_items_for_result(result: ResultOfFileAnalysis) -> list[list[Union[QTableWidgetItem, QCheckBox]]]:
         filename = QTableWidgetItem(result.filename)
-        status = QTableWidgetItem(str(result.status))
+        status = QTableWidgetItem(result.status.to_str())
         is_encr = QTableWidgetItem('есть' if result.an_result.encr_res.is_encr else 'нет')
         is_obf = QTableWidgetItem('есть' if result.an_result.obf_res.is_obf else 'нет')
         suspy_results = result.an_result.suspy_res
@@ -99,9 +96,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 is_encr,
                 is_obf,
 
-                QTableWidgetItem(str(suspy_results[0].code_as_str if suspy_results else '')),
-                QTableWidgetItem(str(suspy_results[0].danger_lvl if suspy_results else '')),
-                QTableWidgetItem(str(suspy_results[0].type if suspy_results else ''))
+                QTableWidgetItem(suspy_results[0].code_as_str if suspy_results else ''),
+                QTableWidgetItem(suspy_results[0].danger_lvl.to_str() if suspy_results else ''),
+                QTableWidgetItem(suspy_results[0].type.to_str() if suspy_results else '')
             ]
         ]
 
@@ -113,9 +110,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 QTableWidgetItem(''),
                 QTableWidgetItem(''),
 
-                QTableWidgetItem(str(suspy_results[i + 1].code_as_str)),
-                QTableWidgetItem(str(suspy_results[i + 1].danger_lvl)),
-                QTableWidgetItem(str(suspy_results[i + 1].type)),
+                QTableWidgetItem(suspy_results[i + 1].code_as_str),
+                QTableWidgetItem(suspy_results[i + 1].danger_lvl.to_str()),
+                QTableWidgetItem(suspy_results[i + 1].type.to_str()),
             ]
             items.append(new_item)
 
