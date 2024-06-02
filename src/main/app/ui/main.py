@@ -152,7 +152,7 @@ def main():
     settings = Settings(FileReader.read_json('../../settings.json'))
     main_service = MainService(
         settings=settings,
-        root_dir='../../source/obf',
+        root_dir='.',
         path_to_db='sqlite:///../../database.db')
 
     app = QtWidgets.QApplication([])
