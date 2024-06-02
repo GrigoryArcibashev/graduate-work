@@ -2,7 +2,7 @@ import sys
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QFileDialog
 
 from main_ui import Ui_MainWindow
 from src.main.app.model.db_service.result_of_file_analysis import ResultOfFileAnalysis
@@ -16,6 +16,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
         self._main_service = main_service
         self._setup_ui()
+        self._show_last_result()
 
     def _setup_ui(self):
         self.ui = Ui_MainWindow()
@@ -25,6 +26,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.btn_start_scan.clicked.connect(self._start_scan)
         self.ui.btn_root_dir.clicked.connect(self._set_root_dir)
 
+    def _set_root_dir(self) -> None:
+        root_dir = QFileDialog.getExistingDirectory(self, 'Выбрать директорию', '.')
+        print('OK')
+        self._main_service.root_dir = root_dir
+
     def _start_scan(self) -> None:
         self._main_service.run()
         self._show_last_result()
@@ -33,7 +39,8 @@ class MainWindow(QtWidgets.QMainWindow):
         results = self._main_service.get_results_from_db()
         items = list()
         for result in results:
-            items.extend(self._make_items_for_result(result))
+            ext = self._make_items_for_result(result)
+            items.extend(ext)
         row_count = len(items)
         self._prepare_table(row_count)
         for row_ind in range(row_count):
@@ -43,10 +50,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         print('OK')
 
-    def _set_root_dir(self, root_dir: str) -> None:
-        self._main_service.root_dir = '../../source/encr/base122'  # root_dir
-        print('OK')
-
     @staticmethod
     def _make_items_for_result(result: ResultOfFileAnalysis) -> list[list[QTableWidgetItem]]:
         filename = QTableWidgetItem(result.filename)
@@ -54,16 +57,37 @@ class MainWindow(QtWidgets.QMainWindow):
         is_encr = QTableWidgetItem('есть' if result.an_result.encr_res.is_encr else 'нет')
         is_obf = QTableWidgetItem('есть' if result.an_result.obf_res.is_obf else 'нет')
         suspy_results = result.an_result.suspy_res
-        items = [[filename, status, is_encr, is_obf]] \
-                + [[QTableWidgetItem('')] * 4] * max(0, len(suspy_results) - 1)
-        for suspy_ind in range(len(suspy_results)):
-            suspy = suspy_results[suspy_ind]
-            items[suspy_ind].extend(
-                [
-                    QTableWidgetItem(suspy.code_as_str),
-                    QTableWidgetItem(str(suspy.danger_lvl)),
-                    QTableWidgetItem(str(suspy.type))]
-            )
+
+        items = [
+            [
+                filename,
+                status,
+                is_encr,
+                is_obf,
+
+                QTableWidgetItem(str(suspy_results[0].code_as_str if suspy_results else '')),
+                QTableWidgetItem(str(suspy_results[0].danger_lvl if suspy_results else '')),
+                QTableWidgetItem(str(suspy_results[0].type if suspy_results else '')),
+
+                QTableWidgetItem('')
+            ]
+        ]
+
+        for i in range(max(0, len(suspy_results) - 1)):
+            new_item = [
+                QTableWidgetItem(''),
+                QTableWidgetItem(''),
+                QTableWidgetItem(''),
+                QTableWidgetItem(''),
+
+                QTableWidgetItem(str(suspy_results[i + 1].code_as_str)),
+                QTableWidgetItem(str(suspy_results[i + 1].danger_lvl)),
+                QTableWidgetItem(str(suspy_results[i + 1].type)),
+
+                QTableWidgetItem(''),
+            ]
+            items.append(new_item)
+
         return items
 
     def _prepare_table(self, row_count: int) -> None:
@@ -74,7 +98,8 @@ class MainWindow(QtWidgets.QMainWindow):
             'Обфускация',
             'Подозрительный\nфрагмент',
             'Уровень опасности\nфрагмента',
-            'Тип фрагмента'
+            'Тип фрагмента',
+            'Доверенный'
         )
         column_count = len(headers)
         self.ui.table.setRowCount(row_count)
