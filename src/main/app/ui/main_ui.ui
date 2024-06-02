@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1553</width>
-    <height>810</height>
+    <height>877</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,10 +32,10 @@
    <widget class="QPushButton" name="btn_show_res">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>710</y>
-      <width>91</width>
-      <height>51</height>
+      <x>10</x>
+      <y>690</y>
+      <width>111</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -44,16 +44,16 @@
      </font>
     </property>
     <property name="text">
-     <string>Показать</string>
+     <string>Результаты</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_start_scan">
     <property name="geometry">
      <rect>
-      <x>610</x>
-      <y>710</y>
+      <x>10</x>
+      <y>730</y>
       <width>111</width>
-      <height>51</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -68,8 +68,8 @@
    <widget class="QPushButton" name="btn_root_dir">
     <property name="geometry">
      <rect>
-      <x>730</x>
-      <y>710</y>
+      <x>440</x>
+      <y>730</y>
       <width>111</width>
       <height>51</height>
      </rect>
@@ -80,16 +80,17 @@
      </font>
     </property>
     <property name="text">
-     <string>ROOT</string>
+     <string>Установить
+новый</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_trust">
     <property name="geometry">
      <rect>
-      <x>850</x>
-      <y>710</y>
-      <width>171</width>
-      <height>51</height>
+      <x>10</x>
+      <y>770</y>
+      <width>111</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -98,7 +99,25 @@
      </font>
     </property>
     <property name="text">
-     <string>Сохранить отметки</string>
+     <string>Сохранить</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_dir">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>690</y>
+      <width>901</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Каталог сайта:</string>
     </property>
    </widget>
   </widget>

@@ -26,6 +26,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.btn_start_scan.clicked.connect(self._start_scan)
         self.ui.btn_root_dir.clicked.connect(self._set_root_dir)
         self.ui.btn_trust.clicked.connect(self._trust)
+        self._set_text_to_label_site_dir(self._main_service.root_dir)
 
     def _trust(self) -> None:
         filenames = set()
@@ -41,6 +42,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _set_root_dir(self) -> None:
         root_dir = QFileDialog.getExistingDirectory(self, 'Выбрать директорию', '.')
+        root_dir = root_dir if root_dir else ''
+        self._set_text_to_label_site_dir(root_dir)
         if root_dir:
             print('CHANGE ROOT')
             self._main_service.root_dir = root_dir
@@ -142,6 +145,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def _make_table_item_read_only(table_item: QTableWidgetItem) -> QTableWidgetItem:
         table_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
         return table_item
+
+    def _set_text_to_label_site_dir(self, text: str = None) -> None:
+        result_text = 'Каталог сайта: ' + text if text is not None else ''
+        self.ui.lbl_dir.setText(result_text)
 
 
 def main():
