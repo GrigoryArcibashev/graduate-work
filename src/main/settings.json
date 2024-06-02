@@ -1,4 +1,7 @@
 {
+  "database": {
+    "path_to_db": "sqlite:///../../database.db"
+  },
   "hash": {
     "alg": "sha256",
     "algs": {

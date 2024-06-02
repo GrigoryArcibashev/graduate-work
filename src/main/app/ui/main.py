@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QFileDialog, QCheckBox
 
-from main_ui import Ui_MainWindow
+from src.main.app.ui.main_ui import Ui_MainWindow
 from src.main.app.model.db_service.result_of_file_analysis import ResultOfFileAnalysis, FileModStatus
 from src.main.app.model.file_service.file_reader import FileReader
 from src.main.app.model.main.mainservice import MainService
@@ -13,10 +13,16 @@ from src.main.app.model.settings.settings import Settings
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, main_service: MainService):
+    def __init__(self):
         super().__init__()
-        self._main_service = main_service
+        self._main_service = None
         self._setup_ui()
+
+    def _set_main_service(self, main_service: MainService):
+        self._main_service = main_service
+
+    def _check_main_service(self) -> bool:
+        return self._main_service is not None
 
     def _setup_ui(self):
         self.ui = Ui_MainWindow()
@@ -26,9 +32,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.btn_start_scan.clicked.connect(self._start_scan)
         self.ui.btn_root_dir.clicked.connect(self._set_root_dir)
         self.ui.btn_trust.clicked.connect(self._trust)
-        self._set_text_to_label_site_dir(self._main_service.root_dir)
+        self._set_text_to_label_site_dir()
 
     def _trust(self) -> None:
+        if not self._check_main_service():
+            return
         filenames = set()
         for row_ind in range(self.ui.table.rowCount()):
             check_box = self.ui.table.cellWidget(row_ind, 0)
@@ -41,6 +49,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self._show_last_result()
 
     def _set_root_dir(self) -> None:
+        if not self._check_main_service():
+            return
         root_dir = QFileDialog.getExistingDirectory(self, 'Выбрать директорию', '.')
         root_dir = root_dir if root_dir else ''
         self._set_text_to_label_site_dir(root_dir)
@@ -48,10 +58,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self._main_service.root_dir = root_dir
 
     def _start_scan(self) -> None:
+        if not self._check_main_service():
+            return
         self._main_service.run()
         self._show_last_result()
 
     def _show_last_result(self) -> None:
+        if not self._check_main_service():
+            return
         results = self._main_service.get_results_from_db()
         statutes = {res.filename: res.status for res in results}
         items = list()
@@ -144,19 +158,17 @@ class MainWindow(QtWidgets.QMainWindow):
         return table_item
 
     def _set_text_to_label_site_dir(self, text: str = None) -> None:
-        result_text = 'Каталог сайта: ' + text if text is not None else ''
-        self.ui.lbl_dir.setText(result_text)
+        result_text = 'Каталог сайта: ' + (text if text is not None else '')
+        self.ui.lbl_site_dir.setText(result_text)
 
 
 def main():
     settings = Settings(FileReader.read_json('../../settings.json'))
-    main_service = MainService(
-        settings=settings,
-        root_dir='.',
-        path_to_db='sqlite:///../../database.db')
+    main_service = MainService(settings=settings, root_dir='.')
 
     app = QtWidgets.QApplication([])
-    application = MainWindow(main_service)
+    application = MainWindow()
+    application._set_main_service(main_service)
     application.show()
 
     sys.exit(app.exec())

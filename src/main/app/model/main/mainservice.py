@@ -11,11 +11,11 @@ from src.main.app.model.settings.settings import Settings
 
 
 class MainService:
-    def __init__(self, settings: Settings, root_dir: str, path_to_db: str):
+    def __init__(self, settings: Settings, root_dir: str):
         self._root_dir = root_dir
         self._hasher = Hasher(settings.hasher_settings)
         self._analyzer = Analyzer(settings.analyzer_settings)
-        self._db_service = DBService(path_to_db)
+        self._db_service = DBService(settings.database_settings.path_to_database)
 
     @property
     def root_dir(self) -> str:
@@ -66,23 +66,19 @@ class MainService:
             an_result = self._analyzer.analyze(data)
             hash_fin = _hash
             status = FileModStatus.UNTRUSTED
-            print(f'{filename} db_result is None')
         elif db_result.hash == _hash:
             # файл не изменился, сохраняем статус
             filename = filename
             an_result = db_result.an_result
             hash_fin = db_result.hash
             status = db_result.status
-            print(f'{filename} db_result.hash == _hash')
         elif db_result.hash != _hash:
             # файл изменился, устанавливаем новый статус
             filename = filename
             an_result = self._analyzer.analyze(data)
             hash_fin = _hash
             status = FileModStatus.MODIFIED
-            print(f'{filename} db_result.hash != _hash')
         else:
-            print(f'{filename} {self.__class__}')
             raise Exception()
         return ResultOfFileAnalysis(
             filename=filename,
@@ -94,23 +90,3 @@ class MainService:
     @staticmethod
     def _make_dict_filename_to_result(results: list[ResultOfFileAnalysis]) -> dict[str, ResultOfFileAnalysis]:
         return {result.filename: result for result in results}
-
-
-def main_app():
-    settings = Settings(FileReader.read_json('../../../settings.json'))
-    app = MainService(
-        settings=settings,
-        root_dir='../../../source/obf/',
-        path_to_db='sqlite:///../../../database.db')
-    app.run()
-    print('=' * 70)
-    results = app.get_results_from_db()
-    app.mark_files_as_trusted(results, {res.filename for res in results})
-    for res in app.get_results_from_db():
-        print(f'{res.filename} - {res.status}')
-        # print(res, end='\n\n')
-
-
-if __name__ == '__main__':
-    # main()
-    main_app()
