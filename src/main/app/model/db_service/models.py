@@ -9,6 +9,12 @@ class Base(DeclarativeBase):
     pass
 
 
+class SiteCatalogPath(Base):
+    __tablename__ = 'site_catalog_path'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    path = Column(String, nullable=False)
+
+
 class ScanResult(Base):
     __tablename__ = 'scan_results'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -21,13 +27,6 @@ class ScanResult(Base):
 
     encr_result = relationship('EncrResult', back_populates='scan_result', cascade='all, delete-orphan')
     suspy_result = relationship('SuspyResult', back_populates='scan_result', cascade='all, delete-orphan')
-
-    def __str__(self):
-        result = f'id = {self.id}, ' \
-                 f'filename = {self.filename}, ' \
-                 f'hash(6) = {str(self.hash)[:6]}' \
-                 f'status = {str(self.status)}'
-        return result
 
 
 class EncrResult(Base):

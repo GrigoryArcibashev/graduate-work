@@ -28,6 +28,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.btn_trust.clicked.connect(self._trust)
         self._set_text_to_label_site_dir()
 
+    def _set_root_dir(self) -> None:
+        new_root_dir = QFileDialog.getExistingDirectory(self, 'Выбрать директорию', '.')
+        if new_root_dir:
+            self._main_service.root_dir = new_root_dir
+            self._set_text_to_label_site_dir()
+
+    def _set_text_to_label_site_dir(self) -> None:
+        self.ui.lbl_site_dir.setText(f'Каталог сайта: {self._main_service.root_dir}')
+
+    def _start_scan(self) -> None:
+        self._main_service.run()
+        self._show_last_result()
+
     def _trust(self) -> None:
         filenames = set()
         for row_ind in range(self.ui.table.rowCount()):
@@ -38,17 +51,6 @@ class MainWindow(QtWidgets.QMainWindow):
             results_of_file_analysis=self._main_service.get_results_from_db(),
             trusted_files=filenames
         )
-        self._show_last_result()
-
-    def _set_root_dir(self) -> None:
-        root_dir = QFileDialog.getExistingDirectory(self, 'Выбрать директорию', '.')
-        root_dir = root_dir if root_dir else ''
-        self._set_text_to_label_site_dir(root_dir)
-        if root_dir:
-            self._main_service.root_dir = root_dir
-
-    def _start_scan(self) -> None:
-        self._main_service.run()
         self._show_last_result()
 
     def _show_last_result(self) -> None:
@@ -143,15 +145,11 @@ class MainWindow(QtWidgets.QMainWindow):
         table_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
         return table_item
 
-    def _set_text_to_label_site_dir(self, text: str = None) -> None:
-        result_text = 'Каталог сайта: ' + (text if text is not None else '')
-        self.ui.lbl_site_dir.setText(result_text)
-
 
 def main():
     settings = Settings(FileReader.read_json('../../settings.json'))
     # settings = Settings(FileReader.read_json('settings_in_ui.json'))
-    main_service = MainService(settings=settings, root_dir='.')
+    main_service = MainService(settings=settings)
 
     app = QtWidgets.QApplication([])
     application = MainWindow(main_service)

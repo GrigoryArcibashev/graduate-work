@@ -11,11 +11,16 @@ from src.main.app.model.settings.settings import Settings
 
 
 class MainService:
-    def __init__(self, settings: Settings, root_dir: str):
-        self._root_dir = root_dir
+    def __init__(self, settings: Settings):
         self._hasher = Hasher(settings.hasher_settings)
         self._analyzer = Analyzer(settings.analyzer_settings)
         self._db_service = DBService(settings.database_settings.path_to_database)
+        self._root_dir = None
+        self._set_root_dir_from_db()
+
+    def _set_root_dir_from_db(self) -> None:
+        root_dir = self._db_service.read_site_catalog_path()
+        self._root_dir = '.' if root_dir is None else root_dir
 
     @property
     def root_dir(self) -> str:
@@ -24,9 +29,10 @@ class MainService:
     @root_dir.setter
     def root_dir(self, new_value: str) -> None:
         self._root_dir = new_value
+        self._db_service.write_site_catalog_path(new_value)
 
     def get_results_from_db(self) -> list[ResultOfFileAnalysis]:
-        return ConverterForDB.convert_from_db_models(self._db_service.read())
+        return ConverterForDB.convert_from_db_models(self._db_service.read_results())
 
     def mark_files_as_trusted(
             self,
@@ -41,7 +47,7 @@ class MainService:
                 status = FileModStatus.MODIFIED if result.status == FileModStatus.MODIFIED else FileModStatus.UNTRUSTED
             new_result = ResultOfFileAnalysis(result.filename, result.an_result, result.hash, status)
             results_to_db.append(new_result)
-        self._db_service.write(ConverterForDB.convert_to_db_models(results_to_db))
+        self._db_service.write_results(ConverterForDB.convert_to_db_models(results_to_db))
 
     def run(self) -> None:
         results_from_db = self._make_dict_filename_to_result(self.get_results_from_db())
@@ -51,7 +57,7 @@ class MainService:
             _hash: HashResult = self._hasher.calc_hash(data)
             db_result = results_from_db.get(filename)
             results_to_db.append(self._make_new_result_for_db(filename, _hash, data, db_result))
-        self._db_service.write(ConverterForDB.convert_to_db_models(results_to_db))
+        self._db_service.write_results(ConverterForDB.convert_to_db_models(results_to_db))
 
     def _make_new_result_for_db(
             self,

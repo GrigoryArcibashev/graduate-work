@@ -133,17 +133,17 @@ def get_filenames_by_path(paths):
 
 
 def write_terminator_line(file):
-    file.write(f'{"=" * 52}\n{"=" * 52}\n\t\t\t\t\tНОВЫЙ РАЗДЕЛ\n{"=" * 52}\n{"=" * 52}\n\n')
+    file.write_results(f'{"=" * 52}\n{"=" * 52}\n\t\t\t\t\tНОВЫЙ РАЗДЕЛ\n{"=" * 52}\n{"=" * 52}\n\n')
 
 
 def write_metrics(f_score, file_stat, fn, fp, precision, recall, tn, tp):
-    file_stat.write(f'Вер. срабатывание: {tp} (TP)\n')
-    file_stat.write(f'Лож. срабатывание: {fp} (FP)\n')
-    file_stat.write(f'Вер. пропуск:      {tn} (TN)\n')
-    file_stat.write(f'Лож. пропуск:      {fn} (FN)\n')
-    file_stat.write(f'Точность = {round(100 * precision)}%\n')
-    file_stat.write(f'Полнота = {round(100 * recall)}%\n')
-    file_stat.write(f'F-score = {round(100 * f_score)}%\n')
+    file_stat.write_results(f'Вер. срабатывание: {tp} (TP)\n')
+    file_stat.write_results(f'Лож. срабатывание: {fp} (FP)\n')
+    file_stat.write_results(f'Вер. пропуск:      {tn} (TN)\n')
+    file_stat.write_results(f'Лож. пропуск:      {fn} (FN)\n')
+    file_stat.write_results(f'Точность = {round(100 * precision)}%\n')
+    file_stat.write_results(f'Полнота = {round(100 * recall)}%\n')
+    file_stat.write_results(f'F-score = {round(100 * f_score)}%\n')
 
 
 def calc_metrics(fn, fp, tp):
@@ -154,15 +154,15 @@ def calc_metrics(fn, fp, tp):
 
 
 def write_result(result: EncrAnalyzeResult, file_stat, filename):
-    file_stat.write(f'ИМЯ: {filename}\n')
-    file_stat.write(f'\tЭнтропия {result.entropy_in_percent}% | {result.entropy_above_border_in_percent}%\n')
-    file_stat.write(f'\tВырезано {result.cut_out_in_percent}%\n')
-    file_stat.write(f'{">ЕСТЬ ШИФР" if result.entr_verdict.is_encr or result.hex_verdict.is_encr else ">НЕТ ШИФРА"}\n')
+    file_stat.write_results(f'ИМЯ: {filename}\n')
+    file_stat.write_results(f'\tЭнтропия {result.entropy_in_percent}% | {result.entropy_above_border_in_percent}%\n')
+    file_stat.write_results(f'\tВырезано {result.cut_out_in_percent}%\n')
+    file_stat.write_results(f'{">ЕСТЬ ШИФР" if result.entr_verdict.is_encr or result.hex_verdict.is_encr else ">НЕТ ШИФРА"}\n')
     if result.entr_verdict.is_encr:
-        file_stat.write(f'\t-Энтропия ({result.entr_verdict.to_str()})\n')
+        file_stat.write_results(f'\t-Энтропия ({result.entr_verdict.to_str()})\n')
     if result.hex_verdict.is_encr:
-        file_stat.write(f'\t-HEX ({result.hex_verdict.to_str()})\n')
-    file_stat.write('\n' + '-' * 20 + '\n\n')
+        file_stat.write_results(f'\t-HEX ({result.hex_verdict.to_str()})\n')
+    file_stat.write_results('\n' + '-' * 20 + '\n\n')
 
 
 if __name__ == '__main__':
