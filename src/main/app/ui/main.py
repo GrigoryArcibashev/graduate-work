@@ -13,7 +13,7 @@ from src.main.app.model.settings.settings import Settings
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self,main_service: MainService):
+    def __init__(self, main_service: MainService):
         super().__init__()
         self._main_service = main_service
         self._setup_ui()

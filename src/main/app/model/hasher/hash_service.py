@@ -32,9 +32,3 @@ class Hasher:
         _hash = hashlib.new(self._hash_func_name)
         _hash.update(data)
         return HashResult(_hash.hexdigest())
-
-    def calc_hash_by_iter(self, data_iter: Iterator[bytes]) -> HashResult:
-        _hash = hashlib.new(self._hash_func_name)
-        for data in data_iter:
-            _hash.update(data)
-        return HashResult(_hash.hexdigest())
