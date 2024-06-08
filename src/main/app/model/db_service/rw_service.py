@@ -37,13 +37,3 @@ class DBService:
         with session(autoflush=False, bind=self._engine) as db:
             db.add_all(scan_results)
             db.commit()
-
-
-def main():
-    service = DBService('sqlite:///../../database.db')
-    for sc_r in service.read():
-        print(sc_r.suspy_result)
-
-
-if __name__ == '__main__':
-    main()

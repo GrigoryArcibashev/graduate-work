@@ -10,10 +10,3 @@ class FileExplorer:
         for filename in glob(root + '', recursive=recursive):
             if isfile(filename):
                 yield filename
-
-
-if __name__ == '__main__':
-    c = 0
-    for fn in FileExplorer.get_all_filenames('../../source/', recursive=True):
-        c += 1
-        print(f'{c}. {fn}')

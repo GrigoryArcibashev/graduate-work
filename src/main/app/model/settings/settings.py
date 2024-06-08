@@ -19,9 +19,3 @@ class Settings:
     @property
     def analyzer_settings(self) -> AnalyzerSettings:
         return AnalyzerSettings(self._raw_settings)
-
-
-if __name__ == '__main__':
-    sts = Settings(FileReader.read_json('../../settings.json'))
-    settings = sts.analyzer_settings
-    print()

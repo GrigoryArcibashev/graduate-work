@@ -1,18 +1,9 @@
 from typing import Optional
 
-from src.main.app.model.extractors.token_extractor import TokenExtractor
 from src.main.app.model.extractors.word import Word
-from src.main.app.model.extractors.word_extractor import WordExtractor
-from src.main.app.model.file_service.file_reader import FileReader
-from src.main.app.model.obfuscation.levenshtein_metric import SearcherByLevenshteinMetric, CalculatorLevenshteinMetric
+from src.main.app.model.obfuscation.levenshtein_metric import SearcherByLevenshteinMetric
 from src.main.app.model.obfuscation.name_processor import NameInfo, NameProcessor
-from src.main.app.model.obfuscation.searchers.searchers import ClassSearcher, FunctionSearcher, VariableSearcher
-from src.main.app.model.settings.calculator_levenshtein_metric_settings import CalculatorLevenshteinMetricSettings
 from src.main.app.model.settings.obfuscation_determinator_settings import ObfuscationDetSettings
-from src.main.app.model.settings.searcher_levenshtein_metric_settings import SearcherLevenshteinMetricSettings
-from src.main.app.model.settings.word_loader_settings import WordLoaderSettings
-from src.main.app.model.words_service.word_dict_service import WordDictService
-from src.main.app.model.words_service.word_loader import SimpleWordLoader
 
 
 class ObfuscationResult:
@@ -89,51 +80,3 @@ class ObfuscationDeterminator:
             obf_word_count += int(self._is_obf_word[word])
             word_count += 1
         return not word_count or obf_word_count / word_count > self._obf_name_border
-
-
-def main():
-    tn_ext = TokenExtractor()
-    var_searcher = VariableSearcher(tn_ext)
-    func_searcher = FunctionSearcher(tn_ext)
-    class_searcher = ClassSearcher(tn_ext)
-    name_processor = NameProcessor([var_searcher, func_searcher, class_searcher], WordExtractor())
-
-    settings = {
-        "obfuscation": {
-            "obfuscation_determinator": {
-                "obf_text_border": 0.4,
-                "obf_name_border": 0.4,
-                "max_non_obf_count_digits": 4
-            },
-            "searcher_by_levenshtein_metric": {
-                "mult_for_max_lev_distance": 0.35
-            },
-            "calculator_levenshtein_metric": {
-                "insert_cost": 1,
-                "delete_cost": 1,
-                "replace_cost": 1
-            }
-        },
-        "word_loader": {
-            "path_to_word_dict": "../words_service/words_by_len.bin"
-        }
-    }
-    word_dict_service = WordDictService(SimpleWordLoader(WordLoaderSettings(settings['word_loader'])))
-    obf_det = ObfuscationDeterminator(
-        name_processor,
-        SearcherByLevenshteinMetric(
-            word_dict_service,
-            CalculatorLevenshteinMetric(
-                CalculatorLevenshteinMetricSettings(settings['obfuscation']['calculator_levenshtein_metric'])
-            ),
-            SearcherLevenshteinMetricSettings(settings['obfuscation']['searcher_by_levenshtein_metric'])
-        ),
-        ObfuscationDetSettings(settings['obfuscation']['obfuscation_determinator'])
-    )
-
-    result = obf_det.determinate(FileReader.read_file('../../source/FOR_TEST_X/x.txt'))
-    print(result)
-
-
-if __name__ == '__main__':
-    main()

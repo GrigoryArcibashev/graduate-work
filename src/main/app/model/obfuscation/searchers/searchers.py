@@ -82,7 +82,6 @@ class VariableSearcher(AbstractSearcher):
     @property
     def patterns(self) -> Iterator[re.Pattern]:
         for pattern in self._patterns:
-            # print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
             yield pattern
 
 
@@ -124,7 +123,6 @@ class FunctionSearcher(AbstractSearcher):
     @property
     def patterns(self) -> Iterator[re.Pattern]:
         for pattern in self._patterns:
-            # print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
             yield pattern
 
 
@@ -148,22 +146,4 @@ class ClassSearcher(AbstractSearcher):
     @property
     def patterns(self) -> Iterator[re.Pattern]:
         for pattern in self._patterns:
-            # print(f'\n{"-" * len(str(pattern))}\n{pattern}\n{"-" * len(str(pattern))}')
             yield pattern
-
-
-def main():
-    variables = set()
-    text = FileReader.read_file('../../../../source/FOR_TEST_X/x.txt')
-    var_searcher = ClassSearcher(TokenExtractor())
-    for var in var_searcher.get_name_iter(text):
-        print('OLD' if var in variables else 'NEW', end=' VARIABLE\n')
-        for name in var.value:
-            print(f'\t{name}')
-        print()
-        variables.add(var)
-    print(f'Кол-во уникальных имён: {len(variables)}')
-
-
-if __name__ == '__main__':
-    main()

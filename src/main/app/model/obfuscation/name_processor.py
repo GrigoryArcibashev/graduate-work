@@ -1,5 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
-from functools import reduce
 from typing import Iterator
 
 from src.main.app.model.extractors.token import TokenType
@@ -39,12 +37,6 @@ class NameProcessor:
     def _get_name_info_list(self, name_iter: Iterator[Name]) -> list[NameInfo]:
         return [self._make_name_info(name) for name in name_iter]
 
-    # def get_next_name_info(self, text) -> list[NameInfo]:
-    #     with ThreadPoolExecutor(max_workers=5) as executor:
-    #         name_iters = [searcher.get_name_iter(text) for searcher in self._searchers]
-    #         results = list(executor.map(self._get_name_info_list, name_iters))
-    #         return reduce(lambda l1, l2: l1 + l2, results)
-    #
     def get_next_name_info(self, text) -> Iterator[NameInfo]:
         for searcher in self._searchers:
             for name in searcher.get_name_iter(text):

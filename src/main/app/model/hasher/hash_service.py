@@ -38,23 +38,3 @@ class Hasher:
         for data in data_iter:
             _hash.update(data)
         return HashResult(_hash.hexdigest())
-
-
-def main():
-    hasher = Hasher(HashSettings({'algs': {'sha256': 'sha256'}, 'alg': 'sha256'}))
-    message = "Hello, Python!".encode()
-
-    def message2() -> Iterator[bytes]:
-        msgs = ["Hello, ", "Python!"]
-        for msg in msgs:
-            yield msg.encode()
-
-    h1 = hasher.calc_hash(message)
-    h2 = hasher.calc_hash_by_iter(message2())
-    print(h1 == h2)
-    print(HashAlg.SHA256.to_str_name())
-    print(h1 == None)
-
-
-if __name__ == '__main__':
-    main()

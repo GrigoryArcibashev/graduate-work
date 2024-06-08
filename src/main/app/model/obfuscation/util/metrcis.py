@@ -30,7 +30,7 @@ SETTINGS_RAW = {
         }
     },
     "word_loader": {
-        "path_to_word_dict": "../words_service/words_by_len.bin"
+        "path_to_word_dict": "../../words_service/words_by_len.bin"
     }
 }
 
@@ -62,7 +62,7 @@ def main():
 
     obf_files, no_obf_files = get_files_for_stat()
     total_count = len(obf_files) + len(no_obf_files)
-    file_stat = open('../../../source/obf_stat.txt', 'w')
+    file_stat = open('../../../../source/obf_stat.txt', 'w')
 
     start = time.time()
     fp, tn, cur_count = process_files(total_count, 0, determinator, no_obf_files, file_stat)
@@ -101,31 +101,14 @@ def process_files(total_count, cur_count, determinator: ObfuscationDeterminator,
 
 def get_files_for_stat():
     path_to_obf = [
-        '../../../source/obf/js',
-        '../../../source/obf/php',
-        '../../../source/obf/python',
+        '../../../../source/obf/js',
+        '../../../../source/obf/php',
+        '../../../../source/obf/python',
     ]
     path_to_non_obf = [
-        '../../../source/obf_non/js',
-        '../../../source/obf_non/php',
-        '../../../source/obf_non/python',
-
-        # '../../../source/encr/base85',
-        # '../../../source/encr/DES_triple',
-        # '../../../source/encr/AES',
-        # '../../../source/encr/hex',
-        # '../../../source/encr/rot13',
-        #
-        # '../../../source/encr_non/bash',
-        # '../../../source/encr_non/css',
-        # '../../../source/encr_non/html',
-        # '../../../source/encr_non/js',
-        # '../../../source/encr_non/php',
-        # '../../../source/encr_non/python',
-        # '../../../source/encr_non/ruby',
-        # '../../../source/encr_non/sharp',
-        # '../../../source/encr_non/sql',
-        # '../../../source/encr_non/xml'
+        '../../../../source/obf_non/js',
+        '../../../../source/obf_non/php',
+        '../../../../source/obf_non/python',
     ]
     obf_files = get_filenames_by_path(path_to_obf)
     no_obf_files = get_filenames_by_path(path_to_non_obf)
