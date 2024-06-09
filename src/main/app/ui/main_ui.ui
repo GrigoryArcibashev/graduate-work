@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1553</width>
-    <height>856</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1551</width>
-      <height>681</height>
+      <width>800</width>
+      <height>431</height>
      </rect>
     </property>
     <property name="font">
@@ -32,8 +32,8 @@
    <widget class="QPushButton" name="btn_show_res">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>690</y>
+      <x>0</x>
+      <y>440</y>
       <width>111</width>
       <height>41</height>
      </rect>
@@ -50,8 +50,8 @@
    <widget class="QPushButton" name="btn_start_scan">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>730</y>
+      <x>0</x>
+      <y>480</y>
       <width>111</width>
       <height>41</height>
      </rect>
@@ -68,8 +68,8 @@
    <widget class="QPushButton" name="btn_root_dir">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>730</y>
+      <x>140</x>
+      <y>480</y>
       <width>111</width>
       <height>51</height>
      </rect>
@@ -87,8 +87,8 @@
    <widget class="QPushButton" name="btn_trust">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>770</y>
+      <x>0</x>
+      <y>520</y>
       <width>111</width>
       <height>41</height>
      </rect>
@@ -105,9 +105,9 @@
    <widget class="QLabel" name="lbl_site_dir">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>690</y>
-      <width>901</width>
+      <x>140</x>
+      <y>440</y>
+      <width>281</width>
       <height>41</height>
      </rect>
     </property>
@@ -126,7 +126,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1553</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>
