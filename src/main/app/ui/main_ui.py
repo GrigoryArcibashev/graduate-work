@@ -15,6 +15,11 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
+        MainWindow.setSizePolicy(sizePolicy)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.table = QtWidgets.QTableWidget(self.centralwidget)
@@ -50,11 +55,19 @@ class Ui_MainWindow(object):
         self.btn_trust.setFont(font)
         self.btn_trust.setObjectName("btn_trust")
         self.lbl_site_dir = QtWidgets.QLabel(self.centralwidget)
-        self.lbl_site_dir.setGeometry(QtCore.QRect(140, 440, 281, 41))
+        self.lbl_site_dir.setGeometry(QtCore.QRect(140, 440, 111, 31))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.lbl_site_dir.setFont(font)
         self.lbl_site_dir.setObjectName("lbl_site_dir")
+        self.line_site_dir = QtWidgets.QLineEdit(self.centralwidget)
+        self.line_site_dir.setGeometry(QtCore.QRect(260, 440, 450, 31))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.line_site_dir.setFont(font)
+        self.line_site_dir.setText("")
+        self.line_site_dir.setReadOnly(True)
+        self.line_site_dir.setObjectName("line_site_dir")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -69,7 +82,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "WebShellDet"))
         self.btn_show_res.setText(_translate("MainWindow", "Результаты"))
         self.btn_start_scan.setText(_translate("MainWindow", "Сканировать"))
         self.btn_root_dir.setText(_translate("MainWindow", "Установить\n"

@@ -21,21 +21,22 @@ class MainWindow(QtWidgets.QMainWindow):
     def _setup_ui(self):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setFixedSize(self.size())
 
         self.ui.btn_show_res.clicked.connect(self._show_last_result)
         self.ui.btn_start_scan.clicked.connect(self._start_scan)
         self.ui.btn_root_dir.clicked.connect(self._set_root_dir)
         self.ui.btn_trust.clicked.connect(self._trust)
-        self._set_text_to_label_site_dir()
+        self._set_text_site_dir()
 
     def _set_root_dir(self) -> None:
         new_root_dir = QFileDialog.getExistingDirectory(self, 'Выбрать директорию', '.')
         if new_root_dir:
             self._main_service.root_dir = new_root_dir
-            self._set_text_to_label_site_dir()
+            self._set_text_site_dir()
 
-    def _set_text_to_label_site_dir(self) -> None:
-        self.ui.lbl_site_dir.setText(f'Каталог сайта: {self._main_service.root_dir}')
+    def _set_text_site_dir(self) -> None:
+        self.ui.line_site_dir.setText(f'{self._main_service.root_dir}')
 
     def _start_scan(self) -> None:
         self._main_service.run()
